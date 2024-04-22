@@ -4,14 +4,18 @@
     to: app.makePath(app.rcFile.directories['workers'], workerFileName)
   })
 }}}
-import { NotificationChannelName, NotificationContract } from '@nemoengineering/worker/types'
+import { Worker } from '@nemoengineering/workers'
+import { WorkerOptions } from '@nemoengineering/workers/types'
+import { Job } from 'bullmq'
 
 export type {{ workerName }}Data = { }
 
 export type {{ workerName }}Return = { }
 
-export default class {{ notificationName }} implements NotificationContract<{{ modelName }}> {
-  via(notifiable: {{ modelName }}): NotificationChannelName | Array<NotificationChannelName> {
-    return 'database'
+export default class {{ workerName }} extends Worker<{{ workerName }}Data, {{ workerName }}Return> {
+  readonly config: WorkerOptions = {}
+
+  async process(job: Job<{{ workerName }}Data, {{ workerName }}Return>): Promise<{{ workerName }}Return> {
+   throw "Unimplemented"
   }
 }

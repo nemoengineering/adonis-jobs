@@ -1,21 +1,14 @@
 import { EmitterLike } from '@adonisjs/core/types/events'
-import {
-  Config,
-  InferDataType,
-  InferReturnType,
-  WorkerDispatch,
-  WorkerEvents,
-  WorkerManagerWorkerFactory,
-} from './types.js'
+import { Config, WorkerEvents, WorkerManagerWorkerFactory } from './types.js'
 import { Worker } from './worker.js'
+import debug from './debug.js'
 import { RuntimeException } from '@poppinss/utils'
-import logger from '@adonisjs/core/services/logger'
 
 export class WorkerManager<KnownWorkers extends Record<string, WorkerManagerWorkerFactory>> {
   //@ts-expect-error
   readonly #emitter: EmitterLike<WorkerEvents<KnownWorkers>>
 
-  #workerCache: Partial<Record<keyof KnownWorkers, Worker>> = {}
+  #runningWorkers: Partial<Record<keyof KnownWorkers, Worker>> = {}
 
   constructor(
     emitter: EmitterLike<WorkerEvents<KnownWorkers>>,
@@ -24,37 +17,39 @@ export class WorkerManager<KnownWorkers extends Record<string, WorkerManagerWork
     this.#emitter = emitter
   }
 
-  use<WorkerName extends keyof KnownWorkers>(
-    workerName: WorkerName
-  ): WorkerDispatch<
-    InferDataType<KnownWorkers[WorkerName]>,
-    InferReturnType<KnownWorkers[WorkerName]>
-  > {
-    if (!this.config.workers[workerName]) {
-      throw new RuntimeException(
-        `Unknown channel "${String(workerName)}". Make sure it is configured inside the config file`
-      )
+  async startWorkers<Name extends keyof KnownWorkers>(workerNames: Name[]) {
+    debug('Starting workers')
+    for (const workerName of workerNames) {
+      if (!this.config.workers[workerName]) {
+        throw new RuntimeException(
+          `Worker "${String(workerName)} not found. Have you registered it in "config/worker.ts"?`
+        )
+      }
+
+      debug('Staring worker. name: %s', workerName)
+      const workerFactory = this.config.workers[workerName]
+      const worker = await workerFactory()
+
+      worker.$bootQueue(String(workerName), this.config.connection)
+      worker.$boot(this.config.connection)
+
+      this.#runningWorkers[workerName] = worker
     }
+    debug('Started workers')
+  }
 
-    const cachedWorker = this.#workerCache[workerName]
-    if (cachedWorker) {
-      return cachedWorker as ReturnType<KnownWorkers[WorkerName]>
-    }
-
-    const workerFactory = this.config.workers[workerName]
-    const worker = workerFactory() as ReturnType<KnownWorkers[WorkerName]>
-
-    worker.$bootQueue(workerName as string, this.config.connection)
-
-    this.#workerCache[workerName] = worker
-
-    return worker
+  getAllWorkerNames() {
+    return Object.keys(this.config.workers)
   }
 
   async shutdown() {
-    for (const [name, worker] of Object.entries(this.#workerCache)) {
-      logger.debug({ name }, 'Shutting down worker')
-      await worker?.$shutdownQueue()
+    debug('Stopping workers')
+
+    for (const [name, worker] of Object.entries(this.#runningWorkers)) {
+      debug('Stopping worker. name: %s', name)
+      await worker?.$shutdownWorker()
     }
+
+    debug('Stopped workers')
   }
 }

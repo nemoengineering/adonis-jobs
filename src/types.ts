@@ -1,11 +1,11 @@
 import { Worker } from './worker.js'
 import { ConnectionOptions, Job } from 'bullmq'
-import { WorkerManager } from './worker_manager.js'
+import { QueueManager } from './queue_manager.js'
 import { ConfigProvider } from '@adonisjs/core/types'
 
 //TODO: export bull job type
 
-export type WorkerManagerWorkerFactory = () => Worker
+export type WorkerManagerWorkerFactory = () => Promise<Worker>
 
 //@ts-expect-error
 export type WorkerEvents<KnownWorkers extends Record<string, WorkerManagerWorkerFactory>> = {}
@@ -18,17 +18,17 @@ export type WorkerOptions = {
   workerOpts?: Omit<WorkerOptions, 'connection'>
 }
 
-export interface WorkerDispatch<DataType, ReturnType> {
+export interface JobContract<DataType, ReturnType> {
   dispatch(name: string, data: DataType): Promise<Job<DataType, ReturnType>>
   dispatchAndWaitResult(name: string, data: DataType): Promise<ReturnType>
 }
 
 export type InferDataType<WorkerFactory extends WorkerManagerWorkerFactory> = Parameters<
-  ReturnType<WorkerFactory>['dispatchAndWaitResult']
+  Awaited<Awaited<ReturnType<WorkerFactory>>['dispatchAndWaitResult']>
 >[1]
 
 export type InferReturnType<WorkerFactory extends WorkerManagerWorkerFactory> = Awaited<
-  ReturnType<ReturnType<WorkerFactory>['dispatchAndWaitResult']>
+  ReturnType<Awaited<ReturnType<WorkerFactory>>['dispatchAndWaitResult']>
 >
 
 /**
@@ -44,7 +44,7 @@ export type InferWorkers<
   T extends ConfigProvider<{ workers: Record<string, WorkerManagerWorkerFactory> }>,
 > = Awaited<ReturnType<T['resolver']>>['workers']
 
-export interface WorkerService
-  extends WorkerManager<
+export interface QueueService
+  extends QueueManager<
     Workers extends Record<string, WorkerManagerWorkerFactory> ? Workers : never
   > {}

@@ -1,9 +1,9 @@
 import { ConnectionOptions, Job, Queue, QueueEvents, Worker as BullWorker } from 'bullmq'
 import logger from '@adonisjs/core/services/logger'
-import { WorkerDispatch, WorkerOptions } from './types.js'
+import { JobContract, WorkerOptions } from './types.js'
 
 export abstract class Worker<DataType = any, ReturnType = any>
-  implements WorkerDispatch<DataType, ReturnType>
+  implements JobContract<DataType, ReturnType>
 {
   abstract readonly config: WorkerOptions
 

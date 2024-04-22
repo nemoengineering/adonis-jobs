@@ -70,7 +70,8 @@
   "dependencies": {
     "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.7.3",
-    "bullmq": "^5.7.4"
+    "bullmq": "^5.7.4",
+    "ts-morph": "^22.0.0"
   },
   "peerDependencies": {
     "@adonisjs/core": "^6.2.0"
@@ -107,8 +108,9 @@
       "src/types.ts",
       "src/worker.ts",
       "services/main.ts",
-      "commands/make_notification.ts",
-      "providers/worker_provider.ts"
+      "providers/worker_provider.ts",
+      "commands/make_worker.ts",
+      "commands/worker_listen.ts"
     ],
     "outDir": "./build",
     "clean": true,

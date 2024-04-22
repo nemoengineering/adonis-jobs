@@ -1,20 +1,17 @@
 import { ConfigProvider } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
-import {Config,  WorkerManagerWorkerFactory} from "./types.js";
+import { Config, WorkerManagerWorkerFactory } from './types.js'
 
-export type ResolvedConfig<
-  KnownWorkers extends Record<string, WorkerManagerWorkerFactory>,
-> = Config & {
-  workers: {
-    [K in keyof KnownWorkers]: KnownWorkers[K] extends ConfigProvider<infer A>
-      ? A
-      : KnownWorkers[K]
+export type ResolvedConfig<KnownWorkers extends Record<string, WorkerManagerWorkerFactory>> =
+  Config & {
+    workers: {
+      [K in keyof KnownWorkers]: KnownWorkers[K] extends ConfigProvider<infer A>
+        ? A
+        : KnownWorkers[K]
+    }
   }
-}
 
-export function defineConfig<
-  KnownWorkers extends Record<string, WorkerManagerWorkerFactory>,
->(
+export function defineConfig<KnownWorkers extends Record<string, WorkerManagerWorkerFactory>>(
   config: Config & {
     workers: { [K in keyof KnownWorkers]: ConfigProvider<KnownWorkers[K]> | KnownWorkers[K] }
   }
