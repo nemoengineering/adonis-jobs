@@ -1,0 +1,14 @@
+{{{
+  exports({ to: app.configPath('worker.ts') })
+}}}
+import { defineConfig } from '@nemoengineering/workers'
+
+const workerConfig = defineConfig({
+  workers: { },
+})
+
+export default workerConfig
+
+declare module '@nemoengineering/workers/types' {
+  interface Workers extends InferWorkers<typeof workerConfig> {}
+}

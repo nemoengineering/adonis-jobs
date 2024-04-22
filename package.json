@@ -1,0 +1,120 @@
+{
+  "name": "@nemoengineering/workers",
+  "description": "Job queues for your AdonisJS applications",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=18.16.0"
+  },
+  "main": "build/index.js",
+  "type": "module",
+  "files": [
+    "build",
+    "!build/bin",
+    "!build/tests"
+  ],
+  "exports": {
+    ".": "./build/index.js",
+    "./types": "./build/src/types.js",
+    "./commands": "./build/commands/main.js",
+    "./worker_provider": "./build/providers/worker_provider.js",
+    "./services/main": "./build/services/main.js"
+  },
+  "scripts": {
+    "pretest": "npm run lint",
+    "test": "c8 npm run quick:test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "del-cli build",
+    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
+    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
+    "postcompile": "npm run copy:templates && npm run index:commands",
+    "build": "npm run compile",
+    "release": "np",
+    "version": "npm run build",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "index:commands": "adonis-kit index build/commands",
+    "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoengineering/jobs"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^7.4.0",
+    "@adonisjs/core": "^6.5.0",
+    "@adonisjs/eslint-config": "^1.3.0",
+    "@adonisjs/prettier-config": "^1.3.0",
+    "@adonisjs/tsconfig": "^1.3.0",
+    "@japa/assert": "^3.0.0",
+    "@japa/expect": "^3.0.2",
+    "@japa/expect-type": "^2.0.2",
+    "@japa/file-system": "^2.3.0",
+    "@japa/plugin-adonisjs": "^3.0.1",
+    "@japa/runner": "^3.1.2",
+    "@japa/snapshot": "^2.0.5",
+    "@poppinss/dev-utils": "^2.0.3",
+    "@swc/core": "^1.4.11",
+    "@types/node": "^20.12.2",
+    "@types/pluralize": "^0.0.33",
+    "c8": "^9.1.0",
+    "copyfiles": "^2.4.1",
+    "del-cli": "^5.1.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "github-label-sync": "^2.2.0",
+    "husky": "^9.0.11",
+    "np": "^10.0.2",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@poppinss/manager": "^5.0.2",
+    "@poppinss/utils": "^6.7.3",
+    "bullmq": "^5.7.4"
+  },
+  "peerDependencies": {
+    "@adonisjs/core": "^6.2.0"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/nemoengineering/adonis-jobs",
+  "eslintConfig": {
+    "extends": "@adonisjs/eslint-config/package"
+  },
+  "prettier": "@adonisjs/prettier-config",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "np": {
+    "message": "chore(release): %s",
+    "tag": "latest",
+    "branch": "main",
+    "anyBranch": false
+  },
+  "c8": {
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "exclude": [
+      "tests/**",
+      "backup/**",
+      "factories/**"
+    ]
+  },
+  "tsup": {
+    "entry": [
+      "index.ts",
+      "src/types.ts",
+      "src/worker.ts",
+      "services/main.ts",
+      "commands/make_notification.ts",
+      "providers/worker_provider.ts"
+    ],
+    "outDir": "./build",
+    "clean": true,
+    "format": "esm",
+    "dts": false,
+    "sourcemap": true,
+    "target": "esnext"
+  }
+}
