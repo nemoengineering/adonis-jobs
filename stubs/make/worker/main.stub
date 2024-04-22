@@ -1,0 +1,17 @@
+{{#var modelImportPath = generators.importPath('#models', model.path, modelFileName)}}
+{{{
+  exports({
+    to: app.makePath(app.rcFile.directories['workers'], workerFileName)
+  })
+}}}
+import { NotificationChannelName, NotificationContract } from '@nemoengineering/worker/types'
+
+export type {{ workerName }}Data = { }
+
+export type {{ workerName }}Return = { }
+
+export default class {{ notificationName }} implements NotificationContract<{{ modelName }}> {
+  via(notifiable: {{ modelName }}): NotificationChannelName | Array<NotificationChannelName> {
+    return 'database'
+  }
+}
