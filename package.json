@@ -58,7 +58,7 @@
     "copyfiles": "^2.4.1",
     "del-cli": "^5.1.0",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.0",
+    "eslint": "^9.1.0",
     "github-label-sync": "^2.2.0",
     "husky": "^9.0.11",
     "np": "^10.0.2",
