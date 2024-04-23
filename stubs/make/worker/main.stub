@@ -1,4 +1,3 @@
-{{#var modelImportPath = generators.importPath('#models', model.path, modelFileName)}}
 {{{
   exports({
     to: app.makePath(app.rcFile.directories['workers'], workerFileName)
