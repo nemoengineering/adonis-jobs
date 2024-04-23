@@ -1,0 +1,15 @@
+{{{
+  exports({ to: app.configPath('job.ts') })
+}}}
+import { defineConfig } from '@nemoengineering/jobs'
+
+const jobConfig = defineConfig({
+  connection: {
+    host: Env.get('REDIS_HOST'),
+    port: Env.get('REDIS_PORT'),
+    password: Env.get('REDIS_PASSWORD'),
+  },
+})
+
+export default jobConfig
+

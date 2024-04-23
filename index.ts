@@ -1,5 +1,5 @@
-export { QueueManager } from './src/queue_manager.js'
-export { Worker } from './src/worker.js'
+export { JobManager } from './src/job_manager.js'
+export { Job } from './src/job.js'
 export { configure } from './configure.js'
 export { stubsRoot } from './stubs/main.js'
 export { defineConfig } from './src/define_config.js'

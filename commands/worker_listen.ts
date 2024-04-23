@@ -17,7 +17,7 @@ export default class WorkerListen extends BaseCommand {
   }
 
   async run() {
-    const queue = await this.app.container.make('queue.manager')
+    const queue = await this.app.container.make('job.manager')
 
     if (this.list) {
       this.ui.logger.log('Available workers')

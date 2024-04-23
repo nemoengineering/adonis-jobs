@@ -1,19 +1,24 @@
-import { Worker } from './worker.js'
-import { ConnectionOptions, Job, JobsOptions, WorkerOptions as BullWorkerOptions } from 'bullmq'
-import { QueueManager } from './queue_manager.js'
+import { Job } from './job.js'
+import {
+  ConnectionOptions,
+  Job as BullJob,
+  JobsOptions,
+  WorkerOptions as BullWorkerOptions,
+} from 'bullmq'
+import { JobManager } from './job_manager.js'
 import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
 
 export type { ConnectionOptions, Job, JobsOptions } from 'bullmq'
 
-export type LazyWorkerImport = () => Promise<{ default: WorkerConstructor }>
+export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
 
-export interface WorkerConstructor {
-  new (...args: any[]): Worker
+export interface JobConstructor {
+  new (...args: any[]): Job
   workerOptions?: WorkerOptions
 }
 
 //@ts-expect-error
-export type WorkerEvents<KnownWorkers extends Record<string, Worker>> = {}
+export type JobEvents<KnownJobs extends Record<string, Job>> = {}
 
 export type Config = {
   connection: ConnectionOptions
@@ -22,45 +27,42 @@ export type Config = {
 export type WorkerOptions = Omit<BullWorkerOptions, 'connection' | 'autorun'>
 
 export interface JobContract<DataType, ReturnType> {
-  dispatch(name: string, data: DataType): Promise<Job<DataType, ReturnType>>
+  dispatch(name: string, data: DataType): Promise<BullJob<DataType, ReturnType>>
   dispatchAndWaitResult(name: string, data: DataType): Promise<ReturnType>
   dispatchMany(
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
-  ): Promise<Job<DataType, ReturnType>[]>
+  ): Promise<BullJob<DataType, ReturnType>[]>
   dispatchManyAndWaitResult(
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
   ): Promise<PromiseSettledResult<Awaited<ReturnType>>[]>
 }
 
-export type InferDataType<W extends Worker> = W['job']['data']
-export type InferReturnType<W extends Worker> = W['job']['returnvalue']
+export type InferDataType<W extends Job> = W['job']['data']
+export type InferReturnType<W extends Job> = W['job']['returnvalue']
 
-export interface FlowJob<
-  KnownWorkers extends Record<string, Worker>,
-  Name extends keyof KnownWorkers,
-> {
+export interface FlowJob<KnownJobs extends Record<string, Job>, Name extends keyof KnownJobs> {
   name: string
   queueName: Name
-  data: InferDataType<KnownWorkers[Name]>
+  data: InferDataType<KnownJobs[Name]>
   prefix?: string
   opts?: Omit<JobsOptions, 'parent' | 'repeat'>
-  children?: FlowJobArg<KnownWorkers>[]
+  children?: FlowJobArg<KnownJobs>[]
 }
 
 export type FlowJobArg<
-  KnownWorkers extends Record<string, Worker>,
-  Name extends keyof KnownWorkers = keyof KnownWorkers,
-> = Name extends keyof KnownWorkers ? FlowJob<KnownWorkers, Name> : never
+  KnownJobs extends Record<string, Job>,
+  Name extends keyof KnownJobs = keyof KnownJobs,
+> = Name extends keyof KnownJobs ? FlowJob<KnownJobs, Name> : never
 
 /*export interface JobNode<
-  FlowJobT extends FlowJobArg<KnownWorkers>,
-  KnownWorkers extends Record<string, WorkerManagerWorkerFactory>,
+  FlowJobT extends FlowJobArg<KnownJobs>,
+  KnownJobs extends Record<string, WorkerManagerWorkerFactory>,
 > {
   job: Job<
-    InferDataType<KnownWorkers[FlowJobT['queueName']]>,
-    InferReturnType<KnownWorkers[FlowJobT['queueName']]>
+    InferDataType<KnownJobs[FlowJobT['queueName']]>,
+    InferReturnType<KnownJobs[FlowJobT['queueName']]>
   >
-  children: JobNode<any, KnownWorkers>[]
+  children: JobNode<any, KnownJobs>[]
 }*/
 
 /**
@@ -70,7 +72,6 @@ export type FlowJobArg<
  * --------------------------------------------------------
  */
 
-export interface Workers {}
+export interface Jobs {}
 
-export interface QueueService
-  extends QueueManager<Workers extends Record<string, Worker> ? Workers : never> {}
+export interface JobService extends JobManager<Jobs extends Record<string, Job> ? Jobs : never> {}

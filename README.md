@@ -5,7 +5,7 @@
 
 
 ## **Pre-requisites**
-The `@nemoengineering/workers` package requires `@adonisjs/core >= 6.2.0`
+The `@nemoengineering/jobs` package requires `@adonisjs/core >= 6.2.0`
 
 
 ## **Setup**
@@ -13,15 +13,15 @@ The `@nemoengineering/workers` package requires `@adonisjs/core >= 6.2.0`
 Install the package from the npm registry as follows.
 
 ```
-npm i @nemoengineering/workers
+npm i @nemoengineering/jobs
 # or
-yarn add @nemoengineering/workers
+yarn add @nemoengineering/jobs
 ```
 
 Next, configure the package by running the following ace command.
 
 ```
-node ace configure @nemoengineering/workers
+node ace configure @nemoengineering/jobs
 ```
 
 And then add the path to the `tsconfig.json`
@@ -35,7 +35,7 @@ And then add the path to the `tsconfig.json`
     "outDir": "./build",
     "paths": {
      ...
-      "#workers/*": ["./app/workers/*.js"]
+      "#jobs/*": ["./app/jobs/*.js"]
     }
   }
 }
@@ -49,7 +49,7 @@ and `package.json`
   "version": "0.0.0",
   "imports": {
     ...
-    "#workers/*": "./app/workers/*.js"
+    "#jobs/*": "./app/jobs/*.js"
   },
   ...
 }

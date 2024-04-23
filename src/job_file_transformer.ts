@@ -7,9 +7,9 @@ import {
   SyntaxKind,
 } from 'ts-morph'
 import StringBuilder from '@poppinss/utils/string_builder'
-import { workerName } from './helper.js'
+import { jobName } from './helper.js'
 
-export class WorkerFileTransformer {
+export class JobFileTransformer {
   #project: Project
 
   #editorSettings: FormatCodeSettings = {
@@ -64,17 +64,17 @@ export class WorkerFileTransformer {
     return call
   }
 
-  addWorker(entity: { path: string; name: string }) {
+  addJob(entity: { path: string; name: string }) {
     this.#getWorkerFileOrThrow().addImportDeclaration({
-      defaultImport: workerName(entity.name),
-      moduleSpecifier: `#workers/${new StringBuilder(workerName(entity.name)).snakeCase().toString()}`,
+      defaultImport: jobName(entity.name),
+      moduleSpecifier: `#jobs/${new StringBuilder(jobName(entity.name)).snakeCase().toString()}`,
     })
 
-    const property = this.#getPropertyAssignmentInDefineConfigCall('workers', '{}')
+    const property = this.#getPropertyAssignmentInDefineConfigCall('jobs', '{}')
     const workers = property.getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression)
     workers.addPropertyAssignment({
       name: entity.name,
-      initializer: `() => new ${workerName(entity.name)}()`,
+      initializer: `() => new ${jobName(entity.name)}()`,
     })
   }
 

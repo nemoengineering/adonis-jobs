@@ -1,5 +1,5 @@
 {
-  "name": "@nemoengineering/workers",
+  "name": "@nemoengineering/jobs",
   "description": "Job queues for your AdonisJS applications",
   "version": "0.0.0",
   "engines": {
@@ -107,9 +107,9 @@
     "entry": [
       "index.ts",
       "src/types.ts",
-      "src/worker.ts",
+      "src/job.ts",
       "services/main.ts",
-      "providers/worker_provider.ts",
+      "providers/jobs_provider.ts",
       "commands/make_worker.ts",
       "commands/worker_listen.ts"
     ],
