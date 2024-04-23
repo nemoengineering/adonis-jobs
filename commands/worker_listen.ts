@@ -1,7 +1,5 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
-import { WorkerManager } from '../src/worker_manager.js'
 import { CommandOptions } from '@adonisjs/core/types/ace'
-import { configProvider } from '@adonisjs/core'
 
 export default class WorkerListen extends BaseCommand {
   static commandName = 'worker:listen'
@@ -19,16 +17,12 @@ export default class WorkerListen extends BaseCommand {
   }
 
   async run() {
-    const emitter = await this.app.container.make('emitter')
-    const workerConfigProvider = await this.app.config.get<any>('worker')
-    const config = await configProvider.resolve<any>(this.app, workerConfigProvider)
-
-    const workerManager = new WorkerManager(emitter, config)
+    const queue = await this.app.container.make('queue.manager')
 
     if (this.list) {
       this.ui.logger.log('Available workers')
       const table = this.ui.table().head(['Name'])
-      workerManager.getAllWorkerNames().forEach((w) => {
+      queue.getAllWorkerNames().forEach((w) => {
         table.row([w])
       })
       table.render()
@@ -36,15 +30,15 @@ export default class WorkerListen extends BaseCommand {
     }
 
     if (this.workers.length === 0) {
-      this.workers = workerManager.getAllWorkerNames()
+      this.workers = queue.getAllWorkerNames()
     }
 
     this.logger.info(`Staring workers. Workers: ${this.workers}`)
-    await workerManager.startWorkers(this.workers)
+    const runningWorkers = await queue.startWorkers(this.workers)
 
     this.app.terminating(async () => {
       this.logger.info('Terminating...')
-      await workerManager.shutdown()
+      await Promise.all(runningWorkers.map((w) => w.close()))
       this.logger.info('Terminated')
     })
     this.app.listen('SIGINT', () => this.app.terminate())

@@ -1,8 +1,9 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
-import { WorkerEvents, WorkerManagerWorkerFactory, Workers, QueueService } from '../src/types.js'
+import { WorkerEvents, Workers, QueueService } from '../src/types.js'
 import { QueueManager } from '../src/queue_manager.js'
+import { Worker } from '../src/worker.js'
 
 /**
  * Extended types
@@ -12,9 +13,7 @@ declare module '@adonisjs/core/types' {
     'queue.manager': QueueService
   }
   export interface EventsList
-    extends WorkerEvents<
-      Workers extends Record<string, WorkerManagerWorkerFactory> ? Workers : {}
-    > {}
+    extends WorkerEvents<Workers extends Record<string, Worker> ? Workers : {}> {}
 }
 
 export default class WorkerProvider {
@@ -32,7 +31,7 @@ export default class WorkerProvider {
         )
       }
 
-      return new QueueManager(emitter, config) as QueueService
+      return new QueueManager(this.app, emitter, config) as QueueService
     })
   }
 

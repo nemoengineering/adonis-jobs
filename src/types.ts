@@ -1,23 +1,25 @@
 import { Worker } from './worker.js'
-import { ConnectionOptions, Job, JobsOptions } from 'bullmq'
+import { ConnectionOptions, Job, JobsOptions, WorkerOptions as BullWorkerOptions } from 'bullmq'
 import { QueueManager } from './queue_manager.js'
-import { ConfigProvider } from '@adonisjs/core/types'
 import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
 
 export type { ConnectionOptions, Job, JobsOptions } from 'bullmq'
 
-export type WorkerManagerWorkerFactory = () => Worker
+export type LazyWorkerImport = () => Promise<{ default: WorkerConstructor }>
+
+export interface WorkerConstructor {
+  new (...args: any[]): Worker
+  workerOptions?: WorkerOptions
+}
 
 //@ts-expect-error
-export type WorkerEvents<KnownWorkers extends Record<string, WorkerManagerWorkerFactory>> = {}
+export type WorkerEvents<KnownWorkers extends Record<string, Worker>> = {}
 
 export type Config = {
   connection: ConnectionOptions
 }
 
-export type WorkerOptions = {
-  workerOpts?: Omit<WorkerOptions, 'connection'>
-}
+export type WorkerOptions = Omit<BullWorkerOptions, 'connection' | 'autorun'>
 
 export interface JobContract<DataType, ReturnType> {
   dispatch(name: string, data: DataType): Promise<Job<DataType, ReturnType>>
@@ -30,16 +32,11 @@ export interface JobContract<DataType, ReturnType> {
   ): Promise<PromiseSettledResult<Awaited<ReturnType>>[]>
 }
 
-export type InferDataType<WorkerFactory extends WorkerManagerWorkerFactory> = Parameters<
-  Awaited<ReturnType<WorkerFactory>['dispatchAndWaitResult']>
->[1]
-
-export type InferReturnType<WorkerFactory extends WorkerManagerWorkerFactory> = Awaited<
-  ReturnType<ReturnType<WorkerFactory>['dispatchAndWaitResult']>
->
+export type InferDataType<W extends Worker> = W['job']['data']
+export type InferReturnType<W extends Worker> = W['job']['returnvalue']
 
 export interface FlowJob<
-  KnownWorkers extends Record<string, WorkerManagerWorkerFactory>,
+  KnownWorkers extends Record<string, Worker>,
   Name extends keyof KnownWorkers,
 > {
   name: string
@@ -51,11 +48,11 @@ export interface FlowJob<
 }
 
 export type FlowJobArg<
-  KnownWorkers extends Record<string, WorkerManagerWorkerFactory>,
+  KnownWorkers extends Record<string, Worker>,
   Name extends keyof KnownWorkers = keyof KnownWorkers,
 > = Name extends keyof KnownWorkers ? FlowJob<KnownWorkers, Name> : never
 
-export interface JobNode<
+/*export interface JobNode<
   FlowJobT extends FlowJobArg<KnownWorkers>,
   KnownWorkers extends Record<string, WorkerManagerWorkerFactory>,
 > {
@@ -64,7 +61,7 @@ export interface JobNode<
     InferReturnType<KnownWorkers[FlowJobT['queueName']]>
   >
   children: JobNode<any, KnownWorkers>[]
-}
+}*/
 
 /**
  * Using declaration merging, one must extend this interface.
@@ -75,11 +72,5 @@ export interface JobNode<
 
 export interface Workers {}
 
-export type InferWorkers<
-  T extends ConfigProvider<{ workers: Record<string, WorkerManagerWorkerFactory> }>,
-> = Awaited<ReturnType<T['resolver']>>['workers']
-
 export interface QueueService
-  extends QueueManager<
-    Workers extends Record<string, WorkerManagerWorkerFactory> ? Workers : never
-  > {}
+  extends QueueManager<Workers extends Record<string, Worker> ? Workers : never> {}
