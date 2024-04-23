@@ -10,6 +10,7 @@ import {
 import { Worker } from './worker.js'
 import { RuntimeException } from '@poppinss/utils'
 import logger from '@adonisjs/core/services/logger'
+import { FlowProducer } from './flow_producer.js'
 
 export class QueueManager<KnownWorkers extends Record<string, WorkerManagerWorkerFactory>> {
   //@ts-expect-error
@@ -24,7 +25,7 @@ export class QueueManager<KnownWorkers extends Record<string, WorkerManagerWorke
     this.#emitter = emitter
   }
 
-  async use<Name extends keyof KnownWorkers>(
+  use<Name extends keyof KnownWorkers>(
     queueName: Name
   ): Promise<JobContract<InferDataType<KnownWorkers[Name]>, InferReturnType<KnownWorkers[Name]>>> {
     if (!this.config.workers[queueName]) {
@@ -35,17 +36,21 @@ export class QueueManager<KnownWorkers extends Record<string, WorkerManagerWorke
 
     const cachedWorker = this.#workerCache[queueName]
     if (cachedWorker) {
-      return cachedWorker as Awaited<ReturnType<KnownWorkers[Name]>>
+      return cachedWorker as InferReturnType<KnownWorkers[Name]>
     }
 
     const workerFactory = this.config.workers[queueName]
-    const worker = (await workerFactory()) as Awaited<ReturnType<KnownWorkers[Name]>>
+    const worker = workerFactory() as InferReturnType<KnownWorkers[Name]>
 
     worker.$bootQueue(String(queueName), this.config.connection)
 
     this.#workerCache[queueName] = worker
 
     return worker
+  }
+
+  createFlow() {
+    return new FlowProducer<KnownWorkers>({ connection: this.config.connection })
   }
 
   async shutdown() {

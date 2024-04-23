@@ -9,7 +9,7 @@ import { QueueManager } from '../src/queue_manager.js'
  */
 declare module '@adonisjs/core/types' {
   export interface ContainerBindings {
-    'worker.queue.manager': QueueService
+    'queue.manager': QueueService
   }
   export interface EventsList
     extends WorkerEvents<
@@ -21,7 +21,7 @@ export default class WorkerProvider {
   constructor(protected app: ApplicationService) {}
 
   register() {
-    this.app.container.singleton('worker.queue.manager', async (resolver) => {
+    this.app.container.singleton('queue.manager', async (resolver) => {
       const emitter = await resolver.make('emitter')
       const workerConfigProvider = await this.app.config.get('worker')
       const config = await configProvider.resolve<any>(this.app, workerConfigProvider)
@@ -37,7 +37,7 @@ export default class WorkerProvider {
   }
 
   async shutdown() {
-    const workers = await this.app.container.make('worker.queue.manager')
+    const workers = await this.app.container.make('queue.manager')
     await workers.shutdown()
   }
 }
