@@ -1,6 +1,5 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
-import { Jobs } from '../src/types.js'
 
 export default class WorkerListen extends BaseCommand {
   static commandName = 'worker:listen'
@@ -30,17 +29,17 @@ export default class WorkerListen extends BaseCommand {
       return await this.terminate()
     }
 
-    if (this.workers.length === 0) {
+    console.log('workers', this.workers)
+    if (!this.workers) {
       this.workers = queue.getAllWorkerNames()
     }
 
     this.logger.info(`Staring workers. Workers: ${this.workers}`)
-    const runningWorkers = await queue.startWorkers(this.workers as keyof Jobs)
+    const runningWorkers = await queue.startWorkers(this.workers)
 
     this.app.terminating(async () => {
       this.logger.info('Terminating...')
       await Promise.all(runningWorkers.map((w) => w.close()))
-      this.logger.info('Terminated')
     })
     this.app.listen('SIGINT', () => this.app.terminate())
   }

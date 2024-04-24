@@ -8,7 +8,7 @@ import {
 import { JobManager } from './job_manager.js'
 import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
 
-export type { ConnectionOptions, Job, JobsOptions } from 'bullmq'
+export type { ConnectionOptions, Job, JobsOptions, BulkJobOptions } from 'bullmq'
 
 export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
 
@@ -27,8 +27,12 @@ export type Config = {
 export type WorkerOptions = Omit<BullWorkerOptions, 'connection' | 'autorun'>
 
 export interface JobContract<DataType, ReturnType> {
-  dispatch(name: string, data: DataType): Promise<BullJob<DataType, ReturnType>>
-  dispatchAndWaitResult(name: string, data: DataType): Promise<ReturnType>
+  dispatch(
+    name: string,
+    data: DataType,
+    options?: JobsOptions
+  ): Promise<BullJob<DataType, ReturnType>>
+  dispatchAndWaitResult(name: string, data: DataType, options?: JobsOptions): Promise<ReturnType>
   dispatchMany(
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
   ): Promise<BullJob<DataType, ReturnType>[]>
@@ -53,17 +57,6 @@ export type FlowJobArg<
   KnownJobs extends Record<string, Job>,
   Name extends keyof KnownJobs = keyof KnownJobs,
 > = Name extends keyof KnownJobs ? FlowJob<KnownJobs, Name> : never
-
-/*export interface JobNode<
-  FlowJobT extends FlowJobArg<KnownJobs>,
-  KnownJobs extends Record<string, WorkerManagerWorkerFactory>,
-> {
-  job: Job<
-    InferDataType<KnownJobs[FlowJobT['queueName']]>,
-    InferReturnType<KnownJobs[FlowJobT['queueName']]>
-  >
-  children: JobNode<any, KnownJobs>[]
-}*/
 
 /**
  * Using declaration merging, one must extend this interface.

@@ -13,6 +13,7 @@ import { Queue } from './queue.js'
 import debug from './debug.js'
 import { Worker as BullWorker } from 'bullmq'
 import { ApplicationService } from '@adonisjs/core/types'
+import { FlowProducer } from './flow_producer.js'
 
 export class JobManager<KnownJobs extends Record<string, Job>> {
   //@ts-expect-error
@@ -55,12 +56,12 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     return queue
   }
 
-  /*  createFlow() {
+  dispatchFlow() {
     return new FlowProducer<KnownJobs>({ connection: this.config.connection })
-  }*/
+  }
 
   getAllWorkerNames() {
-    return Object.keys(this.#workers)
+    return Array.from(this.#workers.keys()) as string[]
   }
 
   async startWorkers(names: (keyof KnownJobs)[]) {

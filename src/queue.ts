@@ -1,5 +1,6 @@
 import { Job, Queue as BullQueue, QueueEvents, BulkJobOptions, ConnectionOptions } from 'bullmq'
 import { JobContract } from './types.js'
+import { JobsOptions } from 'bullmq/dist/esm/types/index.js'
 
 export class Queue<DataType = any, ReturnType = any> implements JobContract<DataType, ReturnType> {
   queue: BullQueue<DataType, ReturnType>
@@ -10,12 +11,20 @@ export class Queue<DataType = any, ReturnType = any> implements JobContract<Data
     this.queueEvents = new QueueEvents(this.queue.name, { connection })
   }
 
-  async dispatch(name: string, data: DataType): Promise<Job<DataType, ReturnType>> {
-    return this.queue.add(name, data)
+  async dispatch(
+    name: string,
+    data: DataType,
+    options?: JobsOptions
+  ): Promise<Job<DataType, ReturnType>> {
+    return this.queue.add(name, data, options)
   }
 
-  async dispatchAndWaitResult(name: string, data: DataType): Promise<ReturnType> {
-    const job = await this.dispatch(name, data)
+  async dispatchAndWaitResult(
+    name: string,
+    data: DataType,
+    options?: JobsOptions
+  ): Promise<ReturnType> {
+    const job = await this.dispatch(name, data, options)
 
     return job.waitUntilFinished(this.queueEvents)
   }
