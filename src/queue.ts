@@ -3,12 +3,12 @@ import { JobContract } from './types.js'
 import { JobsOptions } from 'bullmq/dist/esm/types/index.js'
 
 export class Queue<DataType = any, ReturnType = any> implements JobContract<DataType, ReturnType> {
-  queue: BullQueue<DataType, ReturnType>
-  queueEvents: QueueEvents
+  readonly #queue: BullQueue<DataType, ReturnType>
+  readonly #queueEvents: QueueEvents
 
   constructor(name: string, connection: ConnectionOptions) {
-    this.queue = new BullQueue(name, { connection })
-    this.queueEvents = new QueueEvents(this.queue.name, { connection })
+    this.#queue = new BullQueue(name, { connection })
+    this.#queueEvents = new QueueEvents(this.#queue.name, { connection })
   }
 
   async dispatch(
@@ -16,7 +16,7 @@ export class Queue<DataType = any, ReturnType = any> implements JobContract<Data
     data: DataType,
     options?: JobsOptions
   ): Promise<Job<DataType, ReturnType>> {
-    return this.queue.add(name, data, options)
+    return this.#queue.add(name, data, options)
   }
 
   async dispatchAndWaitResult(
@@ -26,13 +26,13 @@ export class Queue<DataType = any, ReturnType = any> implements JobContract<Data
   ): Promise<ReturnType> {
     const job = await this.dispatch(name, data, options)
 
-    return job.waitUntilFinished(this.queueEvents)
+    return job.waitUntilFinished(this.#queueEvents)
   }
 
   async dispatchMany(
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
   ): Promise<Job<DataType, ReturnType>[]> {
-    return this.queue.addBulk(jobs)
+    return this.#queue.addBulk(jobs)
   }
 
   async dispatchManyAndWaitResult(
@@ -40,11 +40,19 @@ export class Queue<DataType = any, ReturnType = any> implements JobContract<Data
   ): Promise<PromiseSettledResult<Awaited<ReturnType>>[]> {
     const queuedJobs = await this.dispatchMany(jobs)
 
-    return Promise.allSettled(queuedJobs.map((j) => j.waitUntilFinished(this.queueEvents)))
+    return Promise.allSettled(queuedJobs.map((j) => j.waitUntilFinished(this.#queueEvents)))
+  }
+
+  getQueue(): Omit<BullQueue<DataType, ReturnType>, 'add' | 'addBulk'> {
+    return this.#queue
+  }
+
+  getQueueEvents() {
+    return this.#queueEvents
   }
 
   async $shutdown() {
-    await this.queue.close()
-    await this.queueEvents.close()
+    await this.#queue.close()
+    await this.#queueEvents.close()
   }
 }

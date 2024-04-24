@@ -54,10 +54,11 @@ and `package.json`
   ...
 }
 ```
+# Usage
 
-# Creating a job
+## Creating a job
 
-To create a new job run `node ace make:job <jon name>`. The `process` method implements the work the job should do.
+To create a new job run `node ace make:job <job name>`. The `process` method implements the work the job should do.
 
 E.g. `node ace make:job concat` will result in the following job to be created
 
