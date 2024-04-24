@@ -1,14 +1,14 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
 
-export default class WorkerListen extends BaseCommand {
-  static commandName = 'worker:listen'
+export default class QueueListen extends BaseCommand {
+  static commandName = 'queue:listen'
   static description = 'Listen for jobs'
 
-  @flags.array({ name: 'workers', alias: 'w', description: 'The workers you want to run' })
-  declare workers: string[]
+  @flags.array({ name: 'jobs', alias: 'j', description: 'The jobs you want to listen for' })
+  declare jobs: string[]
 
-  @flags.boolean({ name: 'list', alias: 'l', description: 'List all available workers' })
+  @flags.boolean({ name: 'list', alias: 'l', description: 'List all available jobs' })
   declare list: boolean
 
   static options: CommandOptions = {
@@ -22,20 +22,19 @@ export default class WorkerListen extends BaseCommand {
     if (this.list) {
       this.ui.logger.log('Available workers')
       const table = this.ui.table().head(['Name'])
-      queue.getAllWorkerNames().forEach((w) => {
+      queue.getAllJobNames().forEach((w) => {
         table.row([w])
       })
       table.render()
       return await this.terminate()
     }
 
-    console.log('workers', this.workers)
-    if (!this.workers) {
-      this.workers = queue.getAllWorkerNames()
+    if (!this.jobs) {
+      this.jobs = queue.getAllJobNames()
     }
 
-    this.logger.info(`Staring workers. Workers: ${this.workers}`)
-    const runningWorkers = await queue.startWorkers(this.workers)
+    this.logger.info(`Staring workers for queues : ${this.jobs}`)
+    const runningWorkers = await queue.startWorkers(this.jobs)
 
     this.app.terminating(async () => {
       this.logger.info('Terminating...')

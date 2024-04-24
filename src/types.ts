@@ -17,8 +17,25 @@ export interface JobConstructor {
   workerOptions?: WorkerOptions
 }
 
-//@ts-expect-error
-export type JobEvents<KnownJobs extends Record<string, Job>> = {}
+export type JobEvents<KnownJobs extends Record<string, Job>> = {
+  'job:dispatched': EventWithJob<KnownJobs>
+  'job:dispatched:many': EventWithManyJobs<KnownJobs>
+  'job:started': EventWithJob<KnownJobs>
+  'job:success': EventWithJob<KnownJobs>
+  'job:error': EventWithJob<KnownJobs> & { error: Error }
+}
+
+type EventWithJob<KnownJobs extends Record<string, Job>> = {
+  [Job in keyof KnownJobs]: {
+    job: BullJob<InferDataType<KnownJobs[Job]>, InferReturnType<KnownJobs[Job]>>
+  }
+}[keyof Job]
+
+type EventWithManyJobs<KnownJobs extends Record<string, Job>> = {
+  [Job in keyof KnownJobs]: {
+    jobs: BullJob<InferDataType<KnownJobs[Job]>, InferReturnType<KnownJobs[Job]>>[]
+  }
+}[keyof Job]
 
 export type Config = {
   connection: ConnectionOptions

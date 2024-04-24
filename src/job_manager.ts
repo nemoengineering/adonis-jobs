@@ -14,13 +14,14 @@ import debug from './debug.js'
 import { Worker as BullWorker } from 'bullmq'
 import { ApplicationService } from '@adonisjs/core/types'
 import { FlowProducer } from './flow_producer.js'
+import logger from '@adonisjs/core/services/logger'
 
 export class JobManager<KnownJobs extends Record<string, Job>> {
-  //@ts-expect-error
   readonly #emitter: EmitterLike<JobEvents<KnownJobs>>
+
   #app: ApplicationService
-  #workers: Map<keyof KnownJobs, LazyWorkerImport> = new Map()
-  #jobQueues: Map<keyof KnownJobs, Queue> = new Map()
+  #jobs: Map<keyof KnownJobs, LazyWorkerImport> = new Map()
+  #jobQueues: Map<keyof KnownJobs, Queue<KnownJobs>> = new Map()
 
   constructor(
     app: ApplicationService,
@@ -31,15 +32,15 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     this.#emitter = emitter
   }
 
-  set(workers: Record<keyof KnownJobs, LazyWorkerImport>) {
+  set(jobs: Record<keyof KnownJobs, LazyWorkerImport>) {
     debug('setting workers')
-    this.#workers = new Map(Object.entries(workers))
+    this.#jobs = new Map(Object.entries(jobs))
   }
 
   use<Name extends keyof KnownJobs>(
     queueName: Name
   ): JobContract<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>> {
-    if (!this.#workers.has(queueName)) {
+    if (!this.#jobs.has(queueName)) {
       throw new RuntimeException(
         `Unknown job "${String(queueName)}". Make sure it is configured inside the config file`
       )
@@ -50,7 +51,7 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
       return cachedQueue
     }
 
-    const queue = new Queue(String(queueName), this.config.connection)
+    const queue = new Queue(this.#emitter, String(queueName), this.config.connection)
     this.#jobQueues.set(queueName, queue)
 
     return queue
@@ -60,22 +61,25 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     return new FlowProducer<KnownJobs>({ connection: this.config.connection })
   }
 
-  getAllWorkerNames() {
-    return Array.from(this.#workers.keys()) as string[]
+  getAllJobNames() {
+    return Array.from(this.#jobs.keys()) as string[]
   }
 
-  async startWorkers(names: (keyof KnownJobs)[]) {
-    return Promise.all(names.map((w) => this.#startWorker(w)))
+  async startWorkers(jobNames: (keyof KnownJobs)[]) {
+    return Promise.all(jobNames.map((w) => this.#startWorker(w)))
   }
 
   async #startWorker(name: keyof KnownJobs) {
-    const { default: jobClass } = await this.#workers.get(name)!()
+    const { default: jobClass } = await this.#jobs.get(name)!()
 
     const worker = new BullWorker(
       String(name),
       async (job, token) => {
+        void this.#emitter.emit('job:started', { job })
+
         const jobInstance = await this.#app.container.make(jobClass)
         jobInstance.$setJob(job, token)
+
         return this.#app.container.call(jobInstance, 'process')
       },
       {
@@ -85,12 +89,17 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     )
 
     worker.on('failed', async (job, error) => {
-      console.log('Job failed with', error.message)
+      logger.error(error.message, 'Job failed')
       if (!job) return
 
+      void this.#emitter.emit('job:error', { job, error })
       const jobInstance = await this.#app.container.make(jobClass)
       jobInstance.$setFailed(job, error)
       return this.#app.container.call(jobInstance, 'onFailed')
+    })
+
+    worker.on('completed', (job) => {
+      this.#emitter.emit('job:success', { job })
     })
 
     return worker

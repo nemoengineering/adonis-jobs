@@ -111,7 +111,7 @@
       "services/main.ts",
       "providers/job_provider.ts",
       "commands/make_job.ts",
-      "commands/worker_listen.ts"
+      "commands/queue_listen.ts"
     ],
     "outDir": "./build",
     "clean": true,

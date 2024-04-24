@@ -1,12 +1,28 @@
-import { Job, Queue as BullQueue, QueueEvents, BulkJobOptions, ConnectionOptions } from 'bullmq'
-import { JobContract } from './types.js'
+import {
+  Job as BullJob,
+  Queue as BullQueue,
+  QueueEvents,
+  BulkJobOptions,
+  ConnectionOptions,
+} from 'bullmq'
+import { JobContract, JobEvents } from './types.js'
 import { JobsOptions } from 'bullmq/dist/esm/types/index.js'
+import { EmitterLike } from '@adonisjs/core/types/events'
+import { Job } from './job.js'
 
-export class Queue<DataType = any, ReturnType = any> implements JobContract<DataType, ReturnType> {
+export class Queue<KnownJobs extends Record<string, Job>, DataType = any, ReturnType = any>
+  implements JobContract<DataType, ReturnType>
+{
+  readonly #emitter: EmitterLike<JobEvents<KnownJobs>>
   readonly #queue: BullQueue<DataType, ReturnType>
   readonly #queueEvents: QueueEvents
 
-  constructor(name: string, connection: ConnectionOptions) {
+  constructor(
+    emitter: EmitterLike<JobEvents<KnownJobs>>,
+    name: string,
+    connection: ConnectionOptions
+  ) {
+    this.#emitter = emitter
     this.#queue = new BullQueue(name, { connection })
     this.#queueEvents = new QueueEvents(this.#queue.name, { connection })
   }
@@ -15,8 +31,10 @@ export class Queue<DataType = any, ReturnType = any> implements JobContract<Data
     name: string,
     data: DataType,
     options?: JobsOptions
-  ): Promise<Job<DataType, ReturnType>> {
-    return this.#queue.add(name, data, options)
+  ): Promise<BullJob<DataType, ReturnType>> {
+    const job = await this.#queue.add(name, data, options)
+    void this.#emitter.emit('job:dispatched', { job })
+    return job
   }
 
   async dispatchAndWaitResult(
@@ -31,8 +49,10 @@ export class Queue<DataType = any, ReturnType = any> implements JobContract<Data
 
   async dispatchMany(
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
-  ): Promise<Job<DataType, ReturnType>[]> {
-    return this.#queue.addBulk(jobs)
+  ): Promise<BullJob<DataType, ReturnType>[]> {
+    const jobsRes = await this.#queue.addBulk(jobs)
+    void this.#emitter.emit('job:dispatched:many', { jobs: jobsRes })
+    return jobsRes
   }
 
   async dispatchManyAndWaitResult(

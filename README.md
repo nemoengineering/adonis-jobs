@@ -163,3 +163,6 @@ export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
 }
 ```
 
+## Running a Job Worker
+
+To execute the dispatched Jobs run `node ace worker:listen`
