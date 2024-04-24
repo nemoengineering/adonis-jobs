@@ -5,7 +5,6 @@ import { expectTypeOf } from '@japa/expect-type'
 import { configure, processCLIArgs, run } from '@japa/runner'
 import { expect } from '@japa/expect'
 
-
 processCLIArgs(process.argv.splice(2))
 configure({
   suites: [
@@ -16,6 +15,5 @@ configure({
   ],
   plugins: [assert(), fileSystem(), expectTypeOf(), snapshot(), expect()],
 })
-
 
 run()
