@@ -1,0 +1,11 @@
+{{{
+  exports({ to: app.startPath('jobs.ts') })
+}}}
+import jobs from '@nemoengineering/jobs/services/main'
+
+declare module '@nemoengineering/jobs/types' {
+  interface Jobs extends JobList {}
+  type JobList = {}
+}
+
+jobs.set({})

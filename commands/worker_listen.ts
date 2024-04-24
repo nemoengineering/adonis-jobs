@@ -1,5 +1,6 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
+import { Jobs } from '../src/types.js'
 
 export default class WorkerListen extends BaseCommand {
   static commandName = 'worker:listen'
@@ -34,7 +35,7 @@ export default class WorkerListen extends BaseCommand {
     }
 
     this.logger.info(`Staring workers. Workers: ${this.workers}`)
-    const runningWorkers = await queue.startWorkers(this.workers)
+    const runningWorkers = await queue.startWorkers(this.workers as keyof Jobs)
 
     this.app.terminating(async () => {
       this.logger.info('Terminating...')

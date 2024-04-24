@@ -1,10 +1,9 @@
 import { args, BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-
-import { stubsRoot } from '../stubs/main.js'
-import StringBuilder from '@poppinss/utils/string_builder'
 import { JobFileTransformer } from '../src/job_file_transformer.js'
+import { stubsRoot } from '../stubs/main.js'
 import { jobName } from '../src/helper.js'
+import StringBuilder from '@poppinss/utils/string_builder'
 
 export default class MakeJob extends BaseCommand {
   static commandName = 'make:job'

@@ -2,9 +2,9 @@ import {
   CallExpression,
   FormatCodeSettings,
   Project,
-  PropertyAssignment,
   SourceFile,
   SyntaxKind,
+  TypeLiteralNode,
 } from 'ts-morph'
 import StringBuilder from '@poppinss/utils/string_builder'
 import { jobName } from './helper.js'
@@ -26,61 +26,70 @@ export class JobFileTransformer {
     this.#project = project
   }
 
-  #getPropertyAssignmentInDefineConfigCall(propertyName: string, initializer: string) {
-    const file = this.#getWorkerFileOrThrow()
-    const defineConfigCall = this.#locateDefineConfigCallOrThrow(file)
-    const configObject = this.#getDefineConfigObjectOrThrow(defineConfigCall)
+  addJob(entity: { path: string; name: string }) {
+    this.#getJobsFileOrThrow().addImportDeclaration({
+      defaultImport: jobName(entity.name),
+      moduleSpecifier: `#jobs/${new StringBuilder(jobName(entity.name)).snakeCase().toString()}`,
+      isTypeOnly: true,
+    })
 
-    let property = configObject.getProperty(propertyName)
+    const jobsList = this.#getJobsListOrThrow()
+    jobsList.addProperty({ name: entity.name, type: jobName(entity.name) })
 
-    if (!property) {
-      configObject.addPropertyAssignment({ name: propertyName, initializer })
-      property = configObject.getProperty(propertyName)
-    }
-
-    return property as PropertyAssignment
-  }
-  #getWorkerFileOrThrow() {
-    return this.#project.getSourceFileOrThrow('config/worker.ts')
+    this.#getJobsAssignmentInSetJobsCall().addPropertyAssignment({
+      name: entity.name,
+      initializer: `() => import('#jobs/${new StringBuilder(jobName(entity.name)).snakeCase().toString()}'),`,
+    })
   }
 
-  #getDefineConfigObjectOrThrow(defineConfigCall: CallExpression) {
-    const configObject = defineConfigCall
-      .getArguments()[0]
-      .asKindOrThrow(SyntaxKind.ObjectLiteralExpression)
-
-    return configObject
+  save() {
+    const file = this.#getJobsFileOrThrow()
+    file.formatText(this.#editorSettings)
+    return file.save()
   }
 
-  #locateDefineConfigCallOrThrow(file: SourceFile) {
+  #getJobsAssignmentInSetJobsCall() {
+    const file = this.#getJobsFileOrThrow()
+    const defineConfigCall = this.#locateSetJobsCallOrThrow(file)
+    return this.#getDefineConfigObjectOrThrow(defineConfigCall)
+  }
+
+  #getJobsFileOrThrow() {
+    return this.#project.getSourceFileOrThrow('start/jobs.ts')
+  }
+
+  #locateSetJobsCallOrThrow(file: SourceFile) {
     const call = file
       .getDescendantsOfKind(SyntaxKind.CallExpression)
-      .find((statement) => statement.getExpression().getText() === 'defineConfig')
+      .find((statement) => statement.getExpression().getText() === 'jobs.set')
 
     if (!call) {
-      throw new Error('Could not locate the defineConfig call.')
+      throw new Error('Could not locate the jobs.set call.')
     }
 
     return call
   }
 
-  addJob(entity: { path: string; name: string }) {
-    this.#getWorkerFileOrThrow().addImportDeclaration({
-      defaultImport: jobName(entity.name),
-      moduleSpecifier: `#jobs/${new StringBuilder(jobName(entity.name)).snakeCase().toString()}`,
-    })
-
-    const property = this.#getPropertyAssignmentInDefineConfigCall('jobs', '{}')
-    const workers = property.getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression)
-    workers.addPropertyAssignment({
-      name: entity.name,
-      initializer: `() => new ${jobName(entity.name)}()`,
-    })
+  #getDefineConfigObjectOrThrow(defineConfigCall: CallExpression) {
+    return defineConfigCall.getArguments()[0].asKindOrThrow(SyntaxKind.ObjectLiteralExpression)
   }
 
-  save() {
-    const file = this.#getWorkerFileOrThrow()
-    file.formatText(this.#editorSettings)
-    return file.save()
+  #getJobsListOrThrow() {
+    const file = this.#getJobsFileOrThrow()
+    return this.#locateJobListTypeOrThrow(file)
+      .asKindOrThrow(SyntaxKind.TypeAliasDeclaration)
+      .getTypeNodeOrThrow() as TypeLiteralNode
+  }
+
+  #locateJobListTypeOrThrow(file: SourceFile) {
+    const declaration = file
+      .getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration)
+      .find((i) => i.getName() === 'JobList')
+
+    if (!declaration) {
+      throw new Error('Could not locate the JobList type.')
+    }
+
+    return declaration
   }
 }

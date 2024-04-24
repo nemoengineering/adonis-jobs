@@ -16,7 +16,7 @@
     ".": "./build/index.js",
     "./types": "./build/src/types.js",
     "./commands": "./build/commands/main.js",
-    "./worker_provider": "./build/providers/worker_provider.js",
+    "./job_provider": "./build/providers/job_provider.js",
     "./services/main": "./build/services/main.js"
   },
   "scripts": {
@@ -109,8 +109,8 @@
       "src/types.ts",
       "src/job.ts",
       "services/main.ts",
-      "providers/jobs_provider.ts",
-      "commands/make_worker.ts",
+      "providers/job_provider.ts",
+      "commands/make_job.ts",
       "commands/worker_listen.ts"
     ],
     "outDir": "./build",

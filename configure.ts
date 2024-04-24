@@ -1,5 +1,4 @@
 import type Configure from '@adonisjs/core/commands/configure'
-
 import { stubsRoot } from './stubs/main.js'
 
 /**
@@ -12,12 +11,16 @@ export async function configure(command: Configure) {
   // Publish config file
   await codemods.makeUsingStub(stubsRoot, 'config/job.stub', {})
 
+  // Publish start/jobs file
+  await codemods.makeUsingStub(stubsRoot, 'start/jobs.stub', {})
+
   /**
    * Publish provider and command
    */
   await codemods.updateRcFile((rcFile) => {
     rcFile.addProvider('@nemoengineering/jobs/job_provider')
     rcFile.addCommand('@nemoengineering/jobs/commands')
-    rcFile.setDirectory('workers', 'app/jobs')
+    rcFile.setDirectory('jobs', 'app/jobs')
+    rcFile.addPreloadFile('#start/jobs')
   })
 }
