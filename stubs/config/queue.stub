@@ -1,10 +1,10 @@
 {{{
-  exports({ to: app.configPath('job.ts') })
+  exports({ to: app.configPath('queue.ts') })
 }}}
 import { defineConfig } from '@nemoengineering/jobs'
 import Env from "#start/env";
 
-const jobConfig = defineConfig({
+const queueConfig = defineConfig({
   connection: {
     host: Env.get('REDIS_HOST'),
     port: Env.get('REDIS_PORT'),
@@ -12,5 +12,4 @@ const jobConfig = defineConfig({
   },
 })
 
-export default jobConfig
-
+export default queueConfig

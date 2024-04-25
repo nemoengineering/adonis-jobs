@@ -21,12 +21,12 @@ export default class JobProvider {
   register() {
     this.app.container.singleton('job.manager', async (resolver) => {
       const emitter = await resolver.make('emitter')
-      const workerConfigProvider = await this.app.config.get('job')
-      const config = await configProvider.resolve<any>(this.app, workerConfigProvider)
+      const queueConfigProvider = await this.app.config.get('queue')
+      const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
 
       if (!config) {
         throw new RuntimeException(
-          'Invalid "config/worker.ts" file. Make sure you are using the "defineConfig" method'
+          'Invalid "config/queue.ts" file. Make sure you are using the "defineConfig" method'
         )
       }
 
