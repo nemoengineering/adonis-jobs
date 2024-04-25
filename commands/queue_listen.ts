@@ -3,7 +3,7 @@ import { CommandOptions } from '@adonisjs/core/types/ace'
 
 export default class QueueListen extends BaseCommand {
   static commandName = 'queue:listen'
-  static description = 'Listen for jobs'
+  static description = 'Listen for jobs dispatched on queues'
 
   @flags.array({ name: 'jobs', alias: 'j', description: 'The jobs you want to listen for' })
   declare jobs: string[]
@@ -20,7 +20,7 @@ export default class QueueListen extends BaseCommand {
     const queue = await this.app.container.make('job.manager')
 
     if (this.list) {
-      this.ui.logger.log('Available workers')
+      this.ui.logger.log('Available jobs')
       const table = this.ui.table().head(['Name'])
       queue.getAllJobNames().forEach((w) => {
         table.row([w])
