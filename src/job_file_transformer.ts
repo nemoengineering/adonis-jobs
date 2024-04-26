@@ -8,6 +8,7 @@ import {
 } from 'ts-morph'
 import StringBuilder from '@poppinss/utils/string_builder'
 import { jobName } from './helper.js'
+import { join } from 'node:path'
 
 export class JobFileTransformer {
   #project: Project
@@ -27,9 +28,12 @@ export class JobFileTransformer {
   }
 
   addJob(entity: { path: string; name: string }) {
+    const fileName = new StringBuilder(jobName(entity.name)).snakeCase().toString()
+    const filePath = join(entity.path, fileName)
+
     this.#getJobsFileOrThrow().addImportDeclaration({
       defaultImport: jobName(entity.name),
-      moduleSpecifier: `#jobs/${new StringBuilder(jobName(entity.name)).snakeCase().toString()}`,
+      moduleSpecifier: `#jobs/${filePath}`,
       isTypeOnly: true,
     })
 
@@ -38,7 +42,7 @@ export class JobFileTransformer {
 
     this.#getJobsAssignmentInSetJobsCall().addPropertyAssignment({
       name: entity.name,
-      initializer: `() => import('#jobs/${new StringBuilder(jobName(entity.name)).snakeCase().toString()}'),`,
+      initializer: `() => import('#jobs/${filePath}'),`,
     })
   }
 

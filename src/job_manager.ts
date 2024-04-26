@@ -79,6 +79,7 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
 
         const jobInstance = await this.#app.container.make(jobClass)
         jobInstance.$setJob(job, token)
+        jobInstance.$setWorker(worker)
 
         return this.#app.container.call(jobInstance, 'process')
       },

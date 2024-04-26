@@ -1,6 +1,6 @@
 {{{
   exports({
-    to: app.makePath(app.rcFile.directories['jobs'], jobFileName)
+    to: app.makePath(app.rcFile.directories['jobs'], jobFilePath, jobFileName)
   })
 }}}
 import { Job } from '@nemoengineering/jobs'
