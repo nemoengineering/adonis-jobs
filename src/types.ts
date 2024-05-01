@@ -11,15 +11,6 @@ import { JobManager } from './job_manager.js'
 import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
 import { Queue as BullQueue } from 'bullmq/dist/esm/classes/queue.js'
 
-export type {
-  ConnectionOptions,
-  Job,
-  JobsOptions,
-  BulkJobOptions,
-  JobType,
-  UnrecoverableError,
-} from 'bullmq'
-
 export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
 
 export interface JobConstructor {

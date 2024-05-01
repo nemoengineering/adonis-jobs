@@ -14,6 +14,7 @@
   ],
   "exports": {
     ".": "./build/index.js",
+    "./bull": "./build/src/bull.js",
     "./types": "./build/src/types.js",
     "./commands": "./build/commands/main.js",
     "./job_provider": "./build/providers/job_provider.js",
@@ -109,6 +110,7 @@
       "index.ts",
       "src/types.ts",
       "src/job.ts",
+      "src/bull.ts",
       "services/main.ts",
       "providers/job_provider.ts",
       "commands/make_job.ts",
