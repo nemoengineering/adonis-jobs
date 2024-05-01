@@ -3,7 +3,7 @@ import {
   Config,
   InferDataType,
   InferReturnType,
-  JobContract,
+  QueueContract,
   JobEvents,
   LazyWorkerImport,
 } from './types.js'
@@ -39,7 +39,7 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
 
   use<Name extends keyof KnownJobs>(
     queueName: Name
-  ): JobContract<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>> {
+  ): QueueContract<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>> {
     if (!this.#jobs.has(queueName)) {
       throw new RuntimeException(
         `Unknown job "${String(queueName)}". Make sure it is configured inside the config file`
@@ -57,8 +57,8 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     return queue
   }
 
-  dispatchFlow() {
-    return new FlowProducer<KnownJobs>({ connection: this.config.connection })
+  flow() {
+    return new FlowProducer<KnownJobs>(this, { connection: this.config.connection })
   }
 
   getAllJobNames() {
@@ -90,13 +90,17 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     )
 
     worker.on('failed', async (job, error) => {
-      logger.error(error.message, 'Job failed')
-      if (!job) return
+      if (!job) {
+        logger.error(error.message, 'Job failed')
+        return
+      }
 
       void this.#emitter.emit('job:error', { job, error })
       const jobInstance = await this.#app.container.make(jobClass)
-      jobInstance.$setFailed(job, error)
-      return this.#app.container.call(jobInstance, 'onFailed')
+      jobInstance.$setJob(job)
+      jobInstance.$setError(error)
+
+      await this.#app.container.call(jobInstance, 'onFailed')
     })
 
     worker.on('completed', (job) => {
@@ -108,7 +112,7 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
 
   async shutdown() {
     for (const [name, queue] of this.#jobQueues.entries()) {
-      console.log({ name }, 'Shutting down worker')
+      console.log({ name }, 'Shutting queue worker')
       await queue?.$shutdown()
     }
   }

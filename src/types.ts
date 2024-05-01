@@ -3,12 +3,22 @@ import {
   ConnectionOptions,
   Job as BullJob,
   JobsOptions,
+  QueueEvents,
   WorkerOptions as BullWorkerOptions,
+  JobType,
 } from 'bullmq'
 import { JobManager } from './job_manager.js'
 import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
+import { Queue as BullQueue } from 'bullmq/dist/esm/classes/queue.js'
 
-export type { ConnectionOptions, Job, JobsOptions, BulkJobOptions } from 'bullmq'
+export type {
+  ConnectionOptions,
+  Job,
+  JobsOptions,
+  BulkJobOptions,
+  JobType,
+  UnrecoverableError,
+} from 'bullmq'
 
 export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
 
@@ -43,7 +53,7 @@ export type Config = {
 
 export type WorkerOptions = Omit<BullWorkerOptions, 'connection' | 'autorun'>
 
-export interface JobContract<DataType, ReturnType> {
+export interface QueueContract<DataType, ReturnType> {
   dispatch(
     name: string,
     data: DataType,
@@ -56,6 +66,16 @@ export interface JobContract<DataType, ReturnType> {
   dispatchManyAndWaitResult(
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
   ): Promise<PromiseSettledResult<Awaited<ReturnType>>[]>
+
+  getQueue(): Omit<BullQueue<DataType, ReturnType>, 'add' | 'addBulk'>
+  getQueueEvents(): QueueEvents
+
+  findJobsByName(
+    name: string,
+    types?: JobType | JobType[]
+  ): Promise<BullJob<DataType, ReturnType>[]>
+
+  hasJobWithName(name: string, types?: JobType | JobType[]): Promise<boolean>
 }
 
 export type InferDataType<W extends Job> = W['job']['data']

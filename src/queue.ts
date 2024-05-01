@@ -4,14 +4,15 @@ import {
   QueueEvents,
   BulkJobOptions,
   ConnectionOptions,
+  JobType,
 } from 'bullmq'
-import { JobContract, JobEvents } from './types.js'
+import { QueueContract, JobEvents } from './types.js'
 import { JobsOptions } from 'bullmq/dist/esm/types/index.js'
 import { EmitterLike } from '@adonisjs/core/types/events'
 import { Job } from './job.js'
 
 export class Queue<KnownJobs extends Record<string, Job>, DataType = any, ReturnType = any>
-  implements JobContract<DataType, ReturnType>
+  implements QueueContract<DataType, ReturnType>
 {
   readonly #emitter: EmitterLike<JobEvents<KnownJobs>>
   readonly #queue: BullQueue<DataType, ReturnType>
@@ -67,8 +68,18 @@ export class Queue<KnownJobs extends Record<string, Job>, DataType = any, Return
     return this.#queue
   }
 
-  getQueueEvents() {
+  getQueueEvents(): QueueEvents {
     return this.#queueEvents
+  }
+
+  async findJobsByName(name: string, types?: JobType | JobType[]) {
+    const jobs = await this.#queue.getJobs(types)
+    return jobs.filter((j) => j.name === name)
+  }
+
+  async hasJobWithName(name: string, types?: JobType | JobType[]) {
+    const jobs = await this.findJobsByName(name, types)
+    return jobs.length > 0
   }
 
   async $shutdown() {

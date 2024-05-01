@@ -68,6 +68,7 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@adonisjs/http-server": "^7.2.2",
     "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.7.3",
     "@sindresorhus/is": "^6.3.0",
