@@ -51,7 +51,7 @@ export default class QueueListen extends BaseCommand {
       this.jobs = queue.getAllJobNames()
     }
 
-    this.#appLogger.info(`Staring workers for queues : ${this.jobs}`)
+    this.#appLogger.info({ queues: this.jobs }, `Staring workers`)
     const runningWorkers = await queue.startWorkers(this.jobs)
 
     this.app.terminating(async () => {

@@ -111,8 +111,7 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
   }
 
   async shutdown() {
-    for (const [name, queue] of this.#jobQueues.entries()) {
-      console.log({ name }, 'Shutting queue worker')
+    for (const queue of this.#jobQueues.values()) {
       await queue?.$shutdown()
     }
   }
