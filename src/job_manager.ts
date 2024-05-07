@@ -99,7 +99,11 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
       jobInstance.$setJob(job)
       jobInstance.$setError(error)
 
-      await this.#app.container.call(jobInstance, 'onFailed')
+      try {
+        await this.#app.container.call(jobInstance, 'onFailed')
+      } catch (e) {
+        logger.error(e)
+      }
     })
 
     worker.on('completed', (job) => {
