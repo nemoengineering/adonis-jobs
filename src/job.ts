@@ -28,7 +28,6 @@ export abstract class Job<DataType = any, ReturnType = any> {
   abstract process(...args: any[]): Promise<ReturnType>
 
   async onFailed(..._args: any[]): Promise<void> {
-    console.log('job error', this.job.data)
     this.logger.error(this.error)
   }
 

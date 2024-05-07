@@ -73,7 +73,7 @@
     "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.7.3",
     "@sindresorhus/is": "^6.3.0",
-    "bullmq": "^5.7.4",
+    "bullmq": "^5.7.8",
     "ts-morph": "^22.0.0"
   },
   "peerDependencies": {
