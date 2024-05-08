@@ -1,4 +1,4 @@
-import { Job as BullJob, UnrecoverableError, Worker } from 'bullmq'
+import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bullmq'
 import { WorkerOptions } from './types.js'
 import logger from '@adonisjs/core/services/logger'
 import { Logger } from '@adonisjs/core/logger'
@@ -42,11 +42,11 @@ export abstract class Job<DataType = any, ReturnType = any> {
    * Overrides the rate limit to be active for the next jobs.
    *
    * @param waitTimeSeconds - time to wait until next try
-   * @throws Worker.RateLimitError
+   * @returns Worker.RateLimitError
    */
-  async rateLimit(waitTimeSeconds: number): Promise<never> {
+  async rateLimit(waitTimeSeconds: number): Promise<RateLimitError> {
     await this.worker.rateLimit(waitTimeSeconds * 1000)
-    throw Worker.RateLimitError()
+    return Worker.RateLimitError()
   }
 
   /**
