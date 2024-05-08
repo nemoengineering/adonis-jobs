@@ -71,13 +71,13 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
 
   async #startWorker(name: keyof KnownJobs) {
     const { default: jobClass } = await this.#jobs.get(name)!()
-    const jobInstance = await this.#app.container.make(jobClass)
 
     const worker = new BullWorker(
       String(name),
       async (job, token) => {
         void this.#emitter.emit('job:started', { job })
 
+        const jobInstance = await this.#app.container.make(jobClass)
         jobInstance.$setJob(job, token)
         jobInstance.$setWorker(worker)
 
@@ -96,6 +96,7 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
       }
 
       void this.#emitter.emit('job:error', { job, error })
+      const jobInstance = await this.#app.container.make(jobClass)
       jobInstance.$setJob(job)
       jobInstance.$setError(error)
 
