@@ -1,8 +1,10 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import { CommandOptions } from '@adonisjs/core/types/ace'
-import { createServer } from 'node:http'
+import { createServer, Server as NodeServer } from 'node:http'
 import { Server } from '@adonisjs/http-server'
 import { LoggerService } from '@adonisjs/core/types'
+import { Worker } from 'bullmq'
+import { JobService } from '../src/types.js'
 
 export default class QueueListen extends BaseCommand {
   static commandName = 'queue:listen'
@@ -27,38 +29,42 @@ export default class QueueListen extends BaseCommand {
   }
 
   #appLogger!: LoggerService
+  #server: NodeServer | undefined
+  #runningWorkers: Worker[] = []
+  #queue!: JobService
 
   async prepare() {
     this.#appLogger = await this.app.container.make('logger')
+    this.#queue = await this.app.container.make('job.manager')
+
+    this.app.terminating(async () => {
+      this.#appLogger.info('Terminating...')
+      await Promise.all(this.#runningWorkers.map((w) => w.close()))
+      await this.#queue.shutdown()
+      this.#server?.close()
+    })
+    this.app.listen('SIGINT', () => this.terminate())
   }
 
   async run() {
-    const queue = await this.app.container.make('job.manager')
-
     if (this.list) {
       this.ui.logger.log('Available jobs')
       const table = this.ui.table().head(['Name'])
-      queue.getAllJobNames().forEach((w) => {
+      this.#queue.getAllJobNames().forEach((w) => {
         table.row([w])
       })
       table.render()
       return await this.terminate()
     }
 
-    await this.#startServer()
+    this.#server = await this.#startServer()
 
     if (!this.jobs) {
-      this.jobs = queue.getAllJobNames()
+      this.jobs = this.#queue.getAllJobNames()
     }
 
     this.#appLogger.info({ queues: this.jobs }, `Staring workers`)
-    const runningWorkers = await queue.startWorkers(this.jobs)
-
-    this.app.terminating(async () => {
-      this.#appLogger.info('Terminating...')
-      await Promise.all(runningWorkers.map((w) => w.close()))
-    })
-    this.app.listen('SIGINT', () => this.app.terminate())
+    this.#runningWorkers = await this.#queue.startWorkers(this.jobs)
   }
 
   async #startServer() {
@@ -75,7 +81,7 @@ export default class QueueListen extends BaseCommand {
       this.#appLogger.info(`listening to http server, host: ${host}, port: ${port}`)
     })
 
-    httpServer.listen(port, host)
+    return httpServer.listen(port, host)
   }
 
   async #makeServer() {
