@@ -72,7 +72,7 @@
     "@adonisjs/http-server": "^7.2.3",
     "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.7.3",
-    "@sindresorhus/is": "^6.3.1",
+    "@sindresorhus/is": "^7.0.0",
     "bullmq": "^5.12.10",
     "ts-morph": "^22.0.0"
   },
