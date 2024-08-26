@@ -52,7 +52,7 @@
     "@japa/runner": "^3.1.2",
     "@japa/snapshot": "^2.0.5",
     "@poppinss/dev-utils": "^2.0.3",
-    "@swc/core": "^1.7.3",
+    "@swc/core": "^1.7.18",
     "@types/node": "^20.14.13",
     "@types/pluralize": "^0.0.33",
     "c8": "^9.1.0",
@@ -61,11 +61,11 @@
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "github-label-sync": "^2.2.0",
-    "husky": "^9.1.4",
+    "husky": "^9.1.5",
     "np": "^10.0.7",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
-    "tsup": "^8.2.3",
+    "tsup": "^8.2.4",
     "typescript": "^5.5.4"
   },
   "dependencies": {
@@ -73,7 +73,7 @@
     "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.7.3",
     "@sindresorhus/is": "^6.3.1",
-    "bullmq": "^5.11.0",
+    "bullmq": "^5.12.10",
     "ts-morph": "^22.0.0"
   },
   "peerDependencies": {
