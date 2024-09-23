@@ -53,7 +53,7 @@
     "@japa/snapshot": "^2.0.5",
     "@poppinss/dev-utils": "^2.0.3",
     "@swc/core": "^1.7.18",
-    "@types/node": "^20.14.13",
+    "@types/node": "^22.6.0",
     "@types/pluralize": "^0.0.33",
     "c8": "^9.1.0",
     "copyfiles": "^2.4.1",
