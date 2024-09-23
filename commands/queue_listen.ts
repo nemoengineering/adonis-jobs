@@ -64,7 +64,7 @@ export default class QueueListen extends BaseCommand {
     }
 
     this.#appLogger.info({ queues: this.jobs }, `Staring workers`)
-    this.#runningWorkers = await this.#queue.startWorkers(this.jobs)
+    this.#runningWorkers = (await this.#queue.startWorkers(this.jobs)) as unknown as Worker[]
   }
 
   async #startServer() {

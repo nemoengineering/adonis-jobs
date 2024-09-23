@@ -2,6 +2,7 @@ import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bull
 import { WorkerOptions } from './types.js'
 import logger from '@adonisjs/core/services/logger'
 import { Logger } from '@adonisjs/core/logger'
+
 export abstract class Job<DataType = any, ReturnType = any> {
   static workerOptions?: WorkerOptions
 

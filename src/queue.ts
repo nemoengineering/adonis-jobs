@@ -15,16 +15,16 @@ export class Queue<KnownJobs extends Record<string, Job>, DataType = any, Return
   implements QueueContract<DataType, ReturnType>
 {
   readonly #emitter: EmitterLike<JobEvents<KnownJobs>>
-  readonly #queue: BullQueue<DataType, ReturnType>
+  readonly #queue: BullQueue<DataType, ReturnType, keyof KnownJobs & string>
   readonly #queueEvents: QueueEvents
 
   constructor(
     emitter: EmitterLike<JobEvents<KnownJobs>>,
-    name: string,
+    name: keyof KnownJobs,
     connection: ConnectionOptions
   ) {
     this.#emitter = emitter
-    this.#queue = new BullQueue(name, { connection })
+    this.#queue = new BullQueue(String(name), { connection })
     this.#queueEvents = new QueueEvents(this.#queue.name, { connection })
   }
 
@@ -34,7 +34,7 @@ export class Queue<KnownJobs extends Record<string, Job>, DataType = any, Return
     options?: JobsOptions
   ): Promise<BullJob<DataType, ReturnType>> {
     const job = await this.#queue.add(name, data, options)
-    void this.#emitter.emit('job:dispatched', { job })
+    void this.#emitter.emit('job:dispatched', { queueName: this.#queue.name, job })
     return job
   }
 
@@ -52,7 +52,7 @@ export class Queue<KnownJobs extends Record<string, Job>, DataType = any, Return
     jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
   ): Promise<BullJob<DataType, ReturnType>[]> {
     const jobsRes = await this.#queue.addBulk(jobs)
-    void this.#emitter.emit('job:dispatched:many', { jobs: jobsRes })
+    void this.#emitter.emit('job:dispatched:many', { queueName: this.#queue.name, jobs: jobsRes })
     return jobsRes
   }
 

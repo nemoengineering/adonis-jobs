@@ -11,7 +11,7 @@ import { Job } from './job.js'
 import { RuntimeException } from '@poppinss/utils'
 import { Queue } from './queue.js'
 import debug from './debug.js'
-import { Worker as BullWorker } from 'bullmq'
+import { Worker as BullWorker, Job as BullJob } from 'bullmq'
 import { ApplicationService } from '@adonisjs/core/types'
 import { FlowProducer } from './flow_producer.js'
 import logger from '@adonisjs/core/services/logger'
@@ -69,15 +69,21 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     return Promise.all(jobNames.map((w) => this.#startWorker(w)))
   }
 
-  async #startWorker(name: keyof KnownJobs) {
+  async #startWorker<Name extends keyof KnownJobs>(name: Name) {
     const { default: jobClass } = await this.#jobs.get(name)!()
 
     const worker = new BullWorker(
       String(name),
-      async (job, token) => {
-        void this.#emitter.emit('job:started', { job })
+      async (
+        job: BullJob<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>>,
+        token
+      ) => {
+        void this.#emitter.emit('job:started', { queueName: name, job })
 
-        const jobInstance = await this.#app.container.make(jobClass)
+        const jobInstance: Job<
+          InferDataType<KnownJobs[Name]>,
+          InferReturnType<KnownJobs[Name]>
+        > = await this.#app.container.make(jobClass)
         jobInstance.$setJob(job, token)
         jobInstance.$setWorker(worker)
 
@@ -90,26 +96,36 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
       }
     )
 
-    worker.on('failed', async (job, error) => {
-      if (!job) {
-        logger.error(error.message, 'Job failed')
-        return
-      }
+    worker.on(
+      'failed',
+      async (
+        job: BullJob<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>> | undefined,
+        error
+      ) => {
+        if (!job) {
+          logger.error(error.message, 'Job failed')
+          return
+        }
 
-      void this.#emitter.emit('job:error', { job, error })
-      const jobInstance = await this.#app.container.make(jobClass)
-      jobInstance.$setJob(job)
-      jobInstance.$setError(error)
+        void this.#emitter.emit('job:error', { queueName: name, job, error })
+        const jobInstance = await this.#app.container.make(jobClass)
+        jobInstance.$setJob(job)
+        jobInstance.$setError(error)
 
-      try {
-        await this.#app.container.call(jobInstance, 'onFailed')
-      } catch (e) {
-        logger.error(e)
+        try {
+          await this.#app.container.call(jobInstance, 'onFailed')
+        } catch (e) {
+          logger.error(e)
+        }
+
+        if (jobInstance.allAttemptsMade()) {
+          void this.#emitter.emit('job:failed', { queueName: name, job, error })
+        }
       }
-    })
+    )
 
     worker.on('completed', (job) => {
-      this.#emitter.emit('job:success', { job })
+      this.#emitter.emit('job:success', { queueName: name, job })
     })
 
     return worker

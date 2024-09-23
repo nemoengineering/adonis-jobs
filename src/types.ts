@@ -18,25 +18,30 @@ export interface JobConstructor {
   workerOptions?: WorkerOptions
 }
 
-export type JobEvents<KnownJobs extends Record<string, Job>> = {
+export type JobEvents<
+  KnownJobs extends Record<string, Job> = Jobs extends Record<string, Job> ? Jobs : never,
+> = {
   'job:dispatched': EventWithJob<KnownJobs>
   'job:dispatched:many': EventWithManyJobs<KnownJobs>
   'job:started': EventWithJob<KnownJobs>
   'job:success': EventWithJob<KnownJobs>
   'job:error': EventWithJob<KnownJobs> & { error: Error }
+  'job:failed': EventWithJob<KnownJobs> & { error: Error }
 }
 
 type EventWithJob<KnownJobs extends Record<string, Job>> = {
-  [Job in keyof KnownJobs]: {
-    job: BullJob<InferDataType<KnownJobs[Job]>, InferReturnType<KnownJobs[Job]>>
+  [Queue in keyof KnownJobs]: {
+    queueName: Queue
+    job: BullJob<InferDataType<KnownJobs[Queue]>, InferReturnType<KnownJobs[Queue]>>
   }
-}[keyof Job]
+}[keyof KnownJobs]
 
 type EventWithManyJobs<KnownJobs extends Record<string, Job>> = {
-  [Job in keyof KnownJobs]: {
-    jobs: BullJob<InferDataType<KnownJobs[Job]>, InferReturnType<KnownJobs[Job]>>[]
+  [Queue in keyof KnownJobs]: {
+    queueName: Queue
+    jobs: BullJob<InferDataType<KnownJobs[Queue]>, InferReturnType<KnownJobs[Queue]>>[]
   }
-}[keyof Job]
+}[keyof KnownJobs]
 
 export type Config = {
   connection: ConnectionOptions
