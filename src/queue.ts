@@ -1,3 +1,4 @@
+/*
 import {
   Job as BullJob,
   Queue as BullQueue,
@@ -6,21 +7,26 @@ import {
   ConnectionOptions,
   JobType,
 } from 'bullmq'
-import { QueueContract, JobEvents } from './types.js'
+import { QueueContract, JobEvents, QueueConfig } from './types.js'
 import { JobsOptions } from 'bullmq/dist/esm/types/index.js'
 import { EmitterLike } from '@adonisjs/core/types/events'
 import { Job } from './job.js'
 
-export class Queue<KnownJobs extends Record<string, Job>, DataType = any, ReturnType = any>
-  implements QueueContract<DataType, ReturnType>
+export class Queue<
+  KnownQueues extends Record<string, QueueConfig>,
+  KnownJobs extends Record<string, Job>,
+  QueueName extends keyof KnownQueues = keyof KnownQueues,
+  DataType = any,
+  ReturnType = any,
+> implements QueueContract<DataType, ReturnType>
 {
   readonly #emitter: EmitterLike<JobEvents<KnownJobs>>
   readonly #queue: BullQueue<DataType, ReturnType, keyof KnownJobs & string>
   readonly #queueEvents: QueueEvents
 
   constructor(
+    name: QueueName,
     emitter: EmitterLike<JobEvents<KnownJobs>>,
-    name: keyof KnownJobs,
     connection: ConnectionOptions
   ) {
     this.#emitter = emitter
@@ -87,3 +93,4 @@ export class Queue<KnownJobs extends Record<string, Job>, DataType = any, Return
     await this.#queueEvents.close()
   }
 }
+*/

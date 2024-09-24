@@ -4,18 +4,20 @@ import {
   Job as BullJob,
   JobsOptions,
   QueueEvents,
+  QueueOptions as BullQueueOptions,
   WorkerOptions as BullWorkerOptions,
   JobType,
 } from 'bullmq'
 import { JobManager } from './job_manager.js'
 import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
 import { Queue as BullQueue } from 'bullmq/dist/esm/classes/queue.js'
+import { ConfigProvider } from '@adonisjs/core/types'
 
 export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
 
 export interface JobConstructor {
   new (...args: any[]): Job
-  workerOptions?: WorkerOptions
+  defaultQueue?: keyof Queues
 }
 
 export type JobEvents<
@@ -30,9 +32,10 @@ export type JobEvents<
 }
 
 type EventWithJob<KnownJobs extends Record<string, Job>> = {
-  [Queue in keyof KnownJobs]: {
-    queueName: Queue
-    job: BullJob<InferDataType<KnownJobs[Queue]>, InferReturnType<KnownJobs[Queue]>>
+  [Name in keyof KnownJobs]: {
+    jobName: Name
+    // @ts-ignore
+    job: BullJob<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>, keyof KnownJobs>
   }
 }[keyof KnownJobs]
 
@@ -43,8 +46,14 @@ type EventWithManyJobs<KnownJobs extends Record<string, Job>> = {
   }
 }[keyof KnownJobs]
 
-export type Config = {
+export type Config<KnownQueues extends Record<string, QueueConfig>> = {
   connection: ConnectionOptions
+  defaultQueue: keyof KnownQueues
+  queues: KnownQueues
+}
+
+export type QueueConfig = Omit<BullQueueOptions, 'connection' | 'skipVersionCheck'> & {
+  globalConcurrency?: number
 }
 
 export type WorkerOptions = Omit<BullWorkerOptions, 'connection' | 'autorun'>
@@ -77,6 +86,14 @@ export interface QueueContract<DataType, ReturnType> {
 export type InferDataType<W extends Job> = W['job']['data']
 export type InferReturnType<W extends Job> = W['job']['returnvalue']
 
+export type BullJobb<
+  In,
+  Out,
+  KnownJobs extends Record<string, Job>,
+  Name extends keyof KnownJobs,
+  // @ts-ignore
+> = BullJob<In, Out, Name>
+
 export interface FlowJob<KnownJobs extends Record<string, Job>, Name extends keyof KnownJobs> {
   name: string
   queueName: Name
@@ -98,6 +115,15 @@ export type FlowJobArg<
  * --------------------------------------------------------
  */
 
+export interface Queues {}
+
+export type InferQueues<Conf extends ConfigProvider<{ defaultQueue: unknown; queues: unknown }>> =
+  Awaited<ReturnType<Conf['resolver']>>['queues']
+
 export interface Jobs {}
 
-export interface JobService extends JobManager<Jobs extends Record<string, Job> ? Jobs : never> {}
+export interface JobService
+  extends JobManager<
+    Queues extends Record<string, QueueConfig> ? Queues : never,
+    Jobs extends Record<string, Job> ? Jobs : never
+  > {}

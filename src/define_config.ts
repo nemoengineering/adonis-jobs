@@ -1,7 +1,9 @@
 import { configProvider } from '@adonisjs/core'
-import { Config } from './types.js'
+import { Config, QueueConfig } from './types.js'
 
-export function defineConfig(config: Config) {
+export function defineConfig<KnownQueues extends Record<string, QueueConfig>>(
+  config: Config<KnownQueues>
+) {
   return configProvider.create(async () => {
     return config
   })

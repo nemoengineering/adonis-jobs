@@ -1,11 +1,12 @@
 import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bullmq'
-import { WorkerOptions } from './types.js'
+import { Queues } from './types.js'
 import logger from '@adonisjs/core/services/logger'
 import { Logger } from '@adonisjs/core/logger'
 
 export abstract class Job<DataType = any, ReturnType = any> {
-  static workerOptions?: WorkerOptions
+  static defaultQueue?: keyof Queues
 
+  data!: DataType
   job!: BullJob<DataType, ReturnType>
   worker!: Worker<DataType, ReturnType>
   logger!: Logger
@@ -14,6 +15,7 @@ export abstract class Job<DataType = any, ReturnType = any> {
 
   $setJob(job: BullJob<DataType, ReturnType>, token?: string) {
     this.job = job
+    this.data = job.data
     this.token = token
     this.logger = logger.child({ queueName: job.queueName, jobName: job.name, jobId: job.id })
   }

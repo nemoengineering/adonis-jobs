@@ -3,30 +3,37 @@ import {
   Config,
   InferDataType,
   InferReturnType,
-  QueueContract,
   JobEvents,
   LazyWorkerImport,
+  QueueConfig,
+  JobConstructor,
 } from './types.js'
 import { Job } from './job.js'
 import { RuntimeException } from '@poppinss/utils'
-import { Queue } from './queue.js'
 import debug from './debug.js'
-import { Worker as BullWorker, Job as BullJob } from 'bullmq'
+import { Worker as BullWorker, Queue, QueueEvents } from 'bullmq'
 import { ApplicationService } from '@adonisjs/core/types'
 import { FlowProducer } from './flow_producer.js'
 import logger from '@adonisjs/core/services/logger'
+import { JobsOptions, Job as BullJob } from 'bullmq'
+import { Dispatcher } from './dispatcher.js'
 
-export class JobManager<KnownJobs extends Record<string, Job>> {
+export class JobManager<
+  KnownQueues extends Record<string, QueueConfig>,
+  KnownJobs extends Record<string, Job>,
+> {
   readonly #emitter: EmitterLike<JobEvents<KnownJobs>>
 
   #app: ApplicationService
   #jobs: Map<keyof KnownJobs, LazyWorkerImport> = new Map()
-  #jobQueues: Map<keyof KnownJobs, Queue<KnownJobs>> = new Map()
+  #jobClassCache: Map<keyof KnownJobs, JobConstructor> = new Map()
+  #queues: Map<keyof KnownQueues, Queue> = new Map()
+  #queuesEvents: Map<keyof KnownQueues, QueueEvents> = new Map()
 
   constructor(
     app: ApplicationService,
     emitter: EmitterLike<JobEvents<KnownJobs>>,
-    public config: Config
+    public config: Config<KnownQueues>
   ) {
     this.#app = app
     this.#emitter = emitter
@@ -37,24 +44,108 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     this.#jobs = new Map(Object.entries(jobs))
   }
 
-  use<Name extends keyof KnownJobs>(
-    queueName: Name
-  ): QueueContract<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>> {
-    if (!this.#jobs.has(queueName)) {
+  async #getJobClass(jobName: keyof KnownJobs) {
+    const cachedJobClass = this.#jobClassCache.get(jobName)
+    if (cachedJobClass) return cachedJobClass
+
+    const jobImport = this.#jobs.get(jobName)
+    if (!jobImport) {
       throw new RuntimeException(
-        `Unknown job "${String(queueName)}". Make sure it is configured inside the config file`
+        `Unknown job "${String(jobName)}". Make sure it is configured inside the config file`
       )
     }
 
-    const cachedQueue = this.#jobQueues.get(queueName)
+    const { default: jobClass } = await jobImport()
+    this.#jobClassCache.set(jobName, jobClass)
+
+    return jobClass
+  }
+
+  dispatch<JobName extends keyof KnownJobs>(
+    jobName: JobName & string,
+    data: InferDataType<KnownJobs[JobName]>,
+    options?: JobsOptions
+  ) {
+    return new Dispatcher<
+      KnownQueues,
+      BullJob<
+        InferDataType<KnownJobs[JobName]>,
+        InferReturnType<KnownJobs[JobName]>,
+        JobName & string
+      >
+    >(async (d) => {
+      const JobClass = await this.#getJobClass(jobName)
+      const queue = this.#useQueue<JobName, any>(
+        d.queueName || JobClass.defaultQueue || this.config.defaultQueue
+      )
+
+      const job = await queue.add(jobName, data, options)
+      void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
+      return job
+    })
+  }
+
+  dispatchAndWaitResult<JobName extends keyof KnownJobs>(
+    jobName: JobName,
+    data: InferDataType<KnownJobs[JobName]>,
+    options?: JobsOptions
+  ) {
+    return new Dispatcher<KnownQueues, InferReturnType<KnownJobs[keyof KnownJobs]>>(async (d) => {
+      const JobClass = await this.#getJobClass(jobName)
+      const queue = this.#useQueue(d.queueName || JobClass.defaultQueue || this.config.defaultQueue)
+
+      const job = await queue.add(String(jobName), data, options)
+      const queueEvents = this.#useQueueEvents(job.queueName)
+
+      void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
+      return job.waitUntilFinished(queueEvents)
+    })
+  }
+
+  #useQueue<JobName extends keyof KnownJobs, QueueName extends keyof KnownQueues>(
+    queueName: QueueName
+  ): Queue<
+    InferDataType<KnownJobs[JobName]>,
+    InferReturnType<KnownJobs[JobName]>,
+    JobName & string
+  > {
+    const cachedQueue = this.#queues.get(queueName)
     if (cachedQueue) {
-      return cachedQueue
+      return cachedQueue as Queue<any, any, JobName & string>
     }
 
-    const queue = new Queue(this.#emitter, String(queueName), this.config.connection)
-    this.#jobQueues.set(queueName, queue)
+    const { globalConcurrency, ...queueOptions } = this.config.queues[queueName]
+
+    const queue = new Queue<
+      InferDataType<KnownJobs[JobName]>,
+      InferReturnType<KnownJobs[JobName]>,
+      JobName & string
+    >(String(queueName), {
+      ...queueOptions,
+      connection: this.config.connection,
+    })
+
+    this.#queues.set(queueName, queue)
 
     return queue
+  }
+
+  #useQueueEvents<QueueName extends keyof KnownQueues>(queueName: QueueName): QueueEvents {
+    const cachedQueueEvents = this.#queuesEvents.get(queueName)
+    if (cachedQueueEvents) {
+      return cachedQueueEvents
+    }
+
+    const { globalConcurrency, ...queueOptions } = this.config.queues[queueName]
+
+    const queueEvents = new QueueEvents(String(queueName), {
+      ...queueOptions,
+      connection: this.config.connection,
+    })
+
+    this.#queuesEvents.set(queueName, queueEvents)
+
+    return queueEvents
   }
 
   flow() {
@@ -65,75 +156,59 @@ export class JobManager<KnownJobs extends Record<string, Job>> {
     return Array.from(this.#jobs.keys()) as string[]
   }
 
-  async startWorkers(jobNames: (keyof KnownJobs)[]) {
-    return Promise.all(jobNames.map((w) => this.#startWorker(w)))
+  async startWorkers(queueNames: (keyof KnownQueues)[]) {
+    return Promise.all(queueNames.map((w) => this.#startWorker(w)))
   }
 
-  async #startWorker<Name extends keyof KnownJobs>(name: Name) {
-    const { default: jobClass } = await this.#jobs.get(name)!()
+  async #startWorker<QueueName extends keyof KnownQueues>(queueName: QueueName) {
+    const worker = new BullWorker<any, any, keyof KnownJobs & string>(
+      String(queueName),
+      async (job, token) => {
+        const JobClass = await this.#getJobClass(job.name)
+        void this.#emitter.emit('job:started', { jobName: job.name, job })
 
-    const worker = new BullWorker(
-      String(name),
-      async (
-        job: BullJob<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>>,
-        token
-      ) => {
-        void this.#emitter.emit('job:started', { queueName: name, job })
-
-        const jobInstance: Job<
-          InferDataType<KnownJobs[Name]>,
-          InferReturnType<KnownJobs[Name]>
-        > = await this.#app.container.make(jobClass)
+        const jobInstance = await this.#app.container.make(JobClass)
         jobInstance.$setJob(job, token)
         jobInstance.$setWorker(worker)
 
         jobInstance.logger.info('Starting job')
         return await this.#app.container.call(jobInstance, 'process')
-      },
-      {
-        connection: this.config.connection,
-        ...jobClass.workerOptions,
       }
     )
 
-    worker.on(
-      'failed',
-      async (
-        job: BullJob<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>> | undefined,
-        error
-      ) => {
-        if (!job) {
-          logger.error(error.message, 'Job failed')
-          return
-        }
-
-        void this.#emitter.emit('job:error', { queueName: name, job, error })
-        const jobInstance = await this.#app.container.make(jobClass)
-        jobInstance.$setJob(job)
-        jobInstance.$setError(error)
-
-        try {
-          await this.#app.container.call(jobInstance, 'onFailed')
-        } catch (e) {
-          logger.error(e)
-        }
-
-        if (jobInstance.allAttemptsMade()) {
-          void this.#emitter.emit('job:failed', { queueName: name, job, error })
-        }
+    worker.on('failed', async (job, error) => {
+      if (!job) {
+        logger.error(error.message, 'Job failed')
+        return
       }
-    )
+      void this.#emitter.emit('job:error', { jobName: job.name, job, error })
+
+      const JobClass = await this.#getJobClass(job.name)
+      const jobInstance = await this.#app.container.make(JobClass)
+      jobInstance.$setJob(job)
+      jobInstance.$setError(error)
+
+      try {
+        await this.#app.container.call(jobInstance, 'onFailed')
+      } catch (e) {
+        logger.error(e)
+      }
+
+      if (jobInstance.allAttemptsMade()) {
+        void this.#emitter.emit('job:failed', { jobName: job.name, job, error })
+      }
+    })
 
     worker.on('completed', (job) => {
-      this.#emitter.emit('job:success', { queueName: name, job })
+      this.#emitter.emit('job:success', { jobName: job.name, job })
     })
 
     return worker
   }
 
   async shutdown() {
-    for (const queue of this.#jobQueues.values()) {
-      await queue?.$shutdown()
+    for (const queue of this.#queues.values()) {
+      await queue?.close()
     }
   }
 }
