@@ -2,13 +2,14 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
 import { QueueManager } from '../src/queue_manager.js'
+import { QueueService } from '../src/types.js'
 
 /**
  * Extended types
  */
 declare module '@adonisjs/core/types' {
   export interface ContainerBindings {
-    'job.queueManager': QueueManager
+    'job.queueManager': QueueService
   }
 
   //export interface EventsList extends JobEvents<Jobs extends Record<string, Job> ? Jobs : {}> {}

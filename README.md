@@ -5,7 +5,7 @@
 
 
 ## **Pre-requisites**
-The `@nemoengineering/jobs` package requires `@adonisjs/core >= 6.2.0`
+The `@nemoengineering/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
 
 
 ## **Setup**
@@ -13,15 +13,15 @@ The `@nemoengineering/jobs` package requires `@adonisjs/core >= 6.2.0`
 Install the package from the npm registry as follows.
 
 ```
-npm i @nemoengineering/jobs
+npm i @nemoengineering/adonis-jobs
 # or
-yarn add @nemoengineering/jobs
+yarn add @nemoengineering/adonis-jobs
 ```
 
 Next, configure the package by running the following ace command.
 
 ```
-node ace configure @nemoengineering/jobs
+node ace configure @nemoengineering/adonis-jobs
 ```
 
 And then add the path to the `tsconfig.json`
@@ -63,8 +63,8 @@ To create a new job run `node ace make:job <job name>`. The `process` method imp
 E.g. `node ace make:job concat` will result in the following job to be created
 
 ```typescript
-import { Job } from '@nemoengineering/jobs'
-import { WorkerOptions } from '@nemoengineering/jobs/types'
+import { Job } from '@nemoengineering/adonis-jobs'
+import { WorkerOptions } from '@nemoengineering/adonis-jobs/types'
 
 export type ConcatJobData = { name: [string, string] }
 
@@ -86,7 +86,7 @@ You can use `@inject()` to on the constructor or methods like would expect in Ad
 A job can be dispatched and handled in the background, or you can wait for the result of the job.
 
 ```typescript
-import jobs from '@nemoengineering/jobs/services/main'
+import jobs from '@nemoengineering/adonis-jobs/services/main'
 
 // Dispatch a asynchonous job
 await jobs.use('concat').dispatch('concat-name', { name: ["Albert", "Einstein"] })
@@ -106,7 +106,7 @@ await jobs.use('concat').dispatchMany([
 Use the `dispatchFlow` to start a flow job. Read more about flow jobs in the [BullMQ docs](https://docs.bullmq.io/guide/flows).
 
 ```typescript
-import jobs from '@nemoengineering/jobs/services/main'
+import jobs from '@nemoengineering/adonis-jobs/services/main'
 
 await jobs.dispatchFlow().add({
   name: 'renovate-interior',
@@ -124,7 +124,7 @@ await jobs.dispatchFlow().add({
 You can dispatch a repeated job which automatically runs on the specified schedule. Read more about repeated jobs in the [BullMQ docs](https://docs.bullmq.io/guide/jobs/repeatable)
 
 ```typescript
-import jobs from '@nemoengineering/jobs/services/main'
+import jobs from '@nemoengineering/adonis-jobs/services/main'
 
 // Dispatch a repeated job
 await jobs.use('concat').dispatch(
@@ -143,8 +143,8 @@ await jobs.use('concat').dispatch(
 To react on a failing job you can overwrite the `onFailed` method on the job class.
 
 ```typescript
-import { Job } from '@nemoengineering/jobs'
-import { WorkerOptions } from '@nemoengineering/jobs/types'
+import { Job } from '@nemoengineering/adonis-jobs'
+import { WorkerOptions } from '@nemoengineering/adonis-jobs/types'
 
 export type ConcatJobData = { name: [string, string] }
 

@@ -21,9 +21,9 @@ export class MultiDispatcher {
     return await flow.addBulk(
       this.#jobs.map((job) => ({
         name: job.getName(),
-        queueName: String(job.getConfig().queueName),
+        queueName: String(job.getQueueName()),
         data: job.getData(),
-        opts: job.getConfig().jobOptions,
+        opts: job.getJobOptions(),
       }))
     )
   }

@@ -1,20 +1,12 @@
 import { Config, QueueConfig, Queues } from './types.js'
 import { FlowProducer, Queue, QueueEvents } from 'bullmq'
-export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
-  //readonly #emitter: EmitterLike<JobEvents>
 
-  //#app: ApplicationService
+export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #queues: Map<keyof KnownQueues, Queue> = new Map()
   #queuesEvents: Map<keyof KnownQueues, QueueEvents> = new Map()
+  #flowProducer?: FlowProducer
 
-  constructor(
-    /*    app: ApplicationService,
-    emitter: EmitterLike<JobEvents>,*/
-    public config: Config<KnownQueues>
-  ) {
-    /* this.#app = app
-    this.#emitter = emitter*/
-  }
+  constructor(public config: Config<KnownQueues>) {}
 
   useQueue<DataType, ReturnType>(queueName?: keyof KnownQueues): Queue<DataType, ReturnType> {
     if (!queueName) {
@@ -44,7 +36,8 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       return cachedQueueEvents
     }
 
-    const { globalConcurrency, ...queueOptions } = this.config.queues[queueName]
+    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } =
+      this.config.queues[queueName]
 
     const queueEvents = new QueueEvents(String(queueName), {
       ...queueOptions,
@@ -57,12 +50,17 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   }
 
   useFlowProducer() {
-    return new FlowProducer({ connection: this.config.connection })
+    if (this.#flowProducer) return this.#flowProducer
+
+    this.#flowProducer = new FlowProducer({ connection: this.config.connection })
+
+    return this.#flowProducer
   }
 
   async shutdown() {
     for (const queue of this.#queues.values()) {
       await queue?.close()
     }
+    await this.#flowProducer?.close()
   }
 }

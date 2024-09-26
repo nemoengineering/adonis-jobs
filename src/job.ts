@@ -42,12 +42,12 @@ export abstract class Job<DataType = any, ReturnType = any> {
   }
 
   /**
-   * Overrides the rate limit to be active for the next jobs.
+   * Overrides the rate limit to be active for the next jobs in the queue.
    *
    * @param waitTimeSeconds - time to wait until next try
    * @returns Worker.RateLimitError
    */
-  async rateLimit(waitTimeSeconds: number): Promise<RateLimitError> {
+  async rateLimitQueue(waitTimeSeconds: number): Promise<RateLimitError> {
     await this.worker.rateLimit(waitTimeSeconds * 1000)
     return Worker.RateLimitError()
   }
@@ -59,7 +59,7 @@ export abstract class Job<DataType = any, ReturnType = any> {
    * @param message
    * @throws UnrecoverableError
    */
-  failWithoutRetry(message?: string): never {
+  fail(message?: string): never {
     throw new UnrecoverableError(message)
   }
 

@@ -1,6 +1,5 @@
 import { args, BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import { JobFileTransformer } from '../src/job_file_transformer.js'
 import { stubsRoot } from '../stubs/main.js'
 import { jobName } from '../src/helper.js'
 import StringBuilder from '@poppinss/utils/string_builder'
@@ -23,21 +22,13 @@ export default class MakeJob extends BaseCommand {
    */
   async run(): Promise<void> {
     const codemods = await this.createCodemods()
-    const project = await codemods.getTsMorphProject()
-    const jobFileTransformer = new JobFileTransformer(project!)
-
     const job = this.app.generators.createEntity(this.name)
 
-    const stubResult = await codemods.makeUsingStub(stubsRoot, 'make/job/main.stub', {
+    await codemods.makeUsingStub(stubsRoot, 'make/job/main.stub', {
       flags: this.parsed.flags,
       jobName: jobName(job.name),
       jobFilePath: job.path,
       jobFileName: new StringBuilder(jobName(job.name)).snakeCase().ext('.ts').toString(),
     })
-
-    if (stubResult.status !== 'created') return
-
-    jobFileTransformer.addJob(job)
-    await jobFileTransformer.save()
   }
 }

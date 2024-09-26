@@ -1,10 +1,10 @@
 import { JobsOptions } from 'bullmq'
 
 export class JobConfig {
-  protected queueConfig: JobsOptions = {}
+  protected jobOptions: JobsOptions = {}
 
   with<K extends keyof Required<JobsOptions>>(key: K, value: Required<JobsOptions>[K]) {
-    this.queueConfig[key] = value
+    this.jobOptions[key] = value
     return this
   }
 }

@@ -22,10 +22,6 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     this.#jobs = new Map(jobs.map((j) => [j.name, j]))
   }
 
-  getAllJobNames() {
-    return Array.from(this.#jobs.keys())
-  }
-
   getAllQueueNames() {
     return Object.keys(this.config.queues) as (keyof KnownQueues)[]
   }
@@ -42,19 +38,23 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     const loggerService = await this.#app.container.make('logger')
     const logger = loggerService.child({ queueName })
 
-    const worker = new BullWorker(String(queueName), async (job, token) => {
-      const JobClass = this.#getJobClass(job.name)
+    const worker = new BullWorker(
+      String(queueName),
+      async (job, token) => {
+        const JobClass = this.#getJobClass(job.name)
 
-      const jobInstance = await this.#app.container.make(JobClass)
-      jobInstance.$setJob(job, token, logger)
-      jobInstance.$setWorker(worker)
+        const jobInstance = await this.#app.container.make(JobClass)
+        jobInstance.$setJob(job, token, logger)
+        jobInstance.$setWorker(worker)
 
-      jobInstance.logger.info('Starting job')
+        jobInstance.logger.info('Starting job')
 
-      const res = this.#app.container.call(jobInstance, 'process')
-      //void this.#emitter.emit('job:started', { jobName: job.name, job })
-      return await res
-    })
+        const res = this.#app.container.call(jobInstance, 'process')
+        //void this.#emitter.emit('job:started', { jobName: job.name, job })
+        return await res
+      },
+      { connection: this.config.connection, ...this.config.queues[queueName].defaultWorkerOptions }
+    )
 
     worker.on('failed', async (job, error, token) => {
       if (!job) {

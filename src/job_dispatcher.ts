@@ -1,14 +1,12 @@
 import { JobConstructor, Queues } from './types.js'
-import { Job as BullJob, JobsOptions } from 'bullmq'
+import { Job as BullJob } from 'bullmq'
 import { JobConfig } from './job_config.js'
-import app from '@adonisjs/core/services/app'
 
 type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
 type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
 
 export type DispatchConfig = {
   queueName?: keyof Queues
-  jobOptions?: JobsOptions
 }
 
 export class JobDispatcher<
@@ -21,43 +19,49 @@ export class JobDispatcher<
 {
   readonly #jobClass: TJobClass
   readonly #data: TJobData
-  readonly #config: DispatchConfig
+  #queueName?: keyof Queues
 
   constructor(jobClass: TJobClass, data: TJobData) {
     super()
     this.#jobClass = jobClass
     this.#data = data
-    this.#config = { queueName: jobClass.defaultQueue }
+    this.#queueName = jobClass.defaultQueue
   }
 
   onQueue(queueName: keyof Queues): this {
-    this.#config.queueName = queueName
+    this.#queueName = queueName
 
     return this
-  }
-
-  getConfig() {
-    return this.#config
-  }
-
-  getData() {
-    return this.#data
   }
 
   getName() {
     return this.#jobClass.name
   }
 
-  async #dispatch() {
-    const manager = await app.container.make('job.queueManager')
-    const queue = manager.useQueue<TJobData, TJobReturn>(this.#config.queueName)
+  getQueueName() {
+    return this.#queueName
+  }
 
-    const job = await queue.add(this.getName(), this.#data, this.#config.jobOptions)
+  getJobOptions() {
+    return this.jobOptions
+  }
+
+  getData() {
+    return this.#data
+  }
+
+  async #dispatch() {
+    const { default: app } = await import('@adonisjs/core/services/app')
+    const manager = await app.container.make('job.queueManager')
+    const queue = manager.useQueue<TJobData, TJobReturn>(this.#queueName)
+
+    const job = await queue.add(this.getName(), this.#data, this.jobOptions)
     //void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
     return job
   }
 
   async wait() {
+    const { default: app } = await import('@adonisjs/core/services/app')
     const job = await this.#dispatch()
     const manager = await app.container.make('job.queueManager')
     const queueEvents = manager.useQueueEvents(job.queueName as keyof Queues)
