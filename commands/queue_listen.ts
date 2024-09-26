@@ -3,17 +3,18 @@ import { CommandOptions } from '@adonisjs/core/types/ace'
 import { createServer, Server as NodeServer } from 'node:http'
 import { Server } from '@adonisjs/http-server'
 import { LoggerService } from '@adonisjs/core/types'
-import { Worker } from 'bullmq'
-import { JobService } from '../src/types.js'
+import { configProvider } from '@adonisjs/core'
+import { WorkerManager } from '../src/worker_manager.js'
+import { Queues } from '../src/types.js'
 
 export default class QueueListen extends BaseCommand {
   static commandName = 'queue:listen'
   static description = 'Listen for jobs dispatched on queues'
 
-  @flags.array({ name: 'jobs', alias: 'j', description: 'The jobs you want to listen for' })
-  declare jobs: string[]
+  @flags.array({ name: 'queues', alias: 'q', description: 'The queues you want to listen for' })
+  declare queues: (keyof Queues)[]
 
-  @flags.boolean({ name: 'list', alias: 'l', description: 'List all available jobs' })
+  @flags.boolean({ name: 'list', alias: 'l', description: 'List all available queues' })
   declare list: boolean
 
   @flags.boolean({
@@ -28,43 +29,43 @@ export default class QueueListen extends BaseCommand {
     staysAlive: true,
   }
 
+  #manager!: WorkerManager
   #appLogger!: LoggerService
   #server: NodeServer | undefined
-  #runningWorkers: Worker[] = []
-  #queue!: JobService
 
   async prepare() {
     this.#appLogger = await this.app.container.make('logger')
-    this.#queue = await this.app.container.make('job.manager')
+
+    const queueConfigProvider = await this.app.config.get('queue')
+    const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
+    const jobs = await WorkerManager.loadJobs(this.app)
+    this.#manager = new WorkerManager(this.app, config, jobs)
 
     this.app.terminating(async () => {
       this.#appLogger.info('Terminating...')
-      await Promise.all(this.#runningWorkers.map((w) => w.close()))
-      await this.#queue.shutdown()
+      await this.#manager.stopWorkers()
       this.#server?.close()
     })
     this.app.listen('SIGINT', () => this.terminate())
   }
 
   async run() {
+    const availableQueues = this.#manager.getAllQueueNames()
     if (this.list) {
-      this.ui.logger.log('Available jobs')
+      this.ui.logger.log('Available queues')
       const table = this.ui.table().head(['Name'])
-      this.#queue.getAllJobNames().forEach((w) => {
+      availableQueues.forEach((w) => {
         table.row([w])
       })
       table.render()
       return await this.terminate()
     }
+    this.#appLogger.info({ queues: this.queues }, `Staring workers`)
 
+    this.queues ??= availableQueues
     this.#server = await this.#startServer()
 
-    if (!this.jobs) {
-      this.jobs = this.#queue.getAllJobNames()
-    }
-
-    this.#appLogger.info({ queues: this.jobs }, `Staring workers`)
-    this.#runningWorkers = (await this.#queue.startWorkers(this.jobs)) as unknown as Worker[]
+    await this.#manager.startWorkers(this.queues)
   }
 
   async #startServer() {

@@ -1,21 +1,19 @@
-import { EmitterLike } from '@adonisjs/core/types/events'
-import { Config, JobEvents, QueueConfig, Queues } from './types.js'
+import { Config, QueueConfig, Queues } from './types.js'
 import { FlowProducer, Queue, QueueEvents } from 'bullmq'
-import { ApplicationService } from '@adonisjs/core/types'
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
-  readonly #emitter: EmitterLike<JobEvents>
+  //readonly #emitter: EmitterLike<JobEvents>
 
-  #app: ApplicationService
+  //#app: ApplicationService
   #queues: Map<keyof KnownQueues, Queue> = new Map()
   #queuesEvents: Map<keyof KnownQueues, QueueEvents> = new Map()
 
   constructor(
-    app: ApplicationService,
-    emitter: EmitterLike<JobEvents>,
+    /*    app: ApplicationService,
+    emitter: EmitterLike<JobEvents>,*/
     public config: Config<KnownQueues>
   ) {
-    this.#app = app
-    this.#emitter = emitter
+    /* this.#app = app
+    this.#emitter = emitter*/
   }
 
   useQueue<DataType, ReturnType>(queueName?: keyof KnownQueues): Queue<DataType, ReturnType> {
@@ -61,14 +59,6 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   useFlowProducer() {
     return new FlowProducer({ connection: this.config.connection })
   }
-
-  /*  flow() {
-    return new FlowProducer<KnownJobs>(this, { connection: this.config.connection })
-  }*/
-
-  /*  getAllJobNames() {
-    return Array.from(this.#jobs.keys()) as string[]
-  }*/
 
   async shutdown() {
     for (const queue of this.#queues.values()) {

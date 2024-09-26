@@ -1,5 +1,4 @@
 import { test } from '@japa/runner'
-import { WorkerManager } from '../../src/worker_manager.js'
 import { IgnitorFactory } from '@adonisjs/core/factories'
 import FakeJob from '../../factories/jobs/job.js'
 

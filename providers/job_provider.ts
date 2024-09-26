@@ -1,9 +1,7 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
-import { JobEvents, Jobs } from '../src/types.js'
 import { QueueManager } from '../src/queue_manager.js'
-import { Job } from '../src/job.js'
 
 /**
  * Extended types
@@ -12,15 +10,16 @@ declare module '@adonisjs/core/types' {
   export interface ContainerBindings {
     'job.queueManager': QueueManager
   }
-  export interface EventsList extends JobEvents<Jobs extends Record<string, Job> ? Jobs : {}> {}
+
+  //export interface EventsList extends JobEvents<Jobs extends Record<string, Job> ? Jobs : {}> {}
 }
 
 export default class JobProvider {
   constructor(protected app: ApplicationService) {}
 
   register() {
-    this.app.container.singleton('job.queueManager', async (resolver) => {
-      const emitter = await resolver.make('emitter')
+    this.app.container.singleton('job.queueManager', async (_resolver) => {
+      //const emitter = await resolver.make('emitter')
       const queueConfigProvider = await this.app.config.get('queue')
       const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
 
@@ -30,7 +29,7 @@ export default class JobProvider {
         )
       }
 
-      return new QueueManager(this.app, emitter, config)
+      return new QueueManager(config)
     })
   }
 

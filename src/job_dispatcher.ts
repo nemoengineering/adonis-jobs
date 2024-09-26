@@ -1,27 +1,36 @@
-import { QueueConfig, Queues } from './types.js'
-import { JobsOptions } from 'bullmq'
+import { JobConstructor, Queues } from './types.js'
+import { Job as BullJob, JobsOptions } from 'bullmq'
 import { JobConfig } from './job_config.js'
+import app from '@adonisjs/core/services/app'
 
-export type DispatchConfig<KnownQueues extends Record<string, QueueConfig>> = {
-  queueName?: keyof KnownQueues
+type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
+type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
+
+export type DispatchConfig = {
+  queueName?: keyof Queues
   jobOptions?: JobsOptions
 }
 
-export class JobDispatcher<Data, Return, KnownQueues extends Record<string, QueueConfig> = Queues>
+export class JobDispatcher<
+    TJobClass extends JobConstructor = JobConstructor,
+    TJobData extends JobData<TJobClass> = JobData<TJobClass>,
+    TJobReturn extends JobReturn<TJobClass> = JobReturn<TJobClass>,
+  >
   extends JobConfig
-  implements Promise<Return>
+  implements Promise<BullJob<TJobData, TJobReturn>>
 {
-  #data: Data
-  #config: DispatchConfig<KnownQueues> = {}
-  #callback: (dispatcher: DispatchConfig<KnownQueues>) => Promise<Return>
+  readonly #jobClass: TJobClass
+  readonly #data: TJobData
+  readonly #config: DispatchConfig
 
-  constructor(data: Data, callback: (config: DispatchConfig<KnownQueues>) => Promise<Return>) {
+  constructor(jobClass: TJobClass, data: TJobData) {
     super()
-    this.#callback = callback
+    this.#jobClass = jobClass
     this.#data = data
+    this.#config = { queueName: jobClass.defaultQueue }
   }
 
-  onQueue(queueName: keyof KnownQueues): this {
+  onQueue(queueName: keyof Queues): this {
     this.#config.queueName = queueName
 
     return this
@@ -35,21 +44,45 @@ export class JobDispatcher<Data, Return, KnownQueues extends Record<string, Queu
     return this.#data
   }
 
-  then<TResult1 = Return, TResult2 = never>(
-    onfulfilled?: ((value: Return) => TResult1 | PromiseLike<TResult1>) | null | undefined,
+  getName() {
+    return this.#jobClass.name
+  }
+
+  async #dispatch() {
+    const manager = await app.container.make('job.queueManager')
+    const queue = manager.useQueue<TJobData, TJobReturn>(this.#config.queueName)
+
+    const job = await queue.add(this.getName(), this.#data, this.#config.jobOptions)
+    //void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
+    return job
+  }
+
+  async wait() {
+    const job = await this.#dispatch()
+    const manager = await app.container.make('job.queueManager')
+    const queueEvents = manager.useQueueEvents(job.queueName as keyof Queues)
+
+    return job.waitUntilFinished(queueEvents)
+  }
+
+  then<TResult1 = BullJob<TJobData, TJobReturn>, TResult2 = never>(
+    onfulfilled?:
+      | ((value: BullJob<TJobData, TJobReturn>) => TResult1 | PromiseLike<TResult1>)
+      | null
+      | undefined,
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined
   ): Promise<TResult1 | TResult2> {
-    return this.#callback(this.#config).then(onfulfilled, onrejected)
+    return this.#dispatch().then(onfulfilled, onrejected)
   }
 
   catch<TResult = never>(
     onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined
-  ): Promise<Return | TResult> {
-    return this.#callback(this.#config).catch(onrejected)
+  ): Promise<BullJob<TJobData, TJobReturn> | TResult> {
+    return this.#dispatch().catch(onrejected)
   }
 
-  finally(onfinally?: (() => void) | null | undefined): Promise<Return> {
-    return this.#callback(this.#config).finally(onfinally)
+  finally(onfinally?: (() => void) | null | undefined): Promise<BullJob<TJobData, TJobReturn>> {
+    return this.#dispatch().finally(onfinally)
   }
 
   get [Symbol.toStringTag]() {

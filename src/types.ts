@@ -8,9 +8,8 @@ import {
   WorkerOptions as BullWorkerOptions,
   JobType,
 } from 'bullmq'
-import { QueueManager } from './queue_manager.js'
-import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
-import { Queue as BullQueue } from 'bullmq/dist/esm/classes/queue.js'
+import { BulkJobOptions } from 'bullmq'
+import { Queue as BullQueue } from 'bullmq'
 import { ConfigProvider } from '@adonisjs/core/types'
 
 export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
@@ -20,9 +19,7 @@ export interface JobConstructor<J extends Job = Job> {
   defaultQueue?: keyof Queues
 }
 
-export type JobEvents<
-  KnownJobs extends Record<string, Job> = Jobs extends Record<string, Job> ? Jobs : never,
-> = {
+export type JobEvents<KnownJobs extends Record<string, Job>> = {
   'job:dispatched': EventWithJob<KnownJobs>
   'job:dispatched:many': EventWithManyJobs<KnownJobs>
   'job:started': EventWithJob<KnownJobs>
@@ -120,14 +117,16 @@ export interface Queues {}
 export type InferQueues<Conf extends ConfigProvider<{ defaultQueue: unknown; queues: unknown }>> =
   Awaited<ReturnType<Conf['resolver']>>['queues']
 
-export interface Jobs {}
+/*export interface Jobs {}
 
 export type InferJobs<JobDefs extends Record<string, LazyWorkerImport>> = {
   [Name in keyof JobDefs]: InstanceType<Awaited<ReturnType<JobDefs[Name]>>['default']>
-}
+}*/
 
+/*
 export interface JobService
   extends QueueManager<
     Queues extends Record<string, QueueConfig> ? Queues : never,
     Jobs extends Record<string, Job> ? Jobs : never
   > {}
+*/

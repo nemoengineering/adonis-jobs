@@ -1,39 +1,52 @@
 import { ApplicationService } from '@adonisjs/core/types'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
 import { Job } from './job.js'
-import { Config, JobEvents, QueueConfig } from './types.js'
-import { Worker as BullWorker } from 'bullmq/dist/esm/classes/worker.js'
-import { EmitterLike } from '@adonisjs/core/types/events'
-import logger from '@adonisjs/core/services/logger'
+import { Config, QueueConfig, Queues } from './types.js'
+import { Worker as BullWorker } from 'bullmq'
 
-export class WorkerManager<KnownQueues extends Record<string, QueueConfig>> {
+export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService
-  readonly #emitter: EmitterLike<JobEvents>
+  //readonly #emitter: EmitterLike<JobEvents>
 
   readonly #jobs: Map<string, typeof Job>
+  #runningWorkers: BullWorker[] = []
 
   constructor(
     app: ApplicationService,
-    emitter: EmitterLike<JobEvents>,
+    //emitter: EmitterLike<JobEvents>,
     public config: Config<KnownQueues>,
     jobs: (typeof Job)[]
   ) {
     this.#app = app
-    this.#emitter = emitter
-
+    //this.#emitter = emitter
     this.#jobs = new Map(jobs.map((j) => [j.name, j]))
   }
 
+  getAllJobNames() {
+    return Array.from(this.#jobs.keys())
+  }
+
+  getAllQueueNames() {
+    return Object.keys(this.config.queues) as (keyof KnownQueues)[]
+  }
+
   async startWorkers(queueNames: (keyof KnownQueues)[]) {
-    return Promise.all(queueNames.map((w) => this.#startWorker(w)))
+    this.#runningWorkers = await Promise.all(queueNames.map((w) => this.#startWorker(w)))
+  }
+
+  async stopWorkers() {
+    await Promise.all(this.#runningWorkers.map((w) => w.close()))
   }
 
   async #startWorker(queueName: keyof KnownQueues) {
+    const loggerService = await this.#app.container.make('logger')
+    const logger = loggerService.child({ queueName })
+
     const worker = new BullWorker(String(queueName), async (job, token) => {
       const JobClass = this.#getJobClass(job.name)
 
       const jobInstance = await this.#app.container.make(JobClass)
-      jobInstance.$setJob(job, token)
+      jobInstance.$setJob(job, token, logger)
       jobInstance.$setWorker(worker)
 
       jobInstance.logger.info('Starting job')
@@ -43,7 +56,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig>> {
       return await res
     })
 
-    worker.on('failed', async (job, error) => {
+    worker.on('failed', async (job, error, token) => {
       if (!job) {
         logger.error(error.message, 'Job failed')
         return
@@ -52,7 +65,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig>> {
 
       const JobClass = this.#getJobClass(job.name)
       const jobInstance = await this.#app.container.make(JobClass)
-      jobInstance.$setJob(job)
+      jobInstance.$setJob(job, token, logger)
       jobInstance.$setError(error)
 
       try {
@@ -62,12 +75,12 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig>> {
       }
 
       if (jobInstance.allAttemptsMade()) {
-        void this.#emitter.emit('job:failed', { jobName: job.name, job, error })
+        //void this.#emitter.emit('job:failed', { jobName: job.name, job, error })
       }
     })
 
-    worker.on('completed', (job) => {
-      this.#emitter.emit('job:success', { jobName: job.name, job })
+    worker.on('completed', (_job) => {
+      //this.#emitter.emit('job:success', { jobName: job.name, job })
     })
 
     return worker

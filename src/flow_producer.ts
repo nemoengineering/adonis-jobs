@@ -1,3 +1,4 @@
+/*
 import { FlowProducer as BullFlowProducer, FlowJob as BullFlowJob, QueueBaseOptions } from 'bullmq'
 import { FlowJobArg, InferReturnType } from './types.js'
 import { Job } from './job.js'
@@ -45,3 +46,4 @@ export class FlowProducer<KnownJobs extends Record<string, Job>> {
     return this.#producer
   }
 }
+*/
