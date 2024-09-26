@@ -1,7 +1,9 @@
 import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bullmq'
-import { Queues } from './types.js'
-import logger from '@adonisjs/core/services/logger'
+import { JobConstructor, Queues } from './types.js'
+//import logger from '@adonisjs/core/services/logger'
 import { Logger } from '@adonisjs/core/logger'
+import app from '@adonisjs/core/services/app'
+import { JobDispatcher } from './job_dispatcher.js'
 
 export abstract class Job<DataType = any, ReturnType = any> {
   static defaultQueue?: keyof Queues
@@ -17,7 +19,7 @@ export abstract class Job<DataType = any, ReturnType = any> {
     this.job = job
     this.data = job.data
     this.token = token
-    this.logger = logger.child({ queueName: job.queueName, jobName: job.name, jobId: job.id })
+    //this.logger = logger.child({ queueName: job.queueName, jobName: job.name, jobId: job.id })
   }
 
   $setError(error: Error) {
@@ -61,5 +63,38 @@ export abstract class Job<DataType = any, ReturnType = any> {
    */
   failWithoutRetry(message?: string): never {
     throw new UnrecoverableError(message)
+  }
+
+  static dispatch<T extends Job>(this: JobConstructor<T>, data: InstanceType<typeof this>['data']) {
+    return new JobDispatcher(data, async ({ queueName, jobOptions }) => {
+      const manager = await app.container.make('job.queueManager')
+      const queue = manager.useQueue<
+        InstanceType<typeof this>['data'],
+        InstanceType<typeof this>['job']['returnvalue']
+      >(queueName || this.defaultQueue)
+
+      const job = await queue.add(this.name, data, jobOptions)
+      //void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
+      return job
+    })
+  }
+
+  static dispatchAndWait<T extends Job>(
+    this: JobConstructor<T>,
+    data: InstanceType<typeof this>['data']
+  ) {
+    return new JobDispatcher(data, async ({ queueName, jobOptions }) => {
+      const manager = await app.container.make('job.queueManager')
+      const queue = manager.useQueue<
+        InstanceType<typeof this>['data'],
+        InstanceType<typeof this>['job']['returnvalue']
+      >(queueName || this.defaultQueue)
+
+      const job = await queue.add(this.name, data, jobOptions)
+      const queueEvents = manager.useQueueEvents(queue.name as keyof Queues)
+
+      //void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
+      return job.waitUntilFinished(queueEvents)
+    })
   }
 }

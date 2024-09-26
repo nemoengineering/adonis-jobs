@@ -1,4 +1,4 @@
-export { JobManager } from './src/job_manager.js'
+export { QueueManager } from './src/queue_manager.js'
 export { Job } from './src/job.js'
 export { configure } from './configure.js'
 export { stubsRoot } from './stubs/main.js'

@@ -4,7 +4,7 @@ import { JobService } from '../src/types.js'
 let jobs: JobService
 
 await app.booted(async () => {
-  jobs = await app.container.make('job.manager')
+  jobs = await app.container.make('job.queueManager')
 })
 
 export { jobs as default }

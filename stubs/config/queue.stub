@@ -10,6 +10,10 @@ const queueConfig = defineConfig({
     port: Env.get('REDIS_PORT'),
     password: Env.get('REDIS_PASSWORD'),
   },
+  defaultQueue: 'default',
+  queues: {
+    default: {},
+  },
 })
 
 export default queueConfig

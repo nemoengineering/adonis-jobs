@@ -1,13 +1,13 @@
 import { FlowProducer as BullFlowProducer, FlowJob as BullFlowJob, QueueBaseOptions } from 'bullmq'
 import { FlowJobArg, InferReturnType } from './types.js'
 import { Job } from './job.js'
-import { JobManager } from './job_manager.js'
+import { QueueManager } from './queue_manager.js'
 
 export class FlowProducer<KnownJobs extends Record<string, Job>> {
   #producer: BullFlowProducer
-  #jobManager: JobManager<KnownJobs>
+  #jobManager: QueueManager<KnownJobs>
 
-  constructor(jobManager: JobManager<KnownJobs>, opts?: QueueBaseOptions) {
+  constructor(jobManager: QueueManager<KnownJobs>, opts?: QueueBaseOptions) {
     this.#jobManager = jobManager
     this.#producer = new BullFlowProducer(opts)
   }
