@@ -1,24 +1,25 @@
 import { ApplicationService } from '@adonisjs/core/types'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
 import { Job } from './job.js'
-import { Config, QueueConfig, Queues } from './types.js'
+import { Config, JobEvents, QueueConfig, Queues } from './types.js'
 import { Worker as BullWorker } from 'bullmq'
+import { EmitterLike } from '@adonisjs/core/types/events'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService
-  //readonly #emitter: EmitterLike<JobEvents>
+  readonly #emitter: EmitterLike<JobEvents>
 
   readonly #jobs: Map<string, typeof Job>
   #runningWorkers: BullWorker[] = []
 
   constructor(
     app: ApplicationService,
-    //emitter: EmitterLike<JobEvents>,
+    emitter: EmitterLike<JobEvents>,
     public config: Config<KnownQueues>,
     jobs: (typeof Job)[]
   ) {
     this.#app = app
-    //this.#emitter = emitter
+    this.#emitter = emitter
     this.#jobs = new Map(jobs.map((j) => [j.name, j]))
   }
 
@@ -50,7 +51,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
         jobInstance.logger.info('Starting job')
 
         const res = this.#app.container.call(jobInstance, 'process')
-        //void this.#emitter.emit('job:started', { jobName: job.name, job })
+        void this.#emitter.emit('job:started', { job })
         return await res
       },
       { connection: this.config.connection, ...this.config.queues[queueName].defaultWorkerOptions }
@@ -61,7 +62,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
         logger.error(error.message, 'Job failed')
         return
       }
-      //void this.#emitter.emit('job:error', { jobName: job.name, job, error })
+      void this.#emitter.emit('job:error', { job, error })
 
       const JobClass = this.#getJobClass(job.name)
       const jobInstance = await this.#app.container.make(JobClass)
@@ -75,12 +76,12 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
       }
 
       if (jobInstance.allAttemptsMade()) {
-        //void this.#emitter.emit('job:failed', { jobName: job.name, job, error })
+        void this.#emitter.emit('job:failed', { job, error })
       }
     })
 
-    worker.on('completed', (_job) => {
-      //this.#emitter.emit('job:success', { jobName: job.name, job })
+    worker.on('completed', (job) => {
+      this.#emitter.emit('job:success', { job })
     })
 
     return worker

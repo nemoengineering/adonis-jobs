@@ -5,10 +5,6 @@ import { JobConfig } from './job_config.js'
 type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
 type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
 
-export type DispatchConfig = {
-  queueName?: keyof Queues
-}
-
 export class JobDispatcher<
     TJobClass extends JobConstructor = JobConstructor,
     TJobData extends JobData<TJobClass> = JobData<TJobClass>,
@@ -53,10 +49,11 @@ export class JobDispatcher<
   async #dispatch() {
     const { default: app } = await import('@adonisjs/core/services/app')
     const manager = await app.container.make('job.queueManager')
+    const emitter = await app.container.make('emitter')
     const queue = manager.useQueue<TJobData, TJobReturn>(this.#queueName)
 
     const job = await queue.add(this.getName(), this.#data, this.jobOptions)
-    //void this.#emitter.emit('job:dispatched', { jobName: queue.name, job })
+    void emitter.emit('job:dispatched', { job })
     return job
   }
 

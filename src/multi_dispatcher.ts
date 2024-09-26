@@ -1,5 +1,6 @@
 import { JobDispatcher } from './job_dispatcher.js'
 import app from '@adonisjs/core/services/app'
+import emitter from '@adonisjs/core/services/emitter'
 
 export class MultiDispatcher {
   #jobs: JobDispatcher[]
@@ -18,7 +19,7 @@ export class MultiDispatcher {
     const flow = manager.useFlowProducer()
 
     //TODO: type returned jobs
-    return await flow.addBulk(
+    const jobs = await flow.addBulk(
       this.#jobs.map((job) => ({
         name: job.getName(),
         queueName: String(job.getQueueName()),
@@ -26,5 +27,11 @@ export class MultiDispatcher {
         opts: job.getJobOptions(),
       }))
     )
+
+    void emitter.emit('job:dispatched:many', {
+      jobs: jobs.map((j) => j.job),
+    })
+
+    return jobs
   }
 }

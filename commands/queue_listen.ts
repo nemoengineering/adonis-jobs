@@ -35,11 +35,12 @@ export default class QueueListen extends BaseCommand {
 
   async prepare() {
     this.#appLogger = await this.app.container.make('logger')
+    const emitter = await this.app.container.make('emitter')
 
     const queueConfigProvider = await this.app.config.get('queue')
     const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
     const jobs = await WorkerManager.loadJobs(this.app)
-    this.#manager = new WorkerManager(this.app, config, jobs)
+    this.#manager = new WorkerManager(this.app, emitter, config, jobs)
 
     this.app.terminating(async () => {
       this.#appLogger.info('Terminating...')

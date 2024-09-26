@@ -13,28 +13,22 @@ export interface JobConstructor<J extends Job = Job> {
   defaultQueue?: keyof Queues
 }
 
-export type JobEvents<KnownJobs extends Record<string, Job>> = {
-  'job:dispatched': EventWithJob<KnownJobs>
-  'job:dispatched:many': EventWithManyJobs<KnownJobs>
-  'job:started': EventWithJob<KnownJobs>
-  'job:success': EventWithJob<KnownJobs>
-  'job:error': EventWithJob<KnownJobs> & { error: Error }
-  'job:failed': EventWithJob<KnownJobs> & { error: Error }
+export type JobEvents = {
+  'job:dispatched': EventWithJob
+  'job:dispatched:many': EventWithManyJobs
+  'job:started': EventWithJob
+  'job:success': EventWithJob
+  'job:error': EventWithJob & { error: Error }
+  'job:failed': EventWithJob & { error: Error }
 }
 
-type EventWithJob<KnownJobs extends Record<string, Job>> = {
-  [Name in keyof KnownJobs]: {
-    jobName: Name
-    job: BullJob<InferDataType<KnownJobs[Name]>, InferReturnType<KnownJobs[Name]>>
-  }
-}[keyof KnownJobs]
+type EventWithJob = {
+  job: BullJob
+}
 
-type EventWithManyJobs<KnownJobs extends Record<string, Job>> = {
-  [Queue in keyof KnownJobs]: {
-    queueName: Queue
-    jobs: BullJob<InferDataType<KnownJobs[Queue]>, InferReturnType<KnownJobs[Queue]>>[]
-  }
-}[keyof KnownJobs]
+type EventWithManyJobs = {
+  jobs: BullJob[]
+}
 
 export type Config<KnownQueues extends Record<string, QueueConfig>> = {
   connection: ConnectionOptions
