@@ -7,9 +7,9 @@ import { configProvider } from '@adonisjs/core'
 import { WorkerManager } from '../src/worker_manager.js'
 import { Queues } from '../src/types.js'
 
-export default class QueueListen extends BaseCommand {
-  static commandName = 'queue:listen'
-  static description = 'Listen for jobs dispatched on queues'
+export default class QueueWork extends BaseCommand {
+  static commandName = 'queue:work'
+  static description = 'Listen for dispatched jobs'
 
   @flags.array({ name: 'queues', alias: 'q', description: 'The queues you want to listen for' })
   declare queues: (keyof Queues)[]
@@ -37,7 +37,7 @@ export default class QueueListen extends BaseCommand {
     this.#appLogger = await this.app.container.make('logger')
     const emitter = await this.app.container.make('emitter')
 
-    const queueConfigProvider = await this.app.config.get('queue')
+    const queueConfigProvider = this.app.config.get('queue')
     const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
     const jobs = await WorkerManager.loadJobs(this.app)
     this.#manager = new WorkerManager(this.app, emitter, config, jobs)

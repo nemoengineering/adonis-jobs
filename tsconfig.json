@@ -4,7 +4,8 @@
     "rootDir": "./",
     "outDir": "./build",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "stripInternal": true
   },
   "exclude": ["test-helpers", "bin/test", "build"]
 }

@@ -2,7 +2,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
 import { QueueManager } from '../src/queue_manager.js'
-import { JobEvents, QueueService } from '../src/types.js'
+import { Config, JobEvents, Queues, QueueService } from '../src/types.js'
 
 /**
  * Extended types
@@ -20,8 +20,8 @@ export default class JobProvider {
 
   register() {
     this.app.container.singleton('job.queueManager', async () => {
-      const queueConfigProvider = await this.app.config.get('queue')
-      const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
+      const queueConfigProvider = this.app.config.get('queue')
+      const config = await configProvider.resolve<Config<Queues>>(this.app, queueConfigProvider)
 
       if (!config) {
         throw new RuntimeException(

@@ -49,7 +49,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     return queueEvents
   }
 
-  useFlowProducer() {
+  useFlowProducer(): FlowProducer {
     if (this.#flowProducer) return this.#flowProducer
 
     this.#flowProducer = new FlowProducer({ connection: this.config.connection })

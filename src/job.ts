@@ -1,7 +1,7 @@
 import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bullmq'
 import { JobConstructor, Queues } from './types.js'
 import { Logger } from '@adonisjs/core/logger'
-import { JobDispatcher } from './job_dispatcher.js'
+import { Dispatcher } from './job_dispatcher.js'
 
 export abstract class Job<DataType = any, ReturnType = any> {
   static defaultQueue?: keyof Queues
@@ -64,6 +64,6 @@ export abstract class Job<DataType = any, ReturnType = any> {
   }
 
   static dispatch<T extends Job>(this: JobConstructor<T>, data: InstanceType<typeof this>['data']) {
-    return new JobDispatcher(this, data)
+    return new Dispatcher(this, data)
   }
 }

@@ -1,11 +1,11 @@
 import { JobConstructor, Queues } from './types.js'
-import { Job as BullJob } from 'bullmq'
+import { FlowChildJob, FlowJob, Job as BullJob } from 'bullmq'
 import { JobConfig } from './job_config.js'
 
 type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
 type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
 
-export class JobDispatcher<
+export class Dispatcher<
     TJobClass extends JobConstructor = JobConstructor,
     TJobData extends JobData<TJobClass> = JobData<TJobClass>,
     TJobReturn extends JobReturn<TJobClass> = JobReturn<TJobClass>,
@@ -30,20 +30,15 @@ export class JobDispatcher<
     return this
   }
 
-  getName() {
-    return this.#jobClass.name
-  }
-
-  getQueueName() {
-    return this.#queueName
-  }
-
-  getJobOptions() {
-    return this.jobOptions
-  }
-
-  getData() {
-    return this.#data
+  // @internal
+  $toFlowJob(defaultQueue: keyof Queues, children?: FlowChildJob[]): FlowJob {
+    return {
+      name: this.#jobClass.name,
+      queueName: (this.#queueName || defaultQueue) as string,
+      data: this.#data,
+      opts: this.jobOptions,
+      children,
+    }
   }
 
   async #dispatch() {
@@ -52,12 +47,12 @@ export class JobDispatcher<
     const emitter = await app.container.make('emitter')
     const queue = manager.useQueue<TJobData, TJobReturn>(this.#queueName)
 
-    const job = await queue.add(this.getName(), this.#data, this.jobOptions)
+    const job = await queue.add(this.#jobClass.name, this.#data, this.jobOptions)
     void emitter.emit('job:dispatched', { job })
     return job
   }
 
-  async wait() {
+  async waitResult() {
     const { default: app } = await import('@adonisjs/core/services/app')
     const job = await this.#dispatch()
     const manager = await app.container.make('job.queueManager')
