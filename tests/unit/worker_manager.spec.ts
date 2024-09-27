@@ -29,5 +29,10 @@ test.group('WorkerManager', () => {
       FakeSubDirJob.dispatch({ input: '2' }),
       FakeJob.dispatch({ input: '3' }),
     ]).dispatch()
+
+    const d = await FakeJob.dispatch({ input: '3' })
+    const dd = await FakeJob.decrypt("{ input: '' }")
+
+    console.log(d, dd)
   })
 })

@@ -1,6 +1,6 @@
 import { ApplicationService } from '@adonisjs/core/types'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
-import { Job } from './job.js'
+import { Job, JobConstructor } from './job.js'
 import { Config, JobEvents, QueueConfig, Queues } from './types.js'
 import { Worker as BullWorker } from 'bullmq'
 import { EmitterLike } from '@adonisjs/core/types/events'
@@ -9,14 +9,14 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
   readonly #app: ApplicationService
   readonly #emitter: EmitterLike<JobEvents>
 
-  readonly #jobs: Map<string, typeof Job>
+  readonly #jobs: Map<string, JobConstructor>
   #runningWorkers: BullWorker[] = []
 
   constructor(
     app: ApplicationService,
     emitter: EmitterLike<JobEvents>,
     public config: Config<KnownQueues>,
-    jobs: (typeof Job)[]
+    jobs: JobConstructor[]
   ) {
     this.#app = app
     this.#emitter = emitter
@@ -45,7 +45,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
         const JobClass = this.#getJobClass(job.name)
 
         const jobInstance = await this.#app.container.make(JobClass)
-        jobInstance.$setJob(job, token, logger)
+        await jobInstance.$init(JobClass, job, token, logger)
         jobInstance.$setWorker(worker)
 
         jobInstance.logger.info('Starting job')
@@ -62,21 +62,21 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
         logger.error(error.message, 'Job failed')
         return
       }
-      void this.#emitter.emit('job:error', { job, error })
-
-      const JobClass = this.#getJobClass(job.name)
-      const jobInstance = await this.#app.container.make(JobClass)
-      jobInstance.$setJob(job, token, logger)
-      jobInstance.$setError(error)
-
       try {
+        void this.#emitter.emit('job:error', { job, error })
+
+        const JobClass = this.#getJobClass(job.name)
+        const jobInstance = await this.#app.container.make(JobClass)
+        await jobInstance.$init(JobClass, job, token, logger)
+        jobInstance.$setError(error)
+
         await this.#app.container.call(jobInstance, 'onFailed')
+
+        if (jobInstance.allAttemptsMade()) {
+          void this.#emitter.emit('job:failed', { job, error })
+        }
       } catch (e) {
         logger.error(e)
-      }
-
-      if (jobInstance.allAttemptsMade()) {
-        void this.#emitter.emit('job:failed', { job, error })
       }
     })
 
@@ -116,6 +116,6 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     return imports.filter((i) => {
       if (typeof i !== 'function') return false
       return i.prototype instanceof Job
-    }) as (typeof Job)[]
+    }) as JobConstructor[]
   }
 }

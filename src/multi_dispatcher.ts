@@ -18,15 +18,16 @@ export class MultiDispatcher {
     const manager = await app.container.make('job.queueManager')
     const flow = manager.useFlowProducer()
 
-    //TODO: type returned jobs
-    const jobs = await flow.addBulk(
+    const preparedJobs = await Promise.all(
       this.#jobs.map((job) => job.$toFlowJob(manager.config.defaultQueue))
     )
+    const jobs = await flow.addBulk(preparedJobs)
 
     void emitter.emit('job:dispatched:many', {
       jobs: jobs.map((j) => j.job),
     })
 
+    //TODO: type returned jobs
     return jobs
   }
 }

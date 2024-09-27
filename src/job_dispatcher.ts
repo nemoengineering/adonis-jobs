@@ -1,6 +1,7 @@
-import { JobConstructor, Queues } from './types.js'
-import { FlowChildJob, FlowJob, Job as BullJob } from 'bullmq'
+import { Queues } from './types.js'
+import { FlowChildJob, FlowJob, Job as BullJob, UnrecoverableError } from 'bullmq'
 import { JobConfig } from './job_config.js'
+import { JobConstructor } from './job.js'
 
 type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
 type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
@@ -31,11 +32,11 @@ export class Dispatcher<
   }
 
   // @internal
-  $toFlowJob(defaultQueue: keyof Queues, children?: FlowChildJob[]): FlowJob {
+  async $toFlowJob(defaultQueue: keyof Queues, children?: FlowChildJob[]): Promise<FlowJob> {
     return {
       name: this.#jobClass.name,
       queueName: (this.#queueName || defaultQueue) as string,
-      data: this.#data,
+      data: await this.#getJobData(),
       opts: this.jobOptions,
       children,
     }
@@ -47,18 +48,46 @@ export class Dispatcher<
     const emitter = await app.container.make('emitter')
     const queue = manager.useQueue<TJobData, TJobReturn>(this.#queueName)
 
-    const job = await queue.add(this.#jobClass.name, this.#data, this.jobOptions)
+    const data = await this.#getJobData()
+    const job = await queue.add(this.#jobClass.name, data, this.jobOptions)
     void emitter.emit('job:dispatched', { job })
+
     return job
   }
 
-  async waitResult() {
+  async #getJobData(): Promise<TJobData> {
+    if (this.#jobClass.encrypted) {
+      return (await this.#jobClass.encrypt(this.#data)) as TJobData
+    }
+
+    return this.#data
+  }
+
+  async waitResult(): Promise<TJobReturn> {
     const { default: app } = await import('@adonisjs/core/services/app')
     const job = await this.#dispatch()
     const manager = await app.container.make('job.queueManager')
     const queueEvents = manager.useQueueEvents(job.queueName as keyof Queues)
 
-    return job.waitUntilFinished(queueEvents)
+    const returnData = await job.waitUntilFinished(queueEvents)
+
+    if (this.#jobClass.encrypted) {
+      return await this.#jobClass.decrypt(returnData as string)
+    }
+
+    return returnData
+  }
+
+  // @internal
+  async $decrypt(data: string): Promise<TJobReturn> {
+    const { default: encryption } = await import('@adonisjs/core/services/encryption')
+
+    const decrypted = encryption.decrypt<TJobReturn>(data)
+    if (decrypted === null) {
+      throw new UnrecoverableError('Could not decrypt job payload')
+    }
+
+    return decrypted
   }
 
   then<TResult1 = BullJob<TJobData, TJobReturn>, TResult2 = never>(

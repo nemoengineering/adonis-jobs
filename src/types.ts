@@ -8,11 +8,6 @@ import {
 import { ConfigProvider } from '@adonisjs/core/types'
 import { QueueManager } from './queue_manager.js'
 
-export interface JobConstructor<J extends Job = Job> {
-  new (...args: any[]): J
-  defaultQueue?: keyof Queues
-}
-
 export type JobEvents = {
   'job:dispatched': EventWithJob
   'job:dispatched:many': EventWithManyJobs
@@ -46,8 +41,8 @@ export type WorkerOptions = Omit<
   'connection' | 'autorun' | 'name' | 'useWorkerThreads' | 'skipVersionCheck'
 >
 
-export type InferDataType<W extends Job> = W['job']['data']
-export type InferReturnType<W extends Job> = W['job']['returnvalue']
+export type InferDataType<J extends Job> = J['job']['data']
+export type InferReturnType<J extends Job> = J['job']['returnvalue']
 
 /**
  * Using declaration merging, one must extend this interface.
