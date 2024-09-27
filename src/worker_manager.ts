@@ -54,8 +54,23 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
         void this.#emitter.emit('job:started', { job })
         return await res
       },
-      { connection: this.config.connection, ...this.config.queues[queueName].defaultWorkerOptions }
+      {
+        autorun: false,
+        connection: this.config.connection,
+        ...this.config.queues[queueName].defaultWorkerOptions,
+      }
     )
+
+    const client = await worker.client
+    if (this.config.queues[queueName].globalConcurrency) {
+      await client.hset(
+        worker.keys.meta,
+        'concurrency',
+        this.config.queues[queueName].globalConcurrency
+      )
+    } else {
+      await client.hdel(worker.keys.meta, 'concurrency')
+    }
 
     worker.on('failed', async (job, error, token) => {
       if (!job) {
@@ -84,6 +99,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
       this.#emitter.emit('job:success', { job })
     })
 
+    void worker.run()
     return worker
   }
 
@@ -96,7 +112,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     return JobClass
   }
 
-  static async loadJobs(app: ApplicationService) {
+  static async loadJobs(app: ApplicationService): Promise<JobConstructor[]> {
     const jobPath = app.makePath(app.rcFile.directories['jobs'])
     const files = await fsReadAll(jobPath, {
       pathType: 'url',
@@ -113,9 +129,6 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     )
 
     // TODO: check for duplicate job names
-    return imports.filter((i) => {
-      if (typeof i !== 'function') return false
-      return i.prototype instanceof Job
-    }) as JobConstructor[]
+    return imports.filter((i) => typeof i === 'function').filter((i) => i.prototype instanceof Job)
   }
 }

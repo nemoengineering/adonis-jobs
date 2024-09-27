@@ -18,7 +18,8 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       return cachedQueue as Queue<DataType, ReturnType>
     }
 
-    const { globalConcurrency, ...queueOptions } = this.config.queues[queueName]
+    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } =
+      this.config.queues[queueName]
 
     const queue = new Queue<DataType, ReturnType>(String(queueName), {
       ...queueOptions,
@@ -58,9 +59,22 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   }
 
   async shutdown() {
+    await Promise.all([
+      this.#shutdownQueues(),
+      this.#shutdownQueueEvents(),
+      this.#flowProducer?.close(),
+    ])
+  }
+
+  async #shutdownQueues() {
     for (const queue of this.#queues.values()) {
       await queue?.close()
     }
-    await this.#flowProducer?.close()
+  }
+
+  async #shutdownQueueEvents() {
+    for (const queueEvents of this.#queuesEvents.values()) {
+      await queueEvents?.close()
+    }
   }
 }
