@@ -61,9 +61,10 @@ export default class QueueWork extends BaseCommand {
       table.render()
       return await this.terminate()
     }
+    this.queues ??= availableQueues
+
     this.#appLogger.info({ queues: this.queues }, `Staring workers`)
 
-    this.queues ??= availableQueues
     this.#server = await this.#startServer()
 
     await this.#manager.startWorkers(this.queues)
