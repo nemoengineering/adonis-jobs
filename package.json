@@ -1,7 +1,7 @@
 {
   "name": "@nemoengineering/adonis-jobs",
   "description": "Job queues for your AdonisJS applications",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "engines": {
     "node": ">=18.16.0"
   },
