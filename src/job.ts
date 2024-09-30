@@ -7,15 +7,30 @@ import encryption from '@adonisjs/core/services/encryption'
 export type JobConstructor<J extends Job = Job> = {
   new (): J
 
+  nameOverride?: string
   defaultQueue?: keyof Queues
   encrypted?: boolean
 
   encrypt(data: any): string
   decrypt(data: string): any
+
+  jobName: string
 }
 
 export abstract class Job<DataType = any, ReturnType = any> {
+  /**
+   * Define a custom job name. Defaults to the job class name.
+   */
+  static nameOverride?: string
+
+  /**
+   * Define a default queue for this job. Defaults to the default queue defined inn config/queue.ts
+   */
   static defaultQueue?: keyof Queues
+
+  /**
+   * Encrypt job data sent to workers
+   */
   static encrypted?: boolean
 
   data!: DataType
@@ -77,8 +92,13 @@ export abstract class Job<DataType = any, ReturnType = any> {
     return decrypted
   }
 
+  static get jobName() {
+    return this.nameOverride || this.name
+  }
+
   // @internal
   $init(
+    worker: Worker<DataType, ReturnType>,
     jobClass: JobConstructor,
     job: BullJob<DataType, ReturnType>,
     token: string | undefined,
@@ -88,6 +108,7 @@ export abstract class Job<DataType = any, ReturnType = any> {
       job.data = jobClass.decrypt(job.data as string)
     }
 
+    this.worker = worker
     this.job = job
     this.data = job.data
     this.token = token
@@ -97,10 +118,5 @@ export abstract class Job<DataType = any, ReturnType = any> {
   // @internal
   $setError(error: Error) {
     this.error = error
-  }
-
-  // @internal
-  $setWorker(worker: Worker<DataType, ReturnType>) {
-    this.worker = worker
   }
 }

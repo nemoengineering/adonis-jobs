@@ -27,41 +27,19 @@ export class JobDispatcher<
     this.#queueName = jobClass.defaultQueue
   }
 
+  /**
+   * Send job to specified queue. Default queue in config and in job class will be ignored.
+   * @param queueName
+   */
   onQueue(queueName: keyof Queues): this {
     this.#queueName = queueName
 
     return this
   }
 
-  // @internal
-  $toFlowJob(children?: FlowChildJob[]): FlowJob {
-    return {
-      name: this.#jobClass.name,
-      queueName: (this.#queueName || queueManager.config.defaultQueue) as string,
-      data: this.#getJobData(),
-      opts: this.jobOptions,
-      children,
-    }
-  }
-
-  async #dispatch() {
-    const manager = queueManager.useQueue<TJobData, TJobReturn>(this.#queueName)
-
-    const data = this.#getJobData()
-    const job = await manager.add(this.#jobClass.name, data, this.jobOptions)
-    void emitter.emit('job:dispatched', { job })
-
-    return job
-  }
-
-  #getJobData(): TJobData {
-    if (this.#jobClass.encrypted) {
-      return this.#jobClass.encrypt(this.#data) as TJobData
-    }
-
-    return this.#data
-  }
-
+  /**
+   * Dispatch queue and wait until job finished. Returns the jobs output.
+   */
   async waitResult(): Promise<TJobReturn> {
     const job = await this.#dispatch()
     const queueEvents = queueManager.useQueueEvents(job.queueName as keyof Queues)
@@ -73,6 +51,36 @@ export class JobDispatcher<
     }
 
     return returnData
+  }
+
+  async #dispatch() {
+    const manager = queueManager.useQueue<TJobData, TJobReturn>(this.#queueName)
+
+    const data = this.#getJobData()
+    const job = await manager.add(this.#jobClass.jobName, data, this.jobOptions)
+
+    void emitter.emit('job:dispatched', { job })
+
+    return job
+  }
+
+  // @internal
+  $toFlowJob(children?: FlowChildJob[]): FlowJob {
+    return {
+      name: this.#jobClass.jobName,
+      queueName: (this.#queueName || queueManager.config.defaultQueue) as string,
+      data: this.#getJobData(),
+      opts: this.jobOptions,
+      children,
+    }
+  }
+
+  #getJobData(): TJobData {
+    if (this.#jobClass.encrypted) {
+      return this.#jobClass.encrypt(this.#data) as TJobData
+    }
+
+    return this.#data
   }
 
   then<TResult1 = BullJob<TJobData, TJobReturn>, TResult2 = never>(

@@ -20,7 +20,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
   ) {
     this.#app = app
     this.#emitter = emitter
-    this.#jobs = new Map(jobs.map((j) => [j.name, j]))
+    this.#jobs = new Map(jobs.map((j) => [j.jobName, j]))
   }
 
   getAllQueueNames() {
@@ -45,8 +45,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
         const JobClass = this.#getJobClass(job.name)
 
         const jobInstance = await this.#app.container.make(JobClass)
-        await jobInstance.$init(JobClass, job, token, logger)
-        jobInstance.$setWorker(worker)
+        jobInstance.$init(worker, JobClass, job, token, logger)
 
         jobInstance.logger.info('Starting job')
 
@@ -82,7 +81,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
 
         const JobClass = this.#getJobClass(job.name)
         const jobInstance = await this.#app.container.make(JobClass)
-        await jobInstance.$init(JobClass, job, token, logger)
+        jobInstance.$init(worker, JobClass, job, token, logger)
         jobInstance.$setError(error)
 
         await this.#app.container.call(jobInstance, 'onFailed')

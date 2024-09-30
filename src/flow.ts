@@ -23,7 +23,8 @@ class FlowBuilder {
     return this
   }
 
-  build() {
+  // @internal
+  $build() {
     return this.#flow
   }
 }
@@ -31,7 +32,7 @@ class FlowBuilder {
 export class Flow extends FlowBuilder {
   async dispatch() {
     const flowProducer = queueManager.useFlowProducer()
-    const flow = await flowProducer.add(this.build())
+    const flow = await flowProducer.add(this.$build())
 
     void emitter.emit('job:dispatched:flow', { flow })
 
