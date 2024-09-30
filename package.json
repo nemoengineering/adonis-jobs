@@ -1,5 +1,5 @@
 {
-  "name": "@nemoengineering/jobs",
+  "name": "@nemoengineering/adonis-jobs",
   "description": "Job queues for your AdonisJS applications",
   "version": "0.2.0",
   "engines": {
@@ -10,14 +10,15 @@
   "files": [
     "build",
     "!build/bin",
-    "!build/tests"
+    "!build/tests",
+    "!build/factories"
   ],
   "exports": {
     ".": "./build/index.js",
     "./bull": "./build/src/bull.js",
     "./types": "./build/src/types.js",
     "./commands": "./build/commands/main.js",
-    "./job_provider": "./build/providers/job_provider.js",
+    "./queue_provider": "./build/providers/queue_provider.js",
     "./services/main": "./build/services/main.js"
   },
   "scripts": {
@@ -36,7 +37,7 @@
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
     "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoengineering/jobs"
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoengineering/adonis-jobs"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.7.0",
@@ -77,7 +78,7 @@
     "ts-morph": "^22.0.0"
   },
   "peerDependencies": {
-    "@adonisjs/core": "^6.2.0"
+    "@adonisjs/core": "^6.12.1"
   },
   "license": "MIT",
   "repository": "https://github.com/nemoengineering/adonis-jobs",
@@ -110,11 +111,12 @@
       "index.ts",
       "src/types.ts",
       "src/job.ts",
+      "src/multi_dispatcher.ts",
       "src/bull.ts",
       "services/main.ts",
-      "providers/job_provider.ts",
+      "providers/queue_provider.ts",
       "commands/make_job.ts",
-      "commands/queue_listen.ts"
+      "commands/queue_work.ts"
     ],
     "outDir": "./build",
     "clean": true,

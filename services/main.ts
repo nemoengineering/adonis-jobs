@@ -1,10 +1,10 @@
 import app from '@adonisjs/core/services/app'
-import { JobService } from '../src/types.js'
+import { QueueService } from '../src/types.js'
 
-let jobs: JobService
+let queueManager: QueueService
 
 await app.booted(async () => {
-  jobs = await app.container.make('job.manager')
+  queueManager = await app.container.make('job.queueManager')
 })
 
-export { jobs as default }
+export { queueManager as default }

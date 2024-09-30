@@ -2,94 +2,56 @@ import { Job } from './job.js'
 import {
   ConnectionOptions,
   Job as BullJob,
-  JobsOptions,
-  QueueEvents,
+  JobNode,
+  QueueOptions as BullQueueOptions,
   WorkerOptions as BullWorkerOptions,
-  JobType,
 } from 'bullmq'
-import { JobManager } from './job_manager.js'
-import { BulkJobOptions } from 'bullmq/dist/esm/interfaces/index.js'
-import { Queue as BullQueue } from 'bullmq/dist/esm/classes/queue.js'
+import { ConfigProvider } from '@adonisjs/core/types'
+import { QueueManager } from './queue_manager.js'
 
-export type LazyWorkerImport = () => Promise<{ default: JobConstructor }>
+export interface QueueService extends QueueManager {}
 
-export interface JobConstructor {
-  new (...args: any[]): Job
-  workerOptions?: WorkerOptions
+export type JobEvents = {
+  'job:dispatched': EventWithJob
+  'job:dispatched:many': EventWithManyJobs
+  'job:dispatched:chain': EventWithFlow
+  'job:dispatched:flow': EventWithFlow
+  'job:started': EventWithJob
+  'job:success': EventWithJob
+  'job:error': EventWithJob & { error: Error }
+  'job:failed': EventWithJob & { error: Error }
 }
 
-export type JobEvents<
-  KnownJobs extends Record<string, Job> = Jobs extends Record<string, Job> ? Jobs : never,
-> = {
-  'job:dispatched': EventWithJob<KnownJobs>
-  'job:dispatched:many': EventWithManyJobs<KnownJobs>
-  'job:started': EventWithJob<KnownJobs>
-  'job:success': EventWithJob<KnownJobs>
-  'job:error': EventWithJob<KnownJobs> & { error: Error }
-  'job:failed': EventWithJob<KnownJobs> & { error: Error }
+type EventWithJob = {
+  job: BullJob
 }
 
-type EventWithJob<KnownJobs extends Record<string, Job>> = {
-  [Queue in keyof KnownJobs]: {
-    queueName: Queue
-    job: BullJob<InferDataType<KnownJobs[Queue]>, InferReturnType<KnownJobs[Queue]>>
-  }
-}[keyof KnownJobs]
+type EventWithManyJobs = {
+  jobs: BullJob[]
+}
 
-type EventWithManyJobs<KnownJobs extends Record<string, Job>> = {
-  [Queue in keyof KnownJobs]: {
-    queueName: Queue
-    jobs: BullJob<InferDataType<KnownJobs[Queue]>, InferReturnType<KnownJobs[Queue]>>[]
-  }
-}[keyof KnownJobs]
+type EventWithFlow = {
+  flow: JobNode
+}
 
-export type Config = {
+export type Config<KnownQueues extends Record<string, QueueConfig>> = {
   connection: ConnectionOptions
+  defaultQueue: keyof KnownQueues
+  queues: KnownQueues
 }
 
-export type WorkerOptions = Omit<BullWorkerOptions, 'connection' | 'autorun'>
-
-export interface QueueContract<DataType, ReturnType> {
-  dispatch(
-    name: string,
-    data: DataType,
-    options?: JobsOptions
-  ): Promise<BullJob<DataType, ReturnType>>
-  dispatchAndWaitResult(name: string, data: DataType, options?: JobsOptions): Promise<ReturnType>
-  dispatchMany(
-    jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
-  ): Promise<BullJob<DataType, ReturnType>[]>
-  dispatchManyAndWaitResult(
-    jobs: { name: string; data: DataType; opts?: BulkJobOptions }[]
-  ): Promise<PromiseSettledResult<Awaited<ReturnType>>[]>
-
-  getQueue(): Omit<BullQueue<DataType, ReturnType>, 'add' | 'addBulk'>
-  getQueueEvents(): QueueEvents
-
-  findJobsByName(
-    name: string,
-    types?: JobType | JobType[]
-  ): Promise<BullJob<DataType, ReturnType>[]>
-
-  hasJobWithName(name: string, types?: JobType | JobType[]): Promise<boolean>
+export type QueueConfig = Omit<BullQueueOptions, 'connection' | 'skipVersionCheck'> & {
+  globalConcurrency?: number
+  defaultWorkerOptions?: WorkerOptions
 }
 
-export type InferDataType<W extends Job> = W['job']['data']
-export type InferReturnType<W extends Job> = W['job']['returnvalue']
+export type WorkerOptions = Omit<
+  BullWorkerOptions,
+  'connection' | 'autorun' | 'name' | 'useWorkerThreads' | 'skipVersionCheck'
+>
 
-export interface FlowJob<KnownJobs extends Record<string, Job>, Name extends keyof KnownJobs> {
-  name: string
-  queueName: Name
-  data: InferDataType<KnownJobs[Name]>
-  prefix?: string
-  opts?: Omit<JobsOptions, 'parent' | 'repeat'>
-  children?: FlowJobArg<KnownJobs>[]
-}
-
-export type FlowJobArg<
-  KnownJobs extends Record<string, Job>,
-  Name extends keyof KnownJobs = keyof KnownJobs,
-> = Name extends keyof KnownJobs ? FlowJob<KnownJobs, Name> : never
+export type InferDataType<J extends Job> = J['job']['data']
+export type InferReturnType<J extends Job> = J['job']['returnvalue']
 
 /**
  * Using declaration merging, one must extend this interface.
@@ -98,6 +60,7 @@ export type FlowJobArg<
  * --------------------------------------------------------
  */
 
-export interface Jobs {}
+export interface Queues {}
 
-export interface JobService extends JobManager<Jobs extends Record<string, Job> ? Jobs : never> {}
+export type InferQueues<Conf extends ConfigProvider<{ defaultQueue: unknown; queues: unknown }>> =
+  Awaited<ReturnType<Conf['resolver']>>['queues']

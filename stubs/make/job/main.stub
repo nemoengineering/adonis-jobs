@@ -3,16 +3,13 @@
     to: app.makePath(app.rcFile.directories['jobs'], jobFilePath, jobFileName)
   })
 }}}
-import { Job } from '@nemoengineering/jobs'
-import { WorkerOptions } from '@nemoengineering/jobs/types'
+import { Job } from '@nemoengineering/adonis-jobs'
 
 export type {{ jobName }}Data = { }
 
 export type {{ jobName }}Return = { }
 
 export default class {{ jobName }} extends Job<{{ jobName }}Data, {{ jobName }}Return> {
-  static workerOptions: WorkerOptions = {}
-
   async process(): Promise<{{ jobName }}Return> {
     throw new Error('Job processor not implemented.')
   }

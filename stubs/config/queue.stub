@@ -1,7 +1,7 @@
 {{{
   exports({ to: app.configPath('queue.ts') })
 }}}
-import { defineConfig } from '@nemoengineering/jobs'
+import { defineConfig } from '@nemoengineering/adonis-jobs'
 import Env from "#start/env";
 
 const queueConfig = defineConfig({
@@ -10,6 +10,14 @@ const queueConfig = defineConfig({
     port: Env.get('REDIS_PORT'),
     password: Env.get('REDIS_PASSWORD'),
   },
+  defaultQueue: 'default',
+  queues: {
+    default: {},
+  },
 })
 
 export default queueConfig
+
+declare module '@nemoengineering/adonis-jobs/types' {
+  interface Queues extends InferQueues<typeof queueConfig> {}
+}
