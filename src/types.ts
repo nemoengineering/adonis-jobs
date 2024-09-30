@@ -9,6 +9,8 @@ import {
 import { ConfigProvider } from '@adonisjs/core/types'
 import { QueueManager } from './queue_manager.js'
 
+export interface QueueService extends QueueManager {}
+
 export type JobEvents = {
   'job:dispatched': EventWithJob
   'job:dispatched:many': EventWithManyJobs
@@ -62,5 +64,3 @@ export interface Queues {}
 
 export type InferQueues<Conf extends ConfigProvider<{ defaultQueue: unknown; queues: unknown }>> =
   Awaited<ReturnType<Conf['resolver']>>['queues']
-
-export interface QueueService extends QueueManager {}
