@@ -5,12 +5,15 @@ import { JobDispatcher } from './job_dispatcher.js'
 import encryption from '@adonisjs/core/services/encryption'
 
 export type JobConstructor<J extends Job = Job> = {
-  new (): J
+  new (...args: any[]): J
 
   nameOverride?: string
   defaultQueue?: keyof Queues
   encrypted?: boolean
 
+  dispatch(
+    data: J['data']
+  ): JobDispatcher<JobConstructor<J>, J['job']['data'], J['job']['returnvalue']>
   isInstanceOf(job: BullJob): job is BullJob<J['job']['data'], J['job']['returnvalue']>
 
   encrypt(data: any): string
@@ -77,17 +80,14 @@ export abstract class Job<DataType = any, ReturnType = any> {
     throw new UnrecoverableError(message)
   }
 
-  static isInstanceOf<T extends Job>(
-    this: JobConstructor<T>,
-    job: BullJob
-  ): job is BullJob<
-    InstanceType<typeof this>['job']['data'],
-    InstanceType<typeof this>['job']['returnvalue']
-  > {
+  static isInstanceOf<J extends Job>(
+    this: JobConstructor<J>,
+    job: BullJob<any, any>
+  ): job is BullJob<J['data'], J['job']['returnvalue']> {
     return job.name === this.jobName
   }
 
-  static dispatch<T extends Job>(this: JobConstructor<T>, data: InstanceType<typeof this>['data']) {
+  static dispatch<J extends Job>(this: JobConstructor<J>, data: J['data']) {
     return new JobDispatcher(this, data)
   }
 

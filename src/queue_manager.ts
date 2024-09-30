@@ -8,7 +8,9 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
 
   constructor(public config: Config<KnownQueues>) {}
 
-  useQueue<DataType, ReturnType>(queueName?: keyof KnownQueues): Queue<DataType, ReturnType> {
+  useQueue<DataType = any, ReturnType = any>(
+    queueName?: keyof KnownQueues
+  ): Queue<DataType, ReturnType> {
     if (!queueName) {
       return this.useQueue<DataType, ReturnType>(this.config.defaultQueue)
     }

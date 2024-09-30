@@ -44,13 +44,7 @@ export class JobDispatcher<
     const job = await this.#dispatch()
     const queueEvents = queueManager.useQueueEvents(job.queueName as keyof Queues)
 
-    const returnData = await job.waitUntilFinished(queueEvents)
-
-    if (this.#jobClass.encrypted) {
-      return this.#jobClass.decrypt(returnData as string)
-    }
-
-    return returnData
+    return await job.waitUntilFinished(queueEvents)
   }
 
   async #dispatch() {

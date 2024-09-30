@@ -23,7 +23,6 @@ export class Bulk {
       jobs: jobs.map((j) => j.job),
     })
 
-    //TODO: type returned jobs
-    return jobs
+    return jobs.map((j) => j.job)
   }
 }
