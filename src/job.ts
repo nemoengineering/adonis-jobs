@@ -11,6 +11,14 @@ export type JobConstructor<J extends Job = Job> = {
   defaultQueue?: keyof Queues
   encrypted?: boolean
 
+  isInstanceOf(
+    this: JobConstructor<J>,
+    job: BullJob
+  ): job is BullJob<
+    InstanceType<typeof this>['job']['data'],
+    InstanceType<typeof this>['job']['returnvalue']
+  >
+
   encrypt(data: any): string
   decrypt(data: string): any
 
@@ -73,6 +81,16 @@ export abstract class Job<DataType = any, ReturnType = any> {
    */
   fail(message?: string): never {
     throw new UnrecoverableError(message)
+  }
+
+  static isInstanceOf<T extends Job>(
+    this: JobConstructor<T>,
+    job: BullJob
+  ): job is BullJob<
+    InstanceType<typeof this>['job']['data'],
+    InstanceType<typeof this>['job']['returnvalue']
+  > {
+    return job.name === this.jobName
   }
 
   static dispatch<T extends Job>(this: JobConstructor<T>, data: InstanceType<typeof this>['data']) {
