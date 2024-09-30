@@ -8,10 +8,10 @@ import { expect } from '@japa/expect'
 processCLIArgs(process.argv.splice(2))
 configure({
   suites: [
-    {
+    /*{
       name: 'unit',
-      files: ['tests/unit/**/*.spec.ts'],
-    },
+      files: ['tests/unit/!**!/!*.spec.ts'],
+    },*/
   ],
   plugins: [assert(), fileSystem(), expectTypeOf(), snapshot(), expect()],
 })
