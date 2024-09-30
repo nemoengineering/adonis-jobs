@@ -11,6 +11,8 @@ import { QueueManager } from './queue_manager.js'
 
 export interface QueueService extends QueueManager {}
 
+export type { JobConstructor } from './job.js'
+
 export type JobEvents = {
   'job:dispatched': EventWithJob
   'job:dispatched:many': EventWithManyJobs

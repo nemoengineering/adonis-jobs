@@ -11,13 +11,7 @@ export type JobConstructor<J extends Job = Job> = {
   defaultQueue?: keyof Queues
   encrypted?: boolean
 
-  isInstanceOf(
-    this: JobConstructor<J>,
-    job: BullJob
-  ): job is BullJob<
-    InstanceType<typeof this>['job']['data'],
-    InstanceType<typeof this>['job']['returnvalue']
-  >
+  isInstanceOf(job: BullJob): job is BullJob<J['job']['data'], J['job']['returnvalue']>
 
   encrypt(data: any): string
   decrypt(data: string): any
