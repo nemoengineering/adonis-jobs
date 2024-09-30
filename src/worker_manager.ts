@@ -1,6 +1,6 @@
 import { ApplicationService } from '@adonisjs/core/types'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
-import { Job, JobConstructor } from './job.js'
+import type { JobConstructor } from './job.js'
 import { Config, JobEvents, QueueConfig, Queues } from './types.js'
 import { Worker as BullWorker } from 'bullmq'
 import { EmitterLike } from '@adonisjs/core/types/events'
@@ -113,6 +113,8 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
   }
 
   static async loadJobs(app: ApplicationService): Promise<JobConstructor[]> {
+    const { Job } = await import('./job.js')
+
     const jobPath = app.makePath(app.rcFile.directories['jobs'])
     const files = await fsReadAll(jobPath, {
       pathType: 'url',

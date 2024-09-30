@@ -2,6 +2,7 @@ import { Job } from './job.js'
 import {
   ConnectionOptions,
   Job as BullJob,
+  JobNode,
   QueueOptions as BullQueueOptions,
   WorkerOptions as BullWorkerOptions,
 } from 'bullmq'
@@ -11,6 +12,8 @@ import { QueueManager } from './queue_manager.js'
 export type JobEvents = {
   'job:dispatched': EventWithJob
   'job:dispatched:many': EventWithManyJobs
+  'job:dispatched:chain': EventWithFlow
+  'job:dispatched:flow': EventWithFlow
   'job:started': EventWithJob
   'job:success': EventWithJob
   'job:error': EventWithJob & { error: Error }
@@ -23,6 +26,10 @@ type EventWithJob = {
 
 type EventWithManyJobs = {
   jobs: BullJob[]
+}
+
+type EventWithFlow = {
+  flow: JobNode
 }
 
 export type Config<KnownQueues extends Record<string, QueueConfig>> = {

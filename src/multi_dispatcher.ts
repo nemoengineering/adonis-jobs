@@ -1,27 +1,23 @@
-import { Dispatcher } from './job_dispatcher.js'
-import app from '@adonisjs/core/services/app'
+import { JobDispatcher } from './job_dispatcher.js'
 import emitter from '@adonisjs/core/services/emitter'
+import queueManager from '../services/main.js'
 
 export class MultiDispatcher {
-  #jobs: Dispatcher[]
+  #jobs: JobDispatcher[]
 
-  constructor(jobs?: Dispatcher[]) {
+  constructor(jobs?: JobDispatcher[]) {
     this.#jobs = jobs || []
   }
 
-  add(job: Dispatcher) {
+  add(job: JobDispatcher) {
     this.#jobs.push(job)
     return this
   }
 
   async dispatch() {
-    const manager = await app.container.make('job.queueManager')
-    const flow = manager.useFlowProducer()
+    const flow = queueManager.useFlowProducer()
 
-    const preparedJobs = await Promise.all(
-      this.#jobs.map((job) => job.$toFlowJob(manager.config.defaultQueue))
-    )
-    const jobs = await flow.addBulk(preparedJobs)
+    const jobs = await flow.addBulk(this.#jobs.map((job) => job.$toFlowJob()))
 
     void emitter.emit('job:dispatched:many', {
       jobs: jobs.map((j) => j.job),

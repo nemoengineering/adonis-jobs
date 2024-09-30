@@ -1,15 +1,16 @@
-import { Dispatcher } from './job_dispatcher.js'
-import app from '@adonisjs/core/services/app'
+import { JobDispatcher } from './job_dispatcher.js'
 import { FlowJob } from 'bullmq'
+import queueManager from '../services/main.js'
+import emitter from '@adonisjs/core/services/emitter'
 
 export class Chain {
-  #jobs: Dispatcher[]
+  #jobs: JobDispatcher[]
 
-  constructor(jobs?: Dispatcher[]) {
+  constructor(jobs?: JobDispatcher[]) {
     this.#jobs = jobs || []
   }
 
-  add(job: Dispatcher) {
+  add(job: JobDispatcher) {
     this.#jobs.push(job)
     return this
   }
@@ -17,23 +18,18 @@ export class Chain {
   async dispatch() {
     if (this.#jobs.length === 0) return
 
-    const manager = await app.container.make('job.queueManager')
-    const flow = manager.useFlowProducer()
-
-    const flowChain = await this.#jobs.reduce(
-      async (acc, job) =>
-        job.$toFlowJob(manager.config.defaultQueue, acc ? [await acc] : undefined),
-      undefined as unknown as Promise<FlowJob>
+    const flowChain = this.#jobs.reduce(
+      (acc, job) => job.$toFlowJob(acc ? [acc] : undefined),
+      undefined as unknown as FlowJob
     )
 
-    console.log(JSON.stringify(flowChain, null, 2))
+    const flowProducer = queueManager.useFlowProducer()
+    const flow = await flowProducer.add(flowChain)
 
-    const job = await flow.add(flowChain)
+    void emitter.emit('job:dispatched:chain', {
+      flow,
+    })
 
-    /* void emitter.emit('job:dispatched:many', {
-      jobs: jobs.map((j) => j.job),
-    })*/
-
-    return job
+    return flow
   }
 }

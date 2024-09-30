@@ -1,7 +1,8 @@
 import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bullmq'
 import { Queues } from './types.js'
 import { Logger } from '@adonisjs/core/logger'
-import { Dispatcher } from './job_dispatcher.js'
+import { JobDispatcher } from './job_dispatcher.js'
+import encryption from '@adonisjs/core/services/encryption'
 
 export type JobConstructor<J extends Job = Job> = {
   new (): J
@@ -9,8 +10,8 @@ export type JobConstructor<J extends Job = Job> = {
   defaultQueue?: keyof Queues
   encrypted?: boolean
 
-  encrypt(data: any): Promise<string>
-  decrypt(data: string): Promise<any>
+  encrypt(data: any): string
+  decrypt(data: string): any
 }
 
 export abstract class Job<DataType = any, ReturnType = any> {
@@ -60,18 +61,14 @@ export abstract class Job<DataType = any, ReturnType = any> {
   }
 
   static dispatch<T extends Job>(this: JobConstructor<T>, data: InstanceType<typeof this>['data']) {
-    return new Dispatcher(this, data)
+    return new JobDispatcher(this, data)
   }
 
-  static async encrypt<J extends Job>(this: new () => J, data: any): Promise<string> {
-    const { default: encryption } = await import('@adonisjs/core/services/encryption')
-
+  static encrypt<J extends Job>(this: new () => J, data: any): string {
     return encryption.encrypt(data)
   }
 
-  static async decrypt<J extends Job>(this: JobConstructor<J>, data: string): Promise<any> {
-    const { default: encryption } = await import('@adonisjs/core/services/encryption')
-
+  static decrypt<J extends Job>(this: JobConstructor<J>, data: string): any {
     const decrypted = encryption.decrypt<any>(data)
     if (decrypted === null) {
       throw new UnrecoverableError('Could not decrypt job payload')
@@ -81,14 +78,14 @@ export abstract class Job<DataType = any, ReturnType = any> {
   }
 
   // @internal
-  async $init(
+  $init(
     jobClass: JobConstructor,
     job: BullJob<DataType, ReturnType>,
     token: string | undefined,
     logger: Logger
   ) {
     if (jobClass.encrypted) {
-      job.data = await jobClass.decrypt(job.data as string)
+      job.data = jobClass.decrypt(job.data as string)
     }
 
     this.job = job
