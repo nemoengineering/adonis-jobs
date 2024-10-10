@@ -2,6 +2,7 @@ import { FlowJob } from 'bullmq'
 import { JobDispatcher } from './job_dispatcher.js'
 import queueManager from '../services/main.js'
 import emitter from '@adonisjs/core/services/emitter'
+import { Queues } from './types.js'
 
 class FlowBuilder {
   readonly #flow: FlowJob
@@ -37,5 +38,12 @@ export class JobFlow extends FlowBuilder {
     void emitter.emit('job:dispatched:flow', { flow })
 
     return flow
+  }
+
+  async dispatchAndWaitResult() {
+    const flow = await this.dispatch()
+
+    const queueEvents = queueManager.useQueueEvents(flow.job.queueName as keyof Queues)
+    return await flow.job.waitUntilFinished(queueEvents)
   }
 }
