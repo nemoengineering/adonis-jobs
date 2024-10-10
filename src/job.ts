@@ -87,8 +87,7 @@ export abstract class Job<DataType = any, ReturnType = any> {
     return job.name === this.jobName
   }
 
-  static dispatch(data: any) {
-    // @ts-ignore
+  static dispatch<J extends Job>(this: JobConstructor<J>, data: J['data']) {
     return new JobDispatcher(this, data)
   }
 

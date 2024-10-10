@@ -4,6 +4,7 @@ import type { JobConstructor } from './job.js'
 import { Config, JobEvents, QueueConfig, Queues } from './types.js'
 import { Worker as BullWorker } from 'bullmq'
 import { EmitterLike } from '@adonisjs/core/types/events'
+import { rootDir } from '../root_dir.js'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService
@@ -56,6 +57,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
       {
         autorun: false,
         connection: this.config.connection,
+        concurrency: this.config.queues[queueName]?.globalConcurrency,
         ...this.config.queues[queueName].defaultWorkerOptions,
       }
     )
@@ -115,14 +117,20 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     const { Job } = await import('./job.js')
 
     const jobPath = app.makePath(app.rcFile.directories['jobs'])
-    const files = await fsReadAll(jobPath, {
+    const appJobs = await fsReadAll(jobPath, {
+      pathType: 'url',
+      ignoreMissingRoot: true,
+      filter: isScriptFile,
+    })
+
+    const builtinJobs = await fsReadAll(new URL('./src/builtin', rootDir), {
       pathType: 'url',
       ignoreMissingRoot: true,
       filter: isScriptFile,
     })
 
     const imports = await Promise.all(
-      files.map(async (file) => {
+      appJobs.concat(builtinJobs).map(async (file) => {
         const i = await import(file)
         if (!i.default) return
         return i.default
