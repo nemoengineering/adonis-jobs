@@ -1,9 +1,9 @@
 import { test } from '@japa/runner'
 import { IgnitorFactory } from '@adonisjs/core/factories'
 import FakeJob from '../../factories/jobs/job.js'
-import { Chain } from '../../src/chain.js'
+import { JobChain } from '../../src/job_chain.js'
 import FakeSubDirJob from '../../factories/jobs/subdir/job.js'
-import { Bulk } from '../../src/bulk.js'
+import { BulkDispatcher } from '../../src/bulk_dispatcher.js'
 
 const BASE_URL = new URL('./../../', import.meta.url)
 
@@ -25,13 +25,13 @@ test.group('WorkerManager', () => {
     await app.init()
     await app.boot()
 
-    await new Chain([
+    await new JobChain([
       FakeJob.dispatch({ input: '1' }),
       FakeSubDirJob.dispatch({ input: '2' }),
       FakeJob.dispatch({ input: '3' }),
     ]).dispatch()
 
-    new Bulk([FakeJob.dispatch({ input: '3' })])
+    new BulkDispatcher([FakeJob.dispatch({ input: '3' })])
 
     const d = await FakeJob.dispatch({ input: '3' })
     const dd = await FakeJob.decrypt("{ input: '' }")

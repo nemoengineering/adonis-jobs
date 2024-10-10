@@ -2,7 +2,7 @@ import { JobDispatcher } from './job_dispatcher.js'
 import emitter from '@adonisjs/core/services/emitter'
 import queueManager from '../services/main.js'
 
-export class Bulk {
+export class BulkDispatcher {
   #jobs: JobDispatcher[]
 
   constructor(jobs?: JobDispatcher[]) {

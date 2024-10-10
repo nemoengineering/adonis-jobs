@@ -29,7 +29,7 @@ class FlowBuilder {
   }
 }
 
-export class Flow extends FlowBuilder {
+export class JobFlow extends FlowBuilder {
   async dispatch() {
     const flowProducer = queueManager.useFlowProducer()
     const flow = await flowProducer.add(this.$build())

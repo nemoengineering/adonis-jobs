@@ -3,7 +3,7 @@ import { FlowJob } from 'bullmq'
 import queueManager from '../services/main.js'
 import emitter from '@adonisjs/core/services/emitter'
 
-export class Chain {
+export class JobChain {
   #jobs: JobDispatcher[]
 
   constructor(jobs?: JobDispatcher[]) {
