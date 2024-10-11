@@ -57,7 +57,9 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
       {
         autorun: false,
         connection: this.config.connection,
-        concurrency: this.config.queues[queueName]?.globalConcurrency,
+        ...(this.config.queues[queueName]?.globalConcurrency && {
+          concurrency: this.config.queues[queueName].globalConcurrency,
+        }),
         ...this.config.queues[queueName].defaultWorkerOptions,
       }
     )
