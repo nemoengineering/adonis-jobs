@@ -12,6 +12,10 @@ configure({
       name: 'unit',
       files: ['tests/unit/!**!/!*.spec.ts'],
     },*/
+    {
+      name: 'unit',
+      files: ['tests/unit/**/closure.spec.ts'],
+    },
   ],
   plugins: [assert(), fileSystem(), expectTypeOf(), snapshot(), expect()],
 })
