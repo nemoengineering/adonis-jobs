@@ -3,6 +3,7 @@ import { FlowJob } from 'bullmq'
 import queueManager from '../services/main.js'
 import emitter from '@adonisjs/core/services/emitter'
 import { Queues } from './types.js'
+import debuglog from './debug.js'
 
 export class JobChain {
   #jobs: JobDispatcher[]
@@ -28,6 +29,8 @@ export class JobChain {
       (acc, job) => job.$toFlowJob(acc ? [acc] : undefined),
       undefined as unknown as FlowJob
     )
+
+    debuglog(JSON.stringify(flowChain, null, 2))
 
     const flowProducer = queueManager.useFlowProducer()
     const flow = await flowProducer.add(flowChain)

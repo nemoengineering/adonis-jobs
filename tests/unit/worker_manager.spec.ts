@@ -26,9 +26,12 @@ test.group('WorkerManager', () => {
     await app.boot()
 
     await new JobChain([
-      FakeJob.dispatch({ input: '1' }),
-      FakeSubDirJob.dispatch({ input: '2' }),
-      FakeJob.dispatch({ input: '3' }),
+      FakeJob.dispatch({ input: 'refine' }).addChildren([
+        FakeSubDirJob.dispatch({ input: 'account' }),
+        FakeSubDirJob.dispatch({ input: 'account' }),
+      ]),
+      FakeSubDirJob.dispatch({ input: 'transmit' }),
+      FakeJob.dispatch({ input: 'bulk' }),
     ]).dispatch()
 
     new BulkDispatcher([FakeJob.dispatch({ input: '3' })])

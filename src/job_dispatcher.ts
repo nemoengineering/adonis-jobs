@@ -4,6 +4,7 @@ import { JobConfig } from './job_config.js'
 import { JobConstructor } from './job.js'
 import queueManager from '../services/main.js'
 import emitter from '@adonisjs/core/services/emitter'
+import { JobFlow } from './job_flow.js'
 
 type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
 type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
@@ -19,6 +20,7 @@ export class JobDispatcher<
   readonly #jobClass: TJobClass
   readonly #data: TJobData
   #queueName?: keyof Queues
+  #children?: JobDispatcher[]
 
   constructor(jobClass: TJobClass, data: TJobData) {
     super()
@@ -37,6 +39,17 @@ export class JobDispatcher<
     return this
   }
 
+  addChildren(jobs: JobDispatcher[]) {
+    if (jobs.length === 0) return this
+
+    if (!this.#children) {
+      this.#children = []
+    }
+    this.#children.push(...jobs)
+
+    return this
+  }
+
   /**
    * Dispatch queue and wait until job finished. Returns the jobs output.
    */
@@ -47,7 +60,13 @@ export class JobDispatcher<
     return await job.waitUntilFinished(queueEvents)
   }
 
-  async #dispatch() {
+  async #dispatch(): Promise<BullJob<TJobData, TJobReturn>> {
+    if (this.#children) {
+      const flow = new JobFlow(this)
+      const { job } = await flow.dispatch()
+      return job
+    }
+
     const manager = queueManager.useQueue<TJobData, TJobReturn>(this.#queueName)
 
     const data = this.#getJobData()
@@ -60,12 +79,14 @@ export class JobDispatcher<
 
   // @internal
   $toFlowJob(children?: FlowChildJob[]): FlowJob {
+    const jobChildren = this.#children?.map((j) => j.$toFlowJob())
+
     return {
       name: this.#jobClass.jobName,
       queueName: (this.#queueName || queueManager.config.defaultQueue) as string,
       data: this.#getJobData(),
       opts: this.jobOptions,
-      children,
+      children: jobChildren || children ? [...(jobChildren || []), ...(children || [])] : undefined,
     }
   }
 

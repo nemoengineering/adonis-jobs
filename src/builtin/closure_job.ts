@@ -31,13 +31,16 @@ export default class ClosureJob extends Job<ClosureJobData, void> {
   }
 
   static override dispatch<J extends Job<any, any>, C extends ClosureConstructor>(
-    this: JobConstructor<J>,
+    this: Omit<JobConstructor<J>, 'dispatch'>,
     closure: C,
     ...args: Parameters<InstanceType<C>['run']>
   ) {
     const serializedClosure = serializeClosure(closure, ...args)
     const signedClosure = encryption.verifier.sign(serializedClosure, undefined)
 
-    return new JobDispatcher(this, { closure: serializedClosure, signedClosure })
+    return new JobDispatcher(this as JobConstructor<J>, {
+      closure: serializedClosure,
+      signedClosure,
+    })
   }
 }

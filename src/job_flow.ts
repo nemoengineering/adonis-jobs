@@ -3,6 +3,7 @@ import { JobDispatcher } from './job_dispatcher.js'
 import queueManager from '../services/main.js'
 import emitter from '@adonisjs/core/services/emitter'
 import { Queues } from './types.js'
+import debuglog from './debug.js'
 
 class FlowBuilder {
   readonly #flow: FlowJob
@@ -33,7 +34,10 @@ class FlowBuilder {
 export class JobFlow extends FlowBuilder {
   async dispatch() {
     const flowProducer = queueManager.useFlowProducer()
-    const flow = await flowProducer.add(this.$build())
+    const preparedFlow = this.$build()
+    debuglog(JSON.stringify(preparedFlow, null, 2))
+
+    const flow = await flowProducer.add(preparedFlow)
 
     void emitter.emit('job:dispatched:flow', { flow })
 

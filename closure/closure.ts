@@ -10,7 +10,7 @@ export type ClosureConstructor = {
 export abstract class Closure<A extends SerializableValue[] = any> {
   declare app: ApplicationService
   declare logger: Logger
-  declare job: BullJob
+  declare job: BullJob<never, never>
 
   #appUrl!: string
   #args!: A
@@ -27,7 +27,7 @@ export abstract class Closure<A extends SerializableValue[] = any> {
   $init(app: ApplicationService, logger: Logger, job: BullJob) {
     this.app = app
     this.logger = logger
-    this.job = job
+    this.job = job as BullJob<never, never>
 
     this.#appUrl = app.makeURL().href
     this.#initialized = true
