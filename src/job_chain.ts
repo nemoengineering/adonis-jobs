@@ -16,6 +16,11 @@ export class JobChain {
     return this
   }
 
+  addMany(jobs: JobDispatcher[]) {
+    this.#jobs.push(...jobs)
+    return this
+  }
+
   async dispatch() {
     if (this.#jobs.length === 0) return
 
