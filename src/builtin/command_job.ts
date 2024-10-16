@@ -1,5 +1,5 @@
 import { BaseCommand, FsLoader, Kernel } from '@adonisjs/core/ace'
-import { Job, JobConstructor } from '../job.js'
+import { BaseJob, BaseJobConstructor } from '../base_job.js'
 import { JobDispatcher } from '../job_dispatcher.js'
 import app from '@adonisjs/core/services/app'
 
@@ -10,7 +10,7 @@ export type ScheduledCommandData = {
 
 export type ScheduledCommandReturn = void
 
-export default class CommandJob extends Job<ScheduledCommandData, ScheduledCommandReturn> {
+export default class CommandJob extends BaseJob<ScheduledCommandData, ScheduledCommandReturn> {
   async process(): Promise<ScheduledCommandReturn> {
     this.logger.info(`Running command: '${this.job.data.commandName}'`)
 
@@ -44,8 +44,8 @@ export default class CommandJob extends Job<ScheduledCommandData, ScheduledComma
     return ace
   }
 
-  static override dispatch<J extends Job<any, any>>(
-    this: JobConstructor<J>,
+  static dispatch<J extends CommandJob>(
+    this: BaseJobConstructor<J>,
     command: typeof BaseCommand,
     args?: string[]
   ) {

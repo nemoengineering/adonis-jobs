@@ -1,4 +1,4 @@
-import { Job } from './job.js'
+import { BaseJob } from './base_job.js'
 import {
   ConnectionOptions,
   Job as BullJob,
@@ -52,8 +52,8 @@ export type WorkerOptions = Omit<
   'connection' | 'autorun' | 'name' | 'useWorkerThreads' | 'skipVersionCheck'
 >
 
-export type InferDataType<J extends Job<any, any>> = J['job']['data']
-export type InferReturnType<J extends Job<any, any>> = J['job']['returnvalue']
+export type InferDataType<J extends BaseJob<any, any>> = J['job']['data']
+export type InferReturnType<J extends BaseJob<any, any>> = J['job']['returnvalue']
 
 /**
  * Using declaration merging, one must extend this interface.

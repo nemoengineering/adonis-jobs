@@ -1,4 +1,4 @@
-import { Job, JobConstructor } from '../job.js'
+import { BaseJob, BaseJobConstructor } from '../base_job.js'
 import { deserializeClosure, SerializedClosure, serializeClosure } from '../helper.js'
 import { JobDispatcher } from '../job_dispatcher.js'
 import { ClosureConstructor } from '../../closure/closure.js'
@@ -11,8 +11,7 @@ export type ClosureJobData = {
   signedClosure: string
 }
 
-// @ts-expect-error override
-export default class ClosureJob extends Job<ClosureJobData, void> {
+export default class ClosureJob extends BaseJob<ClosureJobData, void> {
   async process(): Promise<void> {
     const serializedClosure = encryption.verifier.unsign<SerializedClosure>(this.data.signedClosure)
     if (!serializedClosure) {
@@ -30,15 +29,15 @@ export default class ClosureJob extends Job<ClosureJobData, void> {
     }
   }
 
-  static override dispatch<J extends Job<any, any>, C extends ClosureConstructor>(
-    this: Omit<JobConstructor<J>, 'dispatch'>,
+  static dispatch<J extends ClosureJob, C extends ClosureConstructor>(
+    this: BaseJobConstructor<J>,
     closure: C,
     ...args: Parameters<InstanceType<C>['run']>
   ) {
     const serializedClosure = serializeClosure(closure, ...args)
     const signedClosure = encryption.verifier.sign(serializedClosure, undefined)
 
-    return new JobDispatcher(this as JobConstructor<J>, {
+    return new JobDispatcher(this, {
       closure: serializedClosure,
       signedClosure,
     })

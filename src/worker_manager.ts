@@ -1,6 +1,6 @@
 import { ApplicationService } from '@adonisjs/core/types'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
-import type { JobConstructor } from './job.js'
+import type { BaseJobConstructor } from './base_job.js'
 import { Config, JobEvents, QueueConfig, Queues } from './types.js'
 import { Worker as BullWorker } from 'bullmq'
 import { EmitterLike } from '@adonisjs/core/types/events'
@@ -10,14 +10,14 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
   readonly #app: ApplicationService
   readonly #emitter: EmitterLike<JobEvents>
 
-  readonly #jobs: Map<string, JobConstructor>
+  readonly #jobs: Map<string, BaseJobConstructor>
   #runningWorkers: BullWorker[] = []
 
   constructor(
     app: ApplicationService,
     emitter: EmitterLike<JobEvents>,
     public config: Config<KnownQueues>,
-    jobs: JobConstructor[]
+    jobs: BaseJobConstructor[]
   ) {
     this.#app = app
     this.#emitter = emitter
@@ -115,8 +115,8 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     return JobClass
   }
 
-  static async loadJobs(app: ApplicationService): Promise<JobConstructor[]> {
-    const { Job } = await import('./job.js')
+  static async loadJobs(app: ApplicationService): Promise<BaseJobConstructor[]> {
+    const { BaseJob } = await import('./base_job.js')
 
     const jobPath = app.makePath(app.rcFile.directories['jobs'])
     const appJobs = await fsReadAll(jobPath, {
@@ -140,6 +140,8 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     )
 
     // TODO: check for duplicate job names
-    return imports.filter((i) => typeof i === 'function').filter((i) => i.prototype instanceof Job)
+    return imports
+      .filter((i) => typeof i === 'function')
+      .filter((i) => i.prototype instanceof BaseJob)
   }
 }

@@ -1,16 +1,16 @@
 import { Queues } from './types.js'
 import { FlowChildJob, FlowJob, Job as BullJob } from 'bullmq'
 import { JobConfig } from './job_config.js'
-import { JobConstructor } from './job.js'
+import { BaseJobConstructor } from './base_job.js'
 import queueManager from '../services/main.js'
 import emitter from '@adonisjs/core/services/emitter'
 import { JobFlow } from './job_flow.js'
 
-type JobData<J extends JobConstructor> = InstanceType<J>['job']['data']
-type JobReturn<J extends JobConstructor> = InstanceType<J>['job']['returnvalue']
+type JobData<J extends BaseJobConstructor> = InstanceType<J>['job']['data']
+type JobReturn<J extends BaseJobConstructor> = InstanceType<J>['job']['returnvalue']
 
 export class JobDispatcher<
-    TJobClass extends JobConstructor = JobConstructor,
+    TJobClass extends BaseJobConstructor = BaseJobConstructor,
     TJobData extends JobData<TJobClass> = JobData<TJobClass>,
     TJobReturn extends JobReturn<TJobClass> = JobReturn<TJobClass>,
   >
