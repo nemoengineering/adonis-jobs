@@ -30,7 +30,7 @@ export default class ClosureJob extends Job<ClosureJobData, void> {
     }
   }
 
-  static override dispatch<J extends Job, C extends ClosureConstructor>(
+  static override dispatch<J extends Job<any, any>, C extends ClosureConstructor>(
     this: JobConstructor<J>,
     closure: C,
     ...args: Parameters<InstanceType<C>['run']>

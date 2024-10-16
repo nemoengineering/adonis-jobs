@@ -1,28 +1,31 @@
 import { Job as BullJob, RateLimitError, UnrecoverableError, Worker } from 'bullmq'
-import { Queues } from './types.js'
+import { InferDataType, InferReturnType, Queues } from './types.js'
 import { Logger } from '@adonisjs/core/logger'
 import { JobDispatcher } from './job_dispatcher.js'
 import encryption from '@adonisjs/core/services/encryption'
 
-export type JobConstructor<J extends Job = Job> = {
-  new (...args: any[]): J
+export type JobConstructor<JobInstance extends Job<any, any> = Job<any, any>> = {
+  new (...args: any[]): JobInstance
 
   nameOverride?: string
   defaultQueue?: keyof Queues
   encrypted?: boolean
-
-  dispatch(
-    data: J['data']
-  ): JobDispatcher<JobConstructor<J>, J['job']['data'], J['job']['returnvalue']>
-  isInstanceOf(job: BullJob): job is BullJob<J['job']['data'], J['job']['returnvalue']>
-
-  encrypt(data: any): string
-  decrypt(data: string): any
-
   jobName: string
+
+  dispatch<J extends JobInstance>(
+    this: JobConstructor<J>,
+    data: InferDataType<J>
+  ): JobDispatcher<JobConstructor<J>, InferDataType<J>>
+  isInstanceOf<J extends JobInstance>(
+    this: JobConstructor<J>,
+    job: BullJob<any, any>
+  ): job is BullJob<InferDataType<J>, InferReturnType<J>>
+
+  encrypt<J extends JobInstance>(this: JobConstructor<J>, data: any): string
+  decrypt<J extends JobInstance>(this: JobConstructor<J>, data: string): any
 }
 
-export abstract class Job<DataType = any, ReturnType = any> {
+export abstract class Job<DataType, ReturnType> {
   /**
    * Define a custom job name. Defaults to the job class name.
    */
@@ -80,22 +83,22 @@ export abstract class Job<DataType = any, ReturnType = any> {
     throw new UnrecoverableError(message)
   }
 
-  static isInstanceOf<J extends Job>(
-    this: JobConstructor<J>,
-    job: BullJob<any, any>
-  ): job is BullJob<J['data'], J['job']['returnvalue']> {
-    return job.name === this.jobName
-  }
-
-  static dispatch<J extends Job>(this: JobConstructor<J>, data: J['data']) {
+  static dispatch<J extends Job<any, any>>(this: JobConstructor<J>, data: InferDataType<J>) {
     return new JobDispatcher(this, data)
   }
 
-  static encrypt<J extends Job>(this: new () => J, data: any): string {
+  static isInstanceOf<J extends Job<any, any>>(
+    this: JobConstructor<J>,
+    job: BullJob<any, any>
+  ): job is BullJob<InferDataType<J>, InferReturnType<J>> {
+    return job.name === this.jobName
+  }
+
+  static encrypt<J extends Job<any, any>>(this: JobConstructor<J>, data: any): string {
     return encryption.encrypt(data)
   }
 
-  static decrypt<J extends Job>(this: JobConstructor<J>, data: string): any {
+  static decrypt<J extends Job<any, any>>(this: JobConstructor<J>, data: string): any {
     const decrypted = encryption.decrypt<any>(data)
     if (decrypted === null) {
       throw new UnrecoverableError('Could not decrypt job payload')

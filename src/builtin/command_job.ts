@@ -44,7 +44,7 @@ export default class CommandJob extends Job<ScheduledCommandData, ScheduledComma
     return ace
   }
 
-  static override dispatch<J extends Job>(
+  static override dispatch<J extends Job<any, any>>(
     this: JobConstructor<J>,
     command: typeof BaseCommand,
     args?: string[]

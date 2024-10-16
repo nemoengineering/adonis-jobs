@@ -52,8 +52,8 @@ export type WorkerOptions = Omit<
   'connection' | 'autorun' | 'name' | 'useWorkerThreads' | 'skipVersionCheck'
 >
 
-export type InferDataType<J extends Job> = J['job']['data']
-export type InferReturnType<J extends Job> = J['job']['returnvalue']
+export type InferDataType<J extends Job<any, any>> = J['job']['data']
+export type InferReturnType<J extends Job<any, any>> = J['job']['returnvalue']
 
 /**
  * Using declaration merging, one must extend this interface.
