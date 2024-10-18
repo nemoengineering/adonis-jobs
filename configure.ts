@@ -1,11 +1,11 @@
-import type Configure from '@adonisjs/core/commands/configure'
+import ConfigureCommand from '@adonisjs/core/commands/configure'
 import { stubsRoot } from './stubs/main.js'
 
 /**
  * List of supported transports
  */
 
-export async function configure(command: Configure) {
+export async function configure(command: ConfigureCommand) {
   const codemods = await command.createCodemods()
 
   // Publish config file
