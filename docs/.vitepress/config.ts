@@ -4,6 +4,7 @@ import {defineConfig} from 'vitepress'
 export default defineConfig({
   title: "Adonis Jobs",
   description: "Job queues for your AdonisJS applications",
+  base: "/adonis-jobs/",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     // nav: [
@@ -20,6 +21,6 @@ export default defineConfig({
 
     socialLinks: [
       {icon: 'github', link: 'https://github.com/nemoengineering/adonis-jobs'}
-    ]
+    ],
   }
 })
