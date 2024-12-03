@@ -1,5 +1,6 @@
 import { Config, QueueConfig, Queues } from './types.js'
 import { FlowProducer, Queue, QueueEvents } from 'bullmq'
+import { BullMQOtel } from 'bullmq-otel'
 
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #queues: Map<keyof KnownQueues, Queue> = new Map()
@@ -26,6 +27,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     const queue = new Queue<DataType, ReturnType>(String(queueName), {
       ...queueOptions,
       connection: this.config.connection,
+      telemetry: new BullMQOtel('adonis-jobs'),
     })
 
     this.#queues.set(queueName, queue)
@@ -45,6 +47,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     const queueEvents = new QueueEvents(String(queueName), {
       ...queueOptions,
       connection: this.config.connection,
+      telemetry: new BullMQOtel('adonis-jobs'),
     })
 
     this.#queuesEvents.set(queueName, queueEvents)
@@ -55,7 +58,10 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   useFlowProducer(): FlowProducer {
     if (this.#flowProducer) return this.#flowProducer
 
-    this.#flowProducer = new FlowProducer({ connection: this.config.connection })
+    this.#flowProducer = new FlowProducer({
+      connection: this.config.connection,
+      telemetry: new BullMQOtel('adonis-jobs'),
+    })
 
     return this.#flowProducer
   }

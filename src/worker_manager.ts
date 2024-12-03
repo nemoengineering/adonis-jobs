@@ -5,6 +5,8 @@ import { Config, JobEvents, QueueConfig, Queues } from './types.js'
 import { Worker as BullWorker } from 'bullmq'
 import { EmitterLike } from '@adonisjs/core/types/events'
 import { rootDir } from '../root_dir.js'
+import { BullMQOtel } from 'bullmq-otel'
+import { trace } from '@opentelemetry/api'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService
@@ -43,6 +45,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     const worker = new BullWorker(
       String(queueName),
       async (job, token) => {
+        trace.getActiveSpan()?.setAttribute('bullmq.job.name', job.name)
         const JobClass = this.#getJobClass(job.name)
 
         const jobInstance = await this.#app.container.make(JobClass)
@@ -61,6 +64,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
           concurrency: this.config.queues[queueName].globalConcurrency,
         }),
         ...this.config.queues[queueName].defaultWorkerOptions,
+        telemetry: new BullMQOtel('adonis-jobs'),
       }
     )
 
