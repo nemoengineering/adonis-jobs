@@ -74,6 +74,7 @@
   },
   "dependencies": {
     "@adonisjs/http-server": "^7.2.3",
+    "@opentelemetry/api": "^1.9.0",
     "@poppinss/manager": "^5.0.2",
     "@poppinss/utils": "^6.7.3",
     "@queuedash/api": "^2.1.1",
@@ -81,7 +82,8 @@
     "@queuedash/ui": "^2.1.1",
     "@sindresorhus/is": "^6.3.1",
     "@trpc/server": "^10.45.2",
-    "bullmq": "^5.12.10",
+    "bullmq": "^5.29.1",
+    "bullmq-otel": "^1.0.1",
     "import-meta-resolve": "^4.1.0",
     "ts-morph": "^22.0.0"
   },

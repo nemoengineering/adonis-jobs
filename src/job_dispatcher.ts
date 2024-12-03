@@ -70,11 +70,11 @@ export class JobDispatcher<
     const manager = queueManager.useQueue<TJobData, TJobReturn>(this.#queueName)
 
     const data = this.#getJobData()
-    const job = await manager.add(this.#jobClass.jobName, data, this.jobOptions)
+    const job = await manager.add(this.#jobClass.jobName as any, data, this.jobOptions)
 
     void emitter.emit('job:dispatched', { job })
 
-    return job
+    return job as BullJob<TJobData, TJobReturn>
   }
 
   // @internal
