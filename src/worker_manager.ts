@@ -45,11 +45,24 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     const worker = new BullWorker(
       String(queueName),
       async (job, token) => {
-        trace.getActiveSpan()?.setAttribute('bullmq.job.name', job.name)
+        const currentSpan = trace.getActiveSpan()
+        currentSpan?.setAttribute('bullmq.job.name', job.name)
+        const spanContext = currentSpan?.spanContext()
+
         const JobClass = this.#getJobClass(job.name)
 
         const jobInstance = await this.#app.container.make(JobClass)
-        jobInstance.$init(worker, JobClass, job, token, logger)
+        jobInstance.$init(
+          worker,
+          JobClass,
+          job,
+          token,
+          logger.child({
+            trace_id: spanContext?.traceId,
+            span_id: spanContext?.spanId,
+            trace_flags: spanContext?.traceFlags?.toString(),
+          })
+        )
 
         jobInstance.logger.info('Starting job')
 
@@ -80,8 +93,15 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     }
 
     worker.on('failed', async (job, error, token) => {
+      const spanContext = trace.getActiveSpan()?.spanContext()
+      const errLogger = logger.child({
+        trace_id: spanContext?.traceId,
+        span_id: spanContext?.spanId,
+        trace_flags: spanContext?.traceFlags?.toString(),
+      })
+
       if (!job) {
-        logger.error(error.message, 'Job failed')
+        errLogger.error(error.message, 'Job failed')
         return
       }
       try {
@@ -98,7 +118,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
           void this.#emitter.emit('job:failed', { job, error })
         }
       } catch (e) {
-        logger.error(e)
+        errLogger.error(e)
       }
     })
 
