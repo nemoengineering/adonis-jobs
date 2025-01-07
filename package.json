@@ -1,5 +1,5 @@
 {
-  "name": "@nemoengineering/adonis-jobs",
+  "name": "@nemoventures/adonis-jobs",
   "description": "Job queues for your AdonisJS applications",
   "version": "0.6.0",
   "engines": {
@@ -40,7 +40,7 @@
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
     "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoengineering/adonis-jobs"
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoventures/adonis-jobs"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.7.0",
@@ -94,9 +94,6 @@
     "extends": "@adonisjs/eslint-config/package"
   },
   "prettier": "@adonisjs/prettier-config",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "np": {
     "message": "chore(release): %s",
     "tag": "latest",

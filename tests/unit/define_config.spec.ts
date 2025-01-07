@@ -17,7 +17,7 @@ const queueConfigProvider = defineConfig({
   },
 })
 
-declare module '@nemoengineering/adonis-jobs/types' {
+declare module '@nemoventures/adonis-jobs/types' {
   interface Queues extends InferQueues<typeof queueConfigProvider> {}
 }
 

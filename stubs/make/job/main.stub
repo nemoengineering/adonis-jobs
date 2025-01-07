@@ -3,7 +3,7 @@
     to: app.makePath(app.rcFile.directories['jobs'], jobFilePath, jobFileName)
   })
 }}}
-import { Job } from '@nemoengineering/adonis-jobs'
+import { Job } from '@nemoventures/adonis-jobs'
 
 export type {{ jobName }}Data = { }
 
