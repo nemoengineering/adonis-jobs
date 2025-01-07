@@ -1,7 +1,7 @@
 {{{
   exports({ to: app.configPath('queue.ts') })
 }}}
-import { defineConfig } from '@nemoengineering/adonis-jobs'
+import { defineConfig } from '@nemoventures/adonis-jobs'
 import Env from "#start/env";
 
 const queueConfig = defineConfig({
@@ -18,6 +18,6 @@ const queueConfig = defineConfig({
 
 export default queueConfig
 
-declare module '@nemoengineering/adonis-jobs/types' {
+declare module '@nemoventures/adonis-jobs/types' {
   interface Queues extends InferQueues<typeof queueConfig> {}
 }

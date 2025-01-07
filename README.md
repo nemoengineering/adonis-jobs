@@ -5,7 +5,7 @@
 
 
 ## **Pre-requisites**
-The `@nemoengineering/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
+The `@nemoventures/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
 
 
 ## **Setup**
@@ -13,15 +13,15 @@ The `@nemoengineering/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
 Install the package from the npm registry as follows.
 
 ```
-npm i @nemoengineering/adonis-jobs
+npm i @nemoventures/adonis-jobs
 # or
-yarn add @nemoengineering/adonis-jobs
+yarn add @nemoventures/adonis-jobs
 ```
 
 Next, configure the package by running the following ace command.
 
 ```
-node ace configure @nemoengineering/adonis-jobs
+node ace configure @nemoventures/adonis-jobs
 ```
 
 And then add the path to the `package.json`
@@ -46,7 +46,7 @@ To create a new job run `node ace make:job <job name>`. The `process` method imp
 E.g. `node ace make:job concat` will result in the following job to be created
 
 ```typescript
-import { Job } from '@nemoengineering/adonis-jobs'
+import { Job } from '@nemoventures/adonis-jobs'
 
 export type ConcatJobData = { name: [string, string] }
 
@@ -67,7 +67,7 @@ A job can be dispatched and handled in the background, or you can wait for the r
 
 ```typescript
 import ConcatJob from '#jobs/concat_job'
-import { BulkDispatcher, JobChain } from '@nemoengineering/adonis-jobs'
+import { BulkDispatcher, JobChain } from '@nemoventures/adonis-jobs'
 
 // Dispatch a job
 await ConcatJob.dispatch({ name: ["Albert", "Einstein"] })
@@ -141,7 +141,7 @@ export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
 Use `JobFlow` to start a flow job. Read more about flow jobs in the [BullMQ docs](https://docs.bullmq.io/guide/flows).
 
 ```typescript
-import { JobFlow } from '@nemoengineering/adonis-jobs'
+import { JobFlow } from '@nemoventures/adonis-jobs'
 
 const flow = new JobFlow(await RenovateInterior.dispatch({ name: ["Albert", "Einstein"] }))
 
@@ -172,7 +172,7 @@ Sometimes it is useful to not have to create a job class to do some async work. 
 Important to note is that if you want to pass arguments to a closure job they must be json serializable and need to be passed to the closure dispatch.
 
 ```typescript
-import ClosureJob from '@nemoengineering/adonis-jobs/builtin/closure_job'
+import ClosureJob from '@nemoventures/adonis-jobs/builtin/closure_job'
 
 ClosureJob.dispatch(
   class extends Closure {
@@ -196,7 +196,7 @@ ClosureJob.dispatch(
 To react on a failing job you can overwrite the `onFailed` method on the job class.
 
 ```typescript
-import { Job } from '@nemoengineering/adonis-jobs'
+import { Job } from '@nemoventures/adonis-jobs'
 
 export type ConcatJobData = { name: [string, string] }
 

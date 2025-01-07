@@ -35,8 +35,8 @@ export async function configure(command: ConfigureCommand) {
    * Publish provider and command
    */
   await codemods.updateRcFile((rcFile) => {
-    rcFile.addProvider('@nemoengineering/adonis-jobs/queue_provider')
-    rcFile.addCommand('@nemoengineering/adonis-jobs/commands')
+    rcFile.addProvider('@nemoventures/adonis-jobs/queue_provider')
+    rcFile.addCommand('@nemoventures/adonis-jobs/commands')
     rcFile.setDirectory('jobs', 'app/jobs')
   })
 }
