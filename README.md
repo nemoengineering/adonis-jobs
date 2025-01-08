@@ -86,14 +86,14 @@ await ConcatJob.dispatch({ name: ["Albert", "Einstein"] })
 
 // Dispatch jobs in bulk
 await new BulkDispatcher([
-  await ConcatJob.dispatch({ name: ["Albert", "Einstein"] }),
-  await ConcatJob.dispatch({ name: ['Marie', 'Curie'] })
+  ConcatJob.dispatch({ name: ["Albert", "Einstein"] }),
+  ConcatJob.dispatch({ name: ['Marie', 'Curie'] })
 ]).dispatch()
 
 // Dispatch a sequential jon chain
 await new JobChain([
-  await ConcatJob.dispatch({ name: ["Albert", "Einstein"] }),
-  await ConcatJob.dispatch({ name: ['Marie', 'Curie'] })
+  ConcatJob.dispatch({ name: ["Albert", "Einstein"] }),
+  ConcatJob.dispatch({ name: ['Marie', 'Curie'] })
 ]).dispatch()
 ```
 
