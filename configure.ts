@@ -18,6 +18,7 @@ export async function configure(command: ConfigureCommand) {
     REDIS_HOST: '127.0.0.1',
     REDIS_PORT: '6379',
     REDIS_PASSWORD: '',
+    QUEUE_PORT: '3334',
   })
 
   /**
@@ -28,6 +29,7 @@ export async function configure(command: ConfigureCommand) {
       REDIS_HOST: `Env.schema.string({ format: 'host' })`,
       REDIS_PORT: 'Env.schema.number()',
       REDIS_PASSWORD: 'Env.schema.string.optional()',
+      QUEUE_PORT: 'Env.schema.number()',
     },
   })
 
