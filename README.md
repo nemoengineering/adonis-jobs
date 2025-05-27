@@ -3,10 +3,9 @@
   <p>Job queues for your AdonisJS applications</p>
 </div>
 
-
 ## **Pre-requisites**
-The `@nemoventures/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
 
+The `@nemoventures/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
 
 ## **Setup**
 
@@ -37,6 +36,7 @@ And then add the path to the `package.json`
   ...
 }
 ```
+
 # Usage
 
 ## Creating a job
@@ -70,30 +70,29 @@ import ConcatJob from '#jobs/concat_job'
 import { BulkDispatcher, JobChain } from '@nemoventures/adonis-jobs'
 
 // Dispatch a job
-await ConcatJob.dispatch({ name: ["Albert", "Einstein"] })
+await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] })
 
 // Dispatch and wait for result
-const { fullName } = await ConcatJob.dispatch({ name: ["Albert", "Einstein"] }).waitResult()
+const { fullName } = await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).waitResult()
 
 // Dispach with retry
-await ConcatJob.dispatch({ name: ["Albert", "Einstein"] })
+await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] })
   .with('attempts', 10)
   .with('backoff', {
     type: 'exponential',
     delay: 1000,
   })
 
-
 // Dispatch jobs in bulk
 await new BulkDispatcher([
-  ConcatJob.dispatch({ name: ["Albert", "Einstein"] }),
-  ConcatJob.dispatch({ name: ['Marie', 'Curie'] })
+  ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }),
+  ConcatJob.dispatch({ name: ['Marie', 'Curie'] }),
 ]).dispatch()
 
 // Dispatch a sequential jon chain
 await new JobChain([
-  ConcatJob.dispatch({ name: ["Albert", "Einstein"] }),
-  ConcatJob.dispatch({ name: ['Marie', 'Curie'] })
+  ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }),
+  ConcatJob.dispatch({ name: ['Marie', 'Curie'] }),
 ]).dispatch()
 ```
 
@@ -114,7 +113,7 @@ const queueConfig = defineConfig({
         removeOnFail: { age: string.seconds.parse('7 days') },
       },
     },
-  }
+  },
 })
 ```
 
@@ -123,7 +122,7 @@ const queueConfig = defineConfig({
 You can send a job to a different queue using `onQueue`.
 
 ```typescript
-await ConcatJob.dispatch({ name: ["Albert", "Einstein"] }).onQueue("priority")
+await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).onQueue('priority')
 ```
 
 Or you can set the default queue for a specific job in the class.
@@ -135,7 +134,6 @@ export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
 }
 ```
 
-
 ## Dispatching a job flow
 
 Use `JobFlow` to start a flow job. Read more about flow jobs in the [BullMQ docs](https://docs.bullmq.io/guide/flows).
@@ -143,18 +141,17 @@ Use `JobFlow` to start a flow job. Read more about flow jobs in the [BullMQ docs
 ```typescript
 import { JobFlow } from '@nemoventures/adonis-jobs'
 
-const flow = new JobFlow(await RenovateInterior.dispatch({ name: ["Albert", "Einstein"] }))
+const flow = new JobFlow(await RenovateInterior.dispatch({ name: ['Albert', 'Einstein'] }))
 
 flow.addChildJob(RenovateJob.dispatch({ place: 'ceiling' }))
 flow.addChildJob(RenovateJob.dispatch({ place: 'floor' }))
 
 // Add children to this child
-flow.addChildJob(RenovateJob.dispatch({ place: 'walls' }), childFlow => {
+flow.addChildJob(RenovateJob.dispatch({ place: 'walls' }), (childFlow) => {
   childFlow.addChildJob(RenovateJob.dispatch({ place: 'doors' }))
 })
 
 await flow.dispatch()
-
 ```
 
 ## Running a repeated job
@@ -163,10 +160,11 @@ You can dispatch a repeated job which automatically runs on the specified schedu
 
 ```typescript
 // Dispatch a repeated job
-await ConcatJob.dispatch({ name: ["Albert", "Einstein"] }).with('repeat', { pattern: '0 2 * * 0' })
+await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).with('repeat', { pattern: '0 2 * * 0' })
 ```
 
 ## Closure job (experimental)
+
 Sometimes it is useful to not have to create a job class to do some async work. A closure job can be defined anywhere and sent to a worker.
 
 Important to note is that if you want to pass arguments to a closure job they must be json serializable and need to be passed to the closure dispatch.
@@ -179,15 +177,18 @@ ClosureJob.dispatch(
     async run(numberA: number, numberB: number) {
       // never reference variables outside the closure class here
       // they always should be passed as arguments
-      const { default: app } = await this.import<typeof import('@adonisjs/core/services/app')>('@adonisjs/core/services/app')
+      const { default: app } = await this.import<typeof import('@adonisjs/core/services/app')>(
+        '@adonisjs/core/services/app'
+      )
 
       const calculator = await app.app.container.make('calculator')
       calculator.add(numberA, numberB)
     }
   },
-  
+
   // arguments for numberA and numberB in the closure
-  1, 2
+  1,
+  2
 )
 ```
 
@@ -203,18 +204,17 @@ export type ConcatJobData = { name: [string, string] }
 export type ConcatJobReturn = { fullName: string }
 
 export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
-
   async process(): Promise<ConcatJobReturn> {
     if (this.data.name.length === 0) {
       // this fails the job and skips retries
-      this.fail("Must input a name")
+      this.fail('Must input a name')
     }
-    
+
     return { fullName: this.data.name.join(' ') }
   }
 
   async onFailed() {
-    this.logger.error({error: this.error}, 'concat has failed')
+    this.logger.error({ error: this.error }, 'concat has failed')
     if (this.allAttemptsMade()) {
       // e.g. notify user
     }
@@ -226,13 +226,14 @@ export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
 
 To execute the dispatched Jobs run `node ace queue:work`
 
-
 ## Job dashboard
 
 This package ships with [queuedash](https://www.queuedash.com/). To use it you need to register the routes in your `start/routes.ts`
 
 ```typescript
-router.group(() => {
-  queueUiRoutes().prefix('/queue')
-}).prefix("/admin")
+router
+  .group(() => {
+    queueUiRoutes().prefix('/queue')
+  })
+  .prefix('/admin')
 ```

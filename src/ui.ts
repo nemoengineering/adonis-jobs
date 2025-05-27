@@ -2,7 +2,7 @@ import router from '@adonisjs/core/services/router'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { appRouter, Context } from '@queuedash/api'
-import { resolveHTTPResponse } from '@trpc/server/http'
+import { resolveResponse } from '@trpc/server/http'
 import queueManager from '../services/main.js'
 import { Queues } from './types.js'
 import { RouteGroup } from '@adonisjs/http-server'
@@ -18,7 +18,13 @@ export function queueUiRoutes(): RouteGroup {
 
       const queues = queueManager.config.queues
 
-      const { body, status, headers } = await resolveHTTPResponse({
+      const req = new Request(url, {
+        headers: request.headers() as Record<string, string | ReadonlyArray<string>>,
+        body: request.raw(),
+        method: request.method(),
+      })
+
+      const trpcResponse = await resolveResponse({
         createContext: async () => ({
           queues: Object.keys(queues).reduce(
             (acc, queueName) => {
@@ -35,21 +41,18 @@ export function queueUiRoutes(): RouteGroup {
         }),
         router: appRouter,
         path,
-        req: {
-          query: url.searchParams,
-          method: request.method(),
-          headers: request.headers(),
-          body: request.body(),
-        },
+        req: req,
+        error: null,
       })
-      if (headers) {
-        Object.keys(headers).forEach((key) => {
-          const value = headers[key]
-          if (value) response.header(key, value)
-        })
-      }
-      response.status(status)
-      response.send(body)
+
+      const trpcResponseText = await trpcResponse.text()
+
+      trpcResponse.headers.forEach((value, key) => {
+        response.header(key, value)
+      })
+
+      response.status(trpcResponse.status)
+      response.send(trpcResponseText)
     })
 
     router.get('main.mjs', async ({ response }) => {
