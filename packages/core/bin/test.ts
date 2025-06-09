@@ -8,14 +8,10 @@ import { configure, processCLIArgs, run } from '@japa/runner'
 processCLIArgs(process.argv.splice(2))
 configure({
   suites: [
-    /*{
-      name: 'unit',
-      files: ['tests/unit/!**!/!*.spec.ts'],
-    },*/
-    /* {
-      name: 'unit',
-      files: ['tests/unit/!**!/closure.spec.ts'],
-    },*/
+    // {
+    //   name: 'unit',
+    //   files: ['tests/unit/!**!/!*.spec.ts'],
+    // },
   ],
   plugins: [assert(), fileSystem(), expectTypeOf(), snapshot(), expect()],
 })
