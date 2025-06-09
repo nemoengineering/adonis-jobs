@@ -22,6 +22,7 @@ export default class JobProvider {
   register() {
     this.app.container.singleton('job.queueManager', async () => {
       const queueConfigProvider = this.app.config.get('queue')
+
       const config = await configProvider.resolve<Config<Queues>>(this.app, queueConfigProvider)
 
       if (!config) {

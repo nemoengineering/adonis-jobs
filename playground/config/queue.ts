@@ -1,8 +1,6 @@
-{{{
-  exports({ to: app.configPath('queue.ts') })
-}}}
 import { defineConfig } from '@nemoventures/adonis-jobs'
-import env from "#start/env";
+
+import env from '#start/env'
 
 const queueConfig = defineConfig({
   connection: {

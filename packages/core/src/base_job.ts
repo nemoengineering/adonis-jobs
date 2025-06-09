@@ -66,6 +66,7 @@ export abstract class BaseJob<DataType, ReturnType> {
    */
   async rateLimitQueue(waitTimeSeconds: number): Promise<RateLimitError> {
     await this.worker.rateLimit(waitTimeSeconds * 1000)
+    // @ts-expect-error Weird ?
     return new Worker.RateLimitError()
   }
 
