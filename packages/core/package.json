@@ -12,6 +12,7 @@
     "./builtin/*": "./build/src/builtin/*.js",
     "./commands": "./build/commands/main.js",
     "./queue_provider": "./build/providers/queue_provider.js",
+    "./metrics": "./build/src/metrics/index.js",
     "./services/main": "./build/services/main.js",
     "./ui/queuedash": "./build/src/ui/queuedash/index.js"
   },
@@ -42,7 +43,13 @@
   },
   "peerDependencies": {
     "@adonisjs/core": "^6.0.0",
-    "@adonisjs/http-server": "^7.6.1"
+    "@adonisjs/http-server": "^7.6.1",
+    "@julr/adonisjs-prometheus": "^1.0.2"
+  },
+  "peerDependenciesMeta": {
+    "@julr/adonisjs-prometheus": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@adonisjs/http-server": "^7.6.1",
@@ -66,6 +73,7 @@
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
     "@japa/snapshot": "^2.0.8",
+    "@julr/adonisjs-prometheus": "^1.0.2",
     "@swc/core": "^1.11.31",
     "@types/node": "^22.15.30",
     "@types/pluralize": "^0.0.33"
@@ -96,6 +104,7 @@
       "src/bull.ts",
       "services/main.ts",
       "src/ui/**/index.ts",
+      "src/metrics/index.ts",
       "providers/queue_provider.ts",
       "./commands/**/*.ts",
       "root_dir.ts",

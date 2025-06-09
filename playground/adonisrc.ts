@@ -47,6 +47,7 @@ export default defineConfig({
       environment: ['repl', 'test'],
     },
     () => import('@nemoventures/adonis-jobs/queue_provider'),
+    () => import('@julr/adonisjs-prometheus/prometheus_provider'),
   ],
 
   /*

@@ -35,6 +35,7 @@
   "dependencies": {
     "@adonisjs/core": "catalog:",
     "@adonisjs/redis": "^9.2.0",
+    "@julr/adonisjs-prometheus": "^1.0.2",
     "@nemoventures/adonis-jobs": "workspace:*",
     "reflect-metadata": "^0.2.2"
   },
