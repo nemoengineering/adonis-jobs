@@ -7,19 +7,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install
-        run: npm install
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Run lint
-        run: npm run lint
+        run: pnpm run lint
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install
-        run: npm install
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Run typecheck
-        run: npm run typecheck
+
+        run: pnpm run typecheck
 
   tests:
     runs-on: ${{ matrix.os }}
@@ -27,15 +48,20 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node-version:
-          - 20.10.0
-          - 21.x
+          - 22.x
+          - 24.x
+
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install
-        run: npm install
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Run tests
-        run: npm test
+        run: pnpm test
