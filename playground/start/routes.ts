@@ -8,6 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import { queueUiRoutes } from '@nemoventures/adonis-jobs/ui'
 
 import WriteFileJob from '../app/jobs/write_file_job.js'
 
@@ -18,3 +19,9 @@ router.get('/test-job', async () => {
 
   return 'Job dispatched!'
 })
+
+router
+  .group(() => {
+    queueUiRoutes().prefix('/queue')
+  })
+  .prefix('/admin')
