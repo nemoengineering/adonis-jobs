@@ -1,7 +1,7 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { FlowProducer, Queue, QueueEvents } from 'bullmq'
 
-import type { Config, QueueConfig, Queues } from './types.js'
+import type { Config, QueueConfig, Queues } from './types/index.js'
 
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #queues: Map<keyof KnownQueues, Queue> = new Map()

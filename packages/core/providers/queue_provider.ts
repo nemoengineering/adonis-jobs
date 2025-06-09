@@ -3,7 +3,7 @@ import { RuntimeException } from '@poppinss/utils'
 import type { ApplicationService } from '@adonisjs/core/types'
 
 import { QueueManager } from '../src/queue_manager.js'
-import type { Config, JobEvents, Queues, QueueService } from '../src/types.js'
+import type { Config, JobEvents, Queues, QueueService } from '../src/types/index.js'
 
 /**
  * Extended types

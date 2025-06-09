@@ -7,7 +7,7 @@ import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
 
 import { rootDir } from '../root_dir.js'
 import type { BaseJobConstructor } from './base_job.js'
-import type { Config, JobEvents, QueueConfig, Queues } from './types.js'
+import type { Config, JobEvents, QueueConfig, Queues } from './types/index.js'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService

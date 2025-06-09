@@ -6,8 +6,8 @@ import router from '@adonisjs/core/services/router'
 import { resolveResponse } from '@trpc/server/http'
 import type { RouteGroup } from '@adonisjs/http-server'
 
-import type { Queues } from '../../types.js'
 import { createQueueDashHtml } from './html.js'
+import type { Queues } from '../../types/index.js'
 import queueManager from '../../../services/main.js'
 
 export function queueDashUiRoutes(): RouteGroup {

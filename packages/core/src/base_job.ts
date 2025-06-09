@@ -3,7 +3,7 @@ import type { Logger } from '@adonisjs/core/logger'
 import encryption from '@adonisjs/core/services/encryption'
 import type { Job as BullJob, RateLimitError } from 'bullmq'
 
-import type { InferDataType, InferReturnType, Queues } from './types.js'
+import type { InferDataType, InferReturnType, Queues } from './types/index.js'
 
 export type BaseJobConstructor<JobInstance extends BaseJob<any, any> = BaseJob<any, any>> = {
   new (...args: any[]): JobInstance
@@ -81,6 +81,9 @@ export abstract class BaseJob<DataType, ReturnType> {
     throw new UnrecoverableError(message)
   }
 
+  /**
+   * Check if the given job is an instance of the current job class.
+   */
   static isInstanceOf<J extends BaseJob<any, any>>(
     this: BaseJobConstructor<J>,
     job: BullJob<any, any>,

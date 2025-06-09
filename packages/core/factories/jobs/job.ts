@@ -1,5 +1,5 @@
-import { Job } from '../../src/job.js'
-import type { Queues } from '../../src/types.js'
+import { Job } from '../../src/job/job.js'
+import type { Queues } from '../../src/types/index.js'
 
 export default class FakeJob extends Job<{ input: string }, { output: string }> {
   static defaultQueue: keyof Queues = 'default'

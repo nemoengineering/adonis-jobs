@@ -1,7 +1,7 @@
-import { BaseJob } from './base_job.js'
-import type { InferDataType } from './types.js'
+import { BaseJob } from '../base_job.js'
 import { JobDispatcher } from './job_dispatcher.js'
-import type { BaseJobConstructor } from './base_job.js'
+import type { InferDataType } from '../types/index.js'
+import type { BaseJobConstructor } from '../base_job.js'
 
 export type JobConstructor<JobInstance extends BaseJob<any, any> = BaseJob<any, any>> =
   BaseJobConstructor<JobInstance> & {

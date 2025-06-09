@@ -3,7 +3,7 @@ import type { BaseCommand } from '@adonisjs/core/ace'
 import { FsLoader, Kernel } from '@adonisjs/core/ace'
 
 import { BaseJob } from '../base_job.js'
-import { JobDispatcher } from '../job_dispatcher.js'
+import { JobDispatcher } from '../job/job_dispatcher.js'
 import type { BaseJobConstructor } from '../base_job.js'
 
 export type ScheduledCommandData = {

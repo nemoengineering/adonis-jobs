@@ -7,12 +7,12 @@ import type {
   WorkerOptions as BullWorkerOptions,
 } from 'bullmq'
 
-import type { BaseJob } from './base_job.js'
-import type { QueueManager } from './queue_manager.js'
+import type { BaseJob } from '../base_job.js'
+import type { QueueManager } from '../queue_manager.js'
 
 export interface QueueService extends QueueManager {}
 
-export type { JobConstructor } from './job.js'
+export type { JobConstructor } from '../job/job.js'
 
 export type JobEvents = {
   'job:dispatched': EventWithJob

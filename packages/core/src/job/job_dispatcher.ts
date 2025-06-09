@@ -1,34 +1,39 @@
 import emitter from '@adonisjs/core/services/emitter'
-import type { FlowChildJob, FlowJob, Job as BullJob } from 'bullmq'
+import type { FlowChildJob, FlowJob, Job as BullJob, JobsOptions } from 'bullmq'
 
 import { JobFlow } from './job_flow.js'
-import type { Queues } from './types.js'
-import { JobConfig } from './job_config.js'
-import queueManager from '../services/main.js'
-import type { BaseJobConstructor } from './base_job.js'
+import type { Queues } from '../types/index.js'
+import queueManager from '../../services/main.js'
+import type { BaseJobConstructor } from '../base_job.js'
 
 type JobData<J extends BaseJobConstructor> = InstanceType<J>['job']['data']
 
 type JobReturn<J extends BaseJobConstructor> = InstanceType<J>['job']['returnvalue']
 
 export class JobDispatcher<
-    TJobClass extends BaseJobConstructor = BaseJobConstructor,
-    TJobData extends JobData<TJobClass> = JobData<TJobClass>,
-    TJobReturn extends JobReturn<TJobClass> = JobReturn<TJobClass>,
-  >
-  extends JobConfig
-  implements Promise<BullJob<TJobData, TJobReturn>>
+  TJobClass extends BaseJobConstructor = BaseJobConstructor,
+  TJobData extends JobData<TJobClass> = JobData<TJobClass>,
+  TJobReturn extends JobReturn<TJobClass> = JobReturn<TJobClass>,
+> implements Promise<BullJob<TJobData, TJobReturn>>
 {
   readonly #jobClass: TJobClass
   readonly #data: TJobData
   #queueName?: keyof Queues
   #children?: JobDispatcher[]
+  #options: JobsOptions = {}
 
   constructor(jobClass: TJobClass, data: TJobData) {
-    super()
     this.#jobClass = jobClass
     this.#data = data
     this.#queueName = jobClass.defaultQueue
+  }
+
+  /**
+   * Set job options for the job. This will override the default options
+   */
+  with<K extends keyof Required<JobsOptions>>(key: K, value: Required<JobsOptions>[K]) {
+    this.#options[key] = value
+    return this
   }
 
   /**
@@ -37,18 +42,14 @@ export class JobDispatcher<
    */
   onQueue(queueName: keyof Queues): this {
     this.#queueName = queueName
-
     return this
   }
 
   addChildren(jobs: JobDispatcher[]) {
     if (jobs.length === 0) return this
+    if (!this.#children) this.#children = []
 
-    if (!this.#children) {
-      this.#children = []
-    }
     this.#children.push(...jobs)
-
     return this
   }
 
@@ -70,9 +71,8 @@ export class JobDispatcher<
     }
 
     const manager = queueManager.useQueue<TJobData, TJobReturn>(this.#queueName)
-
     const data = this.#getJobData()
-    const job = await manager.add(this.#jobClass.jobName as any, data, this.jobOptions)
+    const job = await manager.add(this.#jobClass.jobName as any, data, this.#options)
 
     void emitter.emit('job:dispatched', { job })
 
@@ -87,7 +87,7 @@ export class JobDispatcher<
       name: this.#jobClass.jobName,
       queueName: (this.#queueName || queueManager.config.defaultQueue) as string,
       data: this.#getJobData(),
-      opts: this.jobOptions,
+      opts: this.#options,
       children: jobChildren || children ? [...(jobChildren || []), ...(children || [])] : undefined,
     }
   }
