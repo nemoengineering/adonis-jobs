@@ -1,5 +1,6 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { FlowProducer, Queue, QueueEvents } from 'bullmq'
+import { RuntimeException } from '@adonisjs/core/exceptions'
 
 import type { Config, QueueConfig, Queues } from './types/index.js'
 
@@ -9,6 +10,29 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   #flowProducer?: FlowProducer
 
   constructor(public config: Config<KnownQueues>) {}
+
+  #getQueue(queueName: keyof KnownQueues) {
+    if (!(queueName in this.config.queues)) {
+      const availableQueues = Object.keys(this.config.queues).join(', ')
+      throw new RuntimeException(
+        `Queue "${String(queueName)}" is not defined in configuration. Available queues: ${availableQueues}`,
+      )
+    }
+
+    return this.config.queues[queueName]
+  }
+
+  async #shutdownQueues() {
+    for (const queue of this.#queues.values()) {
+      await queue?.close()
+    }
+  }
+
+  async #shutdownQueueEvents() {
+    for (const queueEvents of this.#queuesEvents.values()) {
+      await queueEvents?.close()
+    }
+  }
 
   useQueue<DataType = any, ReturnType = any>(
     queueName?: keyof KnownQueues,
@@ -22,9 +46,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       return cachedQueue as Queue<DataType, ReturnType>
     }
 
-    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } =
-      this.config.queues[queueName]
-
+    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
     const queue = new Queue<DataType, ReturnType>(String(queueName), {
       ...queueOptions,
       connection: this.config.connection,
@@ -42,9 +64,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       return cachedQueueEvents
     }
 
-    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } =
-      this.config.queues[queueName]
-
+    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
     const queueEvents = new QueueEvents(String(queueName), {
       ...queueOptions,
       connection: this.config.connection,
@@ -73,17 +93,5 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       this.#shutdownQueueEvents(),
       this.#flowProducer?.close(),
     ])
-  }
-
-  async #shutdownQueues() {
-    for (const queue of this.#queues.values()) {
-      await queue?.close()
-    }
-  }
-
-  async #shutdownQueueEvents() {
-    for (const queueEvents of this.#queuesEvents.values()) {
-      await queueEvents?.close()
-    }
   }
 }
