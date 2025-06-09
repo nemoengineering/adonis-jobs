@@ -1,136 +1,29 @@
 {
-  "name": "@nemoventures/adonis-jobs",
-  "description": "Job queues for your AdonisJS applications",
-  "version": "0.8.0",
-  "engines": {
-    "node": ">=20.6.0"
-  },
-  "main": "build/index.js",
+  "name": "@nemoventures/adonis-jobs-monorepo",
   "type": "module",
-  "files": [
-    "build",
-    "!build/bin",
-    "!build/tests",
-    "!build/factories"
-  ],
-  "exports": {
-    ".": "./build/index.js",
-    "./bull": "./build/src/bull.js",
-    "./types": "./build/src/types.js",
-    "./builtin/*": "./build/src/builtin/*.js",
-    "./commands": "./build/commands/main.js",
-    "./queue_provider": "./build/providers/queue_provider.js",
-    "./services/main": "./build/services/main.js",
-    "./ui": "./build/src/ui.js"
-  },
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.12.1",
+  "prettier": "@julr/tooling-configs/prettier",
   "scripts": {
-    "pretest": "npm run lint",
-    "test": "c8 npm run quick:test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "clean": "del-cli build",
-    "copy:templates": "copyfiles --up=1 \"stubs/**/**/*.stub\" build",
-    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration && npm run compile:closure",
-    "compile:closure": "tsc --declaration false --skipLibCheck --module nodenext --outDir build closure/*",
-    "postcompile": "npm run copy:templates && npm run index:commands",
-    "build": "npm run compile",
-    "release": "np",
-    "version": "npm run build",
-    "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "index:commands": "adonis-kit index build/commands",
-    "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoventures/adonis-jobs"
+    "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^7.8.2",
-    "@adonisjs/core": "^6.18.0",
-    "@adonisjs/eslint-config": "^1.3.0",
-    "@adonisjs/prettier-config": "^1.4.5",
-    "@adonisjs/tsconfig": "^1.3.1",
-    "@japa/assert": "^4.0.1",
-    "@japa/expect": "^3.0.4",
-    "@japa/expect-type": "^2.0.3",
-    "@japa/file-system": "^2.3.2",
-    "@japa/plugin-adonisjs": "^4.0.0",
-    "@japa/runner": "^4.2.0",
-    "@japa/snapshot": "^2.0.8",
-    "@poppinss/dev-utils": "^2.0.3",
-    "@swc/core": "^1.11.29",
-    "@types/node": "^22.15.21",
-    "@types/pluralize": "^0.0.33",
+    "@adonisjs/tsconfig": "^1.4.1",
+    "@julr/tooling-configs": "^4.0.0",
+    "@swc/core": "^1.11.31",
+    "@types/node": "^22.15.30",
     "c8": "^10.1.3",
     "copyfiles": "^2.4.1",
     "del-cli": "^6.0.0",
     "dotenv": "^16.5.0",
-    "eslint": "^8.57.0",
-    "np": "^10.2.0",
+    "eslint": "^9.28.0",
     "prettier": "^3.5.3",
+    "release-it": "^19.0.3",
     "ts-node": "^10.9.2",
+    "tsdown": "^0.12.7",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@adonisjs/http-server": "^7.6.1",
-    "@opentelemetry/api": "^1.9.0",
-    "@poppinss/manager": "^5.0.2",
-    "@poppinss/utils": "^6.9.4",
-    "@queuedash/api": "^3.6.0",
-    "@queuedash/client": "^3.6.0",
-    "@queuedash/ui": "^3.6.0",
-    "@sindresorhus/is": "^7.0.1",
-    "@trpc/server": "^11.1.3",
-    "bullmq": "^5.53.0",
-    "bullmq-otel": "^1.0.1",
-    "import-meta-resolve": "^4.1.0",
-    "ts-morph": "^26.0.0"
-  },
-  "peerDependencies": {
-    "@adonisjs/core": "^6.12.1"
-  },
-  "license": "MIT",
-  "repository": "https://github.com/nemoengineering/adonis-jobs",
-  "eslintConfig": {
-    "extends": "@adonisjs/eslint-config/package"
-  },
-  "prettier": "@adonisjs/prettier-config",
-  "np": {
-    "message": "chore(release): %s",
-    "tag": "latest",
-    "branch": "main",
-    "anyBranch": false
-  },
-  "c8": {
-    "reporter": [
-      "text",
-      "html"
-    ],
-    "exclude": [
-      "tests/**",
-      "factories/**"
-    ]
-  },
-  "tsup": {
-    "entry": [
-      "index.ts",
-      "src/types.ts",
-      "src/job.ts",
-      "src/builtin",
-      "src/multi_dispatcher.ts",
-      "src/bull.ts",
-      "services/main.ts",
-      "src/ui.ts",
-      "providers/queue_provider.ts",
-      "commands/make_job.ts",
-      "commands/queue_work.ts",
-      "root_dir.ts",
-      "closure"
-    ],
-    "outDir": "./build",
-    "clean": true,
-    "format": "esm",
-    "dts": false,
-    "sourcemap": true,
-    "target": "esnext"
   }
 }
