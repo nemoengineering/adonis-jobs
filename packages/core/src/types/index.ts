@@ -35,6 +35,18 @@ export type InferDataType<J extends BaseJob<any, any>> = J['job']['data']
 export type InferReturnType<J extends BaseJob<any, any>> = J['job']['returnvalue']
 
 /**
+ * BullMQ job states
+ */
+export type JobState =
+  | 'completed'
+  | 'wait'
+  | 'active'
+  | 'paused'
+  | 'prioritized'
+  | 'delayed'
+  | 'failed'
+
+/**
  * Using declaration merging, one must extend this interface.
  * --------------------------------------------------------
  * MUST BE SET IN THE USER LAND.

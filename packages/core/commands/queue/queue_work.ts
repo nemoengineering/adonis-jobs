@@ -6,8 +6,8 @@ import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { LoggerService } from '@adonisjs/core/types'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import type { Queues } from '../src/types/index.js'
-import { WorkerManager } from '../src/worker_manager.js'
+import type { Queues } from '../../src/types/index.js'
+import { WorkerManager } from '../../src/worker_manager.js'
 
 export default class QueueWork extends BaseCommand {
   static commandName = 'queue:work'

@@ -97,7 +97,7 @@
       "services/main.ts",
       "src/ui/**/index.ts",
       "providers/queue_provider.ts",
-      "./commands/*.ts",
+      "./commands/**/*.ts",
       "root_dir.ts",
       "closure"
     ],

@@ -2,12 +2,12 @@ import { BullMQOtel } from 'bullmq-otel'
 import { FlowProducer, Queue, QueueEvents } from 'bullmq'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
-import type { Config, QueueConfig, Queues } from './types/index.js'
+import type { Config, JobState, QueueConfig, Queues } from './types/index.js'
 
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
+  #flowProducer?: FlowProducer
   #queues: Map<keyof KnownQueues, Queue> = new Map()
   #queuesEvents: Map<keyof KnownQueues, QueueEvents> = new Map()
-  #flowProducer?: FlowProducer
 
   constructor(public config: Config<KnownQueues>) {}
 
@@ -89,6 +89,56 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     })
 
     return this.#flowProducer
+  }
+
+  /**
+   * Completely destroys the queue and all of its contents irreversibly.
+   * This operation requires to iterate on all the jobs stored in the queue
+   * and can be slow for very large queues.
+   */
+  async clear(queueNames?: Array<keyof KnownQueues>) {
+    const queues = queueNames ?? (Object.keys(this.config.queues) as (keyof KnownQueues)[])
+
+    const promises = queues.map(async (name) => {
+      const queue = this.useQueue(name)
+      await queue.obliterate({ force: true })
+    })
+
+    return await Promise.all(promises)
+  }
+
+  /**
+   * Drains the queue, i.e., removes all jobs that are waiting or delayed, but not active, completed or failed.
+   */
+  async drain(queueNames?: Array<keyof KnownQueues>, options?: { cleanDelayed?: boolean }) {
+    const queues = queueNames ?? (Object.keys(this.config.queues) as (keyof KnownQueues)[])
+
+    const promises = queues.map(async (name) => {
+      const queue = this.useQueue(name)
+      await queue.drain(options?.cleanDelayed ?? true)
+    })
+
+    return await Promise.all(promises)
+  }
+
+  /**
+   * Cleans jobs of a specific type and older than a specified grace period.
+   */
+  async clean(
+    queueNames?: Array<keyof KnownQueues>,
+    options?: { grace: number; limit: number; type?: JobState },
+  ) {
+    const queues = queueNames ?? (Object.keys(this.config.queues) as (keyof KnownQueues)[])
+    const { grace = 0, limit = 100, type = 'completed' } = options ?? {}
+
+    const promises = queues.map(async (name) => {
+      const queue = this.useQueue(name)
+
+      const deletedJobIds = await queue.clean(grace, limit, type)
+      return { queue: name, count: deletedJobIds.length }
+    })
+
+    return await Promise.all(promises)
   }
 
   async shutdown() {

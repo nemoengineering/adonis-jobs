@@ -11,15 +11,24 @@ import router from '@adonisjs/core/services/router'
 import { JobScheduler } from '@nemoventures/adonis-jobs'
 import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
 
+import SlowJob from '#jobs/slow_job'
 import WriteFileJob from '../app/jobs/write_file_job.js'
 
 router.get('/', async () => 'It works!')
 
 router.get('/test-job', async () => {
   await WriteFileJob.dispatch({ data: 'Hello, World!' })
-  return 'Job dispatched!'
+  return 'WriteFileJob dispatched!'
 })
 
+router.get('/slow-job/', async () => {
+  await SlowJob.dispatch({ data: 'This is a slow job!' })
+  return 'SlowJob dispatched!'
+})
+
+/**
+ * Scheduler playground
+ */
 router.get('/test-scheduler/:queue?', async ({ params }) => {
   await JobScheduler.schedule({
     key: 'file-writer-scheduler',
