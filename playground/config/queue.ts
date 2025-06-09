@@ -11,6 +11,7 @@ const queueConfig = defineConfig({
   defaultQueue: 'default',
   queues: {
     default: {},
+    test: {},
   },
 })
 
