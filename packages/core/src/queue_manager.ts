@@ -11,6 +11,10 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
 
   constructor(public config: Config<KnownQueues>) {}
 
+  /**
+   * Get a queue by its name or throw an error if the queue
+   * is not defined in the configuration.
+   */
   #getQueue(queueName: keyof KnownQueues) {
     if (!(queueName in this.config.queues)) {
       const availableQueues = Object.keys(this.config.queues).join(', ')
@@ -22,16 +26,23 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     return this.config.queues[queueName]
   }
 
+  /**
+   * Shutdown all queues by closing them
+   */
   async #shutdownQueues() {
-    for (const queue of this.#queues.values()) {
-      await queue?.close()
-    }
+    const closePromises = Array.from(this.#queues.values()).map((queue) => queue?.close())
+    await Promise.allSettled(closePromises)
   }
 
+  /**
+   * Shutdown all queue events by closing them
+   */
   async #shutdownQueueEvents() {
-    for (const queueEvents of this.#queuesEvents.values()) {
-      await queueEvents?.close()
-    }
+    const promises = Array.from(this.#queuesEvents.values()).map((queueEvents) =>
+      queueEvents?.close(),
+    )
+
+    await Promise.allSettled(promises)
   }
 
   useQueue<DataType = any, ReturnType = any>(
