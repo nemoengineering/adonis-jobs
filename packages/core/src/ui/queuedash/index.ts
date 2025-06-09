@@ -6,31 +6,11 @@ import router from '@adonisjs/core/services/router'
 import { resolveResponse } from '@trpc/server/http'
 import type { RouteGroup } from '@adonisjs/http-server'
 
-import type { Queues } from './types.js'
-import queueManager from '../services/main.js'
+import type { Queues } from '../../types.js'
+import { createQueueDashHtml } from './html.js'
+import queueManager from '../../../services/main.js'
 
-const createQueuedashHtml = (baseUrl: string) =>
-  `<!doctype html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>QueueDash App</title>
-      </head>
-      <body>
-        <div id="root"></div>
-        <script>
-          window.__INITIAL_STATE__ = {
-            apiUrl: '${baseUrl}/trpc',
-            basename: '${baseUrl}',
-          }
-        </script>
-        <link rel="stylesheet" href="${baseUrl}/styles.css" />
-        <script type="module" src="${baseUrl}/main.mjs"></script>
-      </body>
-    </html>`
-
-export function queueUiRoutes(): RouteGroup {
+export function queueDashUiRoutes(): RouteGroup {
   const mainJS = readFileSync(fileURLToPath(import.meta.resolve('@queuedash/client/dist/main.mjs')))
   const style = readFileSync(fileURLToPath(import.meta.resolve('@queuedash/ui/dist/styles.css')))
 
@@ -81,6 +61,7 @@ export function queueUiRoutes(): RouteGroup {
     router.get('main.mjs', async ({ response }) => {
       response.type('application/javascript').send(mainJS)
     })
+
     router.get('styles.css', async ({ response }) => {
       response.type('text/css').send(style)
     })
@@ -88,14 +69,14 @@ export function queueUiRoutes(): RouteGroup {
     router.get('/', ({ response, route }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
       const baseUrl = router.builder().params(route?.meta?.params).make(route?.pattern!)
-      response.type('text/html').send(createQueuedashHtml(baseUrl))
+      response.type('text/html').send(createQueueDashHtml(baseUrl))
     })
 
     router.get('/*', ({ response, route }) => {
       const patternWithoutWildcard = route?.pattern.slice(0, -2)
       const baseUrl = router.builder().params(route?.meta?.params).make(patternWithoutWildcard!)
 
-      response.type('text/html').send(createQueuedashHtml(baseUrl))
+      response.type('text/html').send(createQueueDashHtml(baseUrl))
     })
   })
 }

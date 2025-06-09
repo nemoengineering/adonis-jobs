@@ -13,7 +13,7 @@
     "./commands": "./build/commands/main.js",
     "./queue_provider": "./build/providers/queue_provider.js",
     "./services/main": "./build/services/main.js",
-    "./ui": "./build/src/ui.js"
+    "./ui/queuedash": "./build/src/ui/queuedash/index.js"
   },
   "main": "build/index.js",
   "files": [
