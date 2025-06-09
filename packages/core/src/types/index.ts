@@ -1,41 +1,19 @@
 import type { ConfigProvider } from '@adonisjs/core/types'
 import type {
   ConnectionOptions,
-  Job as BullJob,
-  JobNode,
   QueueOptions as BullQueueOptions,
   WorkerOptions as BullWorkerOptions,
 } from 'bullmq'
 
-import type { BaseJob } from '../base_job.js'
+import type { BaseJob } from '../job/base_job.js'
 import type { QueueManager } from '../queue_manager.js'
+
+export * from './scheduler.js'
+export * from './events.js'
 
 export interface QueueService extends QueueManager {}
 
 export type { JobConstructor } from '../job/job.js'
-
-export type JobEvents = {
-  'job:dispatched': EventWithJob
-  'job:dispatched:many': EventWithManyJobs
-  'job:dispatched:chain': EventWithFlow
-  'job:dispatched:flow': EventWithFlow
-  'job:started': EventWithJob
-  'job:success': EventWithJob
-  'job:error': EventWithJob & { error: Error }
-  'job:failed': EventWithJob & { error: Error }
-}
-
-type EventWithJob = {
-  job: BullJob
-}
-
-type EventWithManyJobs = {
-  jobs: BullJob[]
-}
-
-type EventWithFlow = {
-  flow: JobNode
-}
 
 export type Config<KnownQueues extends Record<string, QueueConfig>> = {
   connection: ConnectionOptions

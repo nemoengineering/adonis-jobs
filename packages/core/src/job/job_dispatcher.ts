@@ -4,7 +4,7 @@ import type { FlowChildJob, FlowJob, Job as BullJob, JobsOptions } from 'bullmq'
 import { JobFlow } from './job_flow.js'
 import type { Queues } from '../types/index.js'
 import queueManager from '../../services/main.js'
-import type { BaseJobConstructor } from '../base_job.js'
+import type { BaseJobConstructor } from './base_job.js'
 
 type JobData<J extends BaseJobConstructor> = InstanceType<J>['job']['data']
 

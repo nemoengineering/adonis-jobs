@@ -2,10 +2,10 @@ import app from '@adonisjs/core/services/app'
 import { RuntimeException } from '@poppinss/utils'
 import encryption from '@adonisjs/core/services/encryption'
 
-import { BaseJob } from '../base_job.js'
+import { BaseJob } from '../job/base_job.js'
 import type { SerializedClosure } from '../helper.js'
 import { JobDispatcher } from '../job/job_dispatcher.js'
-import type { BaseJobConstructor } from '../base_job.js'
+import type { BaseJobConstructor } from '../job/base_job.js'
 import type { ClosureConstructor } from '../../closure/closure.js'
 import { deserializeClosure, serializeClosure } from '../helper.js'
 

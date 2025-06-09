@@ -11,9 +11,7 @@ export type SerializablePrimitive = string | number | boolean | null | undefined
 export type SerializableValue =
   | SerializablePrimitive
   | SerializablePrimitive[]
-  | {
-      [key: string]: SerializablePrimitive
-    }
+  | { [key: string]: SerializablePrimitive }
 
 export type SerializedClosure = { fn: string; args: SerializableValue[] }
 

@@ -1,7 +1,7 @@
 import type { JobsOptions, RepeatOptions } from 'bullmq'
 
 import type { Queues } from './index.js'
-import type { BaseJobConstructor } from '../base_job.js'
+import type { BaseJobConstructor } from '../job/base_job.js'
 
 export interface SchedulerRepeatOptions extends Omit<RepeatOptions, 'key' | 'jobId'> {}
 

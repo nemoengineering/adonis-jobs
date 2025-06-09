@@ -1,9 +1,9 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import { JobScheduler } from '../src/job_scheduler.js'
+import { JobScheduler } from '../../src/job_scheduler.js'
 
-export default class ScheduleList extends BaseCommand {
+export default class SchedulerList extends BaseCommand {
   static commandName = 'queue:scheduler:list'
   static description = 'List all scheduled jobs'
 

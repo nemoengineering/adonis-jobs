@@ -6,7 +6,7 @@ import type { EmitterLike } from '@adonisjs/core/types/events'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
 
 import { rootDir } from '../root_dir.js'
-import type { BaseJobConstructor } from './base_job.js'
+import type { BaseJobConstructor } from './job/base_job.js'
 import type { Config, JobEvents, QueueConfig, Queues } from './types/index.js'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
@@ -141,7 +141,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
   }
 
   static async loadJobs(app: ApplicationService): Promise<BaseJobConstructor[]> {
-    const { BaseJob } = await import('./base_job.js')
+    const { BaseJob } = await import('./job/base_job.js')
 
     const jobPath = app.makePath(app.rcFile.directories['jobs'])
     const appJobs = await fsReadAll(jobPath, {

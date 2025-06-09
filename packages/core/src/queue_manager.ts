@@ -48,14 +48,10 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   useQueue<DataType = any, ReturnType = any>(
     queueName?: keyof KnownQueues,
   ): Queue<DataType, ReturnType> {
-    if (!queueName) {
-      return this.useQueue<DataType, ReturnType>(this.config.defaultQueue)
-    }
+    if (!queueName) return this.useQueue(this.config.defaultQueue)
 
     const cachedQueue = this.#queues.get(queueName)
-    if (cachedQueue) {
-      return cachedQueue as Queue<DataType, ReturnType>
-    }
+    if (cachedQueue) return cachedQueue as Queue<DataType, ReturnType>
 
     const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
     const queue = new Queue<DataType, ReturnType>(String(queueName), {
@@ -71,9 +67,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
 
   useQueueEvents<QueueName extends keyof KnownQueues>(queueName: QueueName): QueueEvents {
     const cachedQueueEvents = this.#queuesEvents.get(queueName)
-    if (cachedQueueEvents) {
-      return cachedQueueEvents
-    }
+    if (cachedQueueEvents) return cachedQueueEvents
 
     const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
     const queueEvents = new QueueEvents(String(queueName), {
@@ -83,7 +77,6 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     })
 
     this.#queuesEvents.set(queueName, queueEvents)
-
     return queueEvents
   }
 
