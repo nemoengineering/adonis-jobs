@@ -3,7 +3,7 @@ import { defineConfig, targets } from '@adonisjs/core/logger'
 
 import env from '#start/env'
 
-const loggerConfig = defineConfig({
+const loggerConfig: any = defineConfig({
   default: 'app',
 
   /**
