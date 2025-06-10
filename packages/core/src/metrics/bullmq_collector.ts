@@ -70,9 +70,10 @@ class BullMQCollector extends Collector {
 
         const processingTime = job.finishedOn - job.processedOn
         const completionTime = job.finishedOn - job.timestamp
+        const jobName = job.name
 
-        this.#processedJobHistogram?.observe({ queue: queueName }, processingTime)
-        this.#completedJobHistogram?.observe({ queue: queueName }, completionTime)
+        this.#processedJobHistogram?.observe({ queue: queueName, job: jobName }, processingTime)
+        this.#completedJobHistogram?.observe({ queue: queueName, job: jobName }, completionTime)
       })
     }
   }
@@ -94,7 +95,7 @@ class BullMQCollector extends Collector {
       buckets: this.#options.processingTimeBuckets ?? [
         100, 500, 1000, 2500, 5000, 10_000, 30_000, 60_000,
       ],
-      labelNames: ['queue'],
+      labelNames: ['queue', 'job'],
     })
 
     this.#completedJobHistogram = this.createHistogram({
@@ -103,7 +104,7 @@ class BullMQCollector extends Collector {
       buckets: this.#options.completionTimeBuckets ?? [
         100, 500, 1000, 2500, 5000, 10_000, 30_000, 60_000,
       ],
-      labelNames: ['queue'],
+      labelNames: ['queue', 'job'],
     })
   }
 
