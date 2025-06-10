@@ -9,7 +9,7 @@ export type TestJobReturn = {}
 
 export default class WriteFileJob extends Job<TestJobData, TestJobReturn> {
   async process(): Promise<TestJobReturn> {
-    const delayMs = Math.floor(Math.random() * (10_000 - 4000 + 1)) + 4000
+    const delayMs = Math.random() * 5000 + 1000
     this.logger.info(`Processing WriteFileJob with ${delayMs}ms delay`)
 
     await new Promise((resolve) => setTimeout(resolve, delayMs))
