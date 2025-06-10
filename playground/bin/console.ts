@@ -1,3 +1,4 @@
+/* eslint-disable import/first */
 /*
 |--------------------------------------------------------------------------
 | Ace entry point
@@ -10,6 +11,9 @@
 | has "options.startApp" flag set to true.
 |
 */
+
+const { initOtel } = await import('#start/otel')
+await initOtel('playground-console')
 
 import 'reflect-metadata'
 

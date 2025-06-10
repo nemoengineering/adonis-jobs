@@ -16,6 +16,12 @@ services:
       retries: 3
       start_period: 30s
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - '4318:4318'
+      - '16686:16686'
+
 volumes:
   redis_data:
     driver: local

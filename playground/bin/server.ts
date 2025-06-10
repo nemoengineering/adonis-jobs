@@ -1,3 +1,4 @@
+/* eslint-disable import/first */
 /*
 |--------------------------------------------------------------------------
 | HTTP server entrypoint
@@ -8,6 +9,9 @@
 | command to run this file and monitor file changes
 |
 */
+
+const { initOtel } = await import('#start/otel')
+await initOtel('playground-api')
 
 import 'reflect-metadata'
 
