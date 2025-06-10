@@ -1,7 +1,7 @@
 import type { ConfigProvider } from '@adonisjs/core/types'
 
 import type { BaseJob } from '../job/base_job.js'
-import type { QueueManager } from '../queue_manager.js'
+import type { QueueManager } from '../worker_manager/queue_manager.js'
 import type { BullQueueOptions, BullWorkerOptions, BullConnectionOptions } from './bull.js'
 
 export * from './scheduler.js'

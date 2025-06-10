@@ -1,4 +1,4 @@
-export { QueueManager } from './src/queue_manager.js'
+export { QueueManager } from './src/worker_manager/queue_manager.js'
 export { Job } from './src/job/job.js'
 export { BulkDispatcher } from './src/bulk_dispatcher.js'
 export { JobChain } from './src/job/job_chain.js'
