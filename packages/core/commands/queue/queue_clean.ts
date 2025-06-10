@@ -45,7 +45,7 @@ export default class QueueClean extends BaseCommand {
   }
 
   async run() {
-    const queueManager = await this.app.container.make('job.queueManager')
+    const queue = await this.app.container.make('queue.manager')
 
     if (this.app.inProduction && !this.force) {
       const confirmed = await this.prompt.confirm(
@@ -69,7 +69,7 @@ export default class QueueClean extends BaseCommand {
         : `This will clean "${this.type}" jobs older than ${this.grace}ms from all queues (limit: ${this.limit})`,
     )
 
-    const results = await queueManager.clean(this.queue ? [this.queue] : undefined, {
+    const results = await queue.clean(this.queue ? [this.queue] : undefined, {
       grace: this.grace,
       limit: this.limit,
       type: this.type,

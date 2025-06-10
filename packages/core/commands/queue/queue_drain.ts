@@ -23,7 +23,7 @@ export default class QueueDrain extends BaseCommand {
   static options: CommandOptions = { startApp: true }
 
   async run() {
-    const queueManager = await this.app.container.make('job.queueManager')
+    const queue = await this.app.container.make('queue.manager')
 
     if (this.app.inProduction && !this.force) {
       const confirmed = await this.prompt.confirm(
@@ -36,7 +36,7 @@ export default class QueueDrain extends BaseCommand {
       }
     }
 
-    await queueManager.drain(this.queue ? [this.queue] : undefined)
+    await queue.drain(this.queue ? [this.queue] : undefined)
 
     this.ui.logger.success(
       this.queue

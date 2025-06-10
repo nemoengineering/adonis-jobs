@@ -18,7 +18,7 @@ export default class QueueClear extends BaseCommand {
   }
 
   async run() {
-    const queueManager = await this.app.container.make('job.queueManager')
+    const queue = await this.app.container.make('queue.manager')
 
     if (this.app.inProduction && !this.force) {
       const confirmed = await this.prompt.confirm(
@@ -31,7 +31,7 @@ export default class QueueClear extends BaseCommand {
       }
     }
 
-    await queueManager.clear(this.queue ? [this.queue] : undefined)
+    await queue.clear(this.queue ? [this.queue] : undefined)
 
     this.ui.logger.success(
       this.queue

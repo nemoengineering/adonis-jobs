@@ -11,7 +11,7 @@ import type { Config, JobEvents, Queues, QueueService } from '../src/types/index
  */
 declare module '@adonisjs/core/types' {
   export interface ContainerBindings {
-    'job.queueManager': QueueService
+    'queue.manager': QueueService
   }
 
   export interface EventsList extends JobEvents {}
@@ -21,7 +21,7 @@ export default class JobProvider {
   constructor(protected app: ApplicationService) {}
 
   register() {
-    this.app.container.singleton('job.queueManager', async () => {
+    this.app.container.singleton('queue.manager', async () => {
       const queueConfigProvider = this.app.config.get('queue')
 
       await BullMqFactory.init()
@@ -38,7 +38,7 @@ export default class JobProvider {
   }
 
   async shutdown() {
-    const manager = await this.app.container.make('job.queueManager')
+    const manager = await this.app.container.make('queue.manager')
     await manager.shutdown()
   }
 }
