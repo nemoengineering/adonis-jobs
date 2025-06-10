@@ -9,9 +9,10 @@ export type TestJobReturn = {}
 
 export default class WriteFileJob extends Job<TestJobData, TestJobReturn> {
   async process(): Promise<TestJobReturn> {
-    if (Math.random() < 0.4) {
-      throw new Error('Random error occurred')
-    }
+    const delayMs = Math.floor(Math.random() * (10_000 - 4000 + 1)) + 4000
+    this.logger.info(`Processing WriteFileJob with ${delayMs}ms delay`)
+
+    await new Promise((resolve) => setTimeout(resolve, delayMs))
 
     await appendFile('test.txt', this.data.data + '\n', 'utf8')
 
