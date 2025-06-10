@@ -13,6 +13,7 @@
   "devDependencies": {
     "@adonisjs/tsconfig": "^1.4.1",
     "@julr/tooling-configs": "^4.0.0",
+    "@release-it/conventional-changelog": "^10.0.1",
     "@swc/core": "^1.11.31",
     "@types/node": "^22.15.30",
     "c8": "^10.1.3",
