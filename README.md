@@ -163,35 +163,6 @@ You can dispatch a repeated job which automatically runs on the specified schedu
 await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).with('repeat', { pattern: '0 2 * * 0' })
 ```
 
-## Closure job (experimental)
-
-Sometimes it is useful to not have to create a job class to do some async work. A closure job can be defined anywhere and sent to a worker.
-
-Important to note is that if you want to pass arguments to a closure job they must be json serializable and need to be passed to the closure dispatch.
-
-```typescript
-import ClosureJob from '@nemoventures/adonis-jobs/builtin/closure_job'
-
-ClosureJob.dispatch(
-  class extends Closure {
-    async run(numberA: number, numberB: number) {
-      // never reference variables outside the closure class here
-      // they always should be passed as arguments
-      const { default: app } = await this.import<typeof import('@adonisjs/core/services/app')>(
-        '@adonisjs/core/services/app'
-      )
-
-      const calculator = await app.app.container.make('calculator')
-      calculator.add(numberA, numberB)
-    }
-  },
-
-  // arguments for numberA and numberB in the closure
-  1,
-  2
-)
-```
-
 ## Handling errors
 
 To react on a failing job you can overwrite the `onFailed` method on the job class.

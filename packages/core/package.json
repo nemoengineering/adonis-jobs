@@ -30,8 +30,7 @@
     "test": "c8 npm run quick:test",
     "clean": "del-cli build",
     "copy:templates": "copyfiles --up 1 \"stubs/**/*.stub\" build",
-    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration && npm run compile:closure",
-    "compile:closure": "tsc --declaration false --skipLibCheck --module nodenext --outDir build closure/*",
+    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
     "release": "np",
@@ -115,8 +114,7 @@
       "src/metrics/index.ts",
       "providers/queue_provider.ts",
       "./commands/**/*.ts",
-      "root_dir.ts",
-      "closure"
+      "root_dir.ts"
     ],
     "outDir": "./build",
     "clean": false,
