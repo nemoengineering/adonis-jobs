@@ -1,22 +1,18 @@
 import type { ConfigProvider } from '@adonisjs/core/types'
-import type {
-  ConnectionOptions,
-  QueueOptions as BullQueueOptions,
-  WorkerOptions as BullWorkerOptions,
-} from 'bullmq'
 
 import type { BaseJob } from '../job/base_job.js'
 import type { QueueManager } from '../queue_manager.js'
+import type { BullQueueOptions, BullWorkerOptions, BullConnectionOptions } from './bull.js'
 
 export * from './scheduler.js'
 export * from './events.js'
+export * from './bull.js'
+export type { JobConstructor } from '../job/job.js'
 
 export interface QueueService extends QueueManager {}
 
-export type { JobConstructor } from '../job/job.js'
-
 export type Config<KnownQueues extends Record<string, QueueConfig>> = {
-  connection: ConnectionOptions
+  connection: BullConnectionOptions
   defaultQueue: keyof KnownQueues
   queues: KnownQueues
 }
@@ -54,6 +50,12 @@ export type JobState =
  */
 
 export interface Queues {}
+export interface BullVersion {}
 
 export type InferQueues<Conf extends ConfigProvider<{ defaultQueue: unknown; queues: unknown }>> =
   Awaited<ReturnType<Conf['resolver']>>['queues']
+
+/**
+ * Check if user has configured BullMQ Pro version in their config.
+ */
+export type HasPro = BullVersion extends { version: 'pro' } ? true : false

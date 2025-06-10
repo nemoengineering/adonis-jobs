@@ -44,22 +44,28 @@
   "peerDependencies": {
     "@adonisjs/core": "^6.0.0",
     "@adonisjs/http-server": "^7.6.1",
-    "@julr/adonisjs-prometheus": "^1.0.2"
+    "@julr/adonisjs-prometheus": "^1.0.2",
+    "@taskforcesh/bullmq-pro": "^7.35.2",
+    "bullmq": "^5.53.2"
   },
   "peerDependenciesMeta": {
     "@julr/adonisjs-prometheus": {
       "optional": true
+    },
+    "@taskforcesh/bullmq-pro": {
+      "optional": true
+    },
+    "bullmq": {
+      "optional": true
     }
   },
   "dependencies": {
-    "@adonisjs/http-server": "^7.6.1",
     "@opentelemetry/api": "^1.9.0",
     "@poppinss/utils": "^6.9.4",
     "@queuedash/api": "^3.6.0",
     "@queuedash/client": "^3.6.0",
     "@queuedash/ui": "^3.6.0",
     "@trpc/server": "^11.3.1",
-    "bullmq": "^5.53.2",
     "bullmq-otel": "^1.0.1",
     "import-meta-resolve": "^4.1.0"
   },
@@ -75,8 +81,10 @@
     "@japa/snapshot": "^2.0.8",
     "@julr/adonisjs-prometheus": "^1.0.2",
     "@swc/core": "^1.11.31",
+    "@taskforcesh/bullmq-pro": "^7.35.2",
     "@types/node": "^22.15.30",
-    "@types/pluralize": "^0.0.33"
+    "@types/pluralize": "^0.0.33",
+    "bullmq": "^5.53.2"
   },
   "np": {
     "message": "chore(release): %s",

@@ -1,10 +1,15 @@
 import emitter from '@adonisjs/core/services/emitter'
-import type { FlowChildJob, FlowJob, Job as BullJob, JobsOptions } from 'bullmq'
 
 import { JobFlow } from './job_flow.js'
-import type { Queues } from '../types/index.js'
 import queueManager from '../../services/main.js'
 import type { BaseJobConstructor } from './base_job.js'
+import type {
+  BullFlowChildJob,
+  BullFlowJob,
+  BullJob,
+  BullJobsOptions,
+  Queues,
+} from '../types/index.js'
 
 type JobData<J extends BaseJobConstructor> = InstanceType<J>['job']['data']
 
@@ -20,7 +25,7 @@ export class JobDispatcher<
   readonly #data: TJobData
   #queueName?: keyof Queues
   #children?: JobDispatcher[]
-  #options: JobsOptions = {}
+  #options: BullJobsOptions = {}
 
   constructor(jobClass: TJobClass, data: TJobData) {
     this.#jobClass = jobClass
@@ -31,7 +36,7 @@ export class JobDispatcher<
   /**
    * Set job options for the job. This will override the default options
    */
-  with<K extends keyof Required<JobsOptions>>(key: K, value: Required<JobsOptions>[K]) {
+  with<K extends keyof Required<BullJobsOptions>>(key: K, value: Required<BullJobsOptions>[K]) {
     this.#options[key] = value
     return this
   }
@@ -80,7 +85,7 @@ export class JobDispatcher<
   }
 
   // @internal
-  $toFlowJob(children?: FlowChildJob[]): FlowJob {
+  $toFlowJob(children?: BullFlowChildJob[]): BullFlowJob {
     const jobChildren = this.#children?.map((j) => j.$toFlowJob())
 
     return {

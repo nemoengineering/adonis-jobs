@@ -1,13 +1,21 @@
 import { BullMQOtel } from 'bullmq-otel'
-import { FlowProducer, Queue, QueueEvents } from 'bullmq'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
-import type { Config, JobState, QueueConfig, Queues } from './types/index.js'
+import { BullMqFactory } from './bull.js'
+import type {
+  BullFlowProducer,
+  BullQueue,
+  BullQueueEvents,
+  Config,
+  JobState,
+  QueueConfig,
+  Queues,
+} from './types/index.js'
 
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
-  #flowProducer?: FlowProducer
-  #queues: Map<keyof KnownQueues, Queue> = new Map()
-  #queuesEvents: Map<keyof KnownQueues, QueueEvents> = new Map()
+  #flowProducer?: BullFlowProducer
+  #queues: Map<keyof KnownQueues, BullQueue> = new Map()
+  #queuesEvents: Map<keyof KnownQueues, BullQueueEvents> = new Map()
 
   constructor(public config: Config<KnownQueues>) {}
 
@@ -47,14 +55,14 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
 
   useQueue<DataType = any, ReturnType = any>(
     queueName?: keyof KnownQueues,
-  ): Queue<DataType, ReturnType> {
+  ): BullQueue<DataType, ReturnType> {
     if (!queueName) return this.useQueue(this.config.defaultQueue)
 
     const cachedQueue = this.#queues.get(queueName)
-    if (cachedQueue) return cachedQueue as Queue<DataType, ReturnType>
+    if (cachedQueue) return cachedQueue as BullQueue<DataType, ReturnType>
 
     const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
-    const queue = new Queue<DataType, ReturnType>(String(queueName), {
+    const queue = BullMqFactory.createQueue<DataType, ReturnType>(String(queueName), {
       ...queueOptions,
       connection: this.config.connection,
       telemetry: new BullMQOtel('adonis-jobs'),
@@ -65,12 +73,12 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     return queue
   }
 
-  useQueueEvents<QueueName extends keyof KnownQueues>(queueName: QueueName): QueueEvents {
+  useQueueEvents<QueueName extends keyof KnownQueues>(queueName: QueueName): BullQueueEvents {
     const cachedQueueEvents = this.#queuesEvents.get(queueName)
     if (cachedQueueEvents) return cachedQueueEvents
 
     const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
-    const queueEvents = new QueueEvents(String(queueName), {
+    const queueEvents = BullMqFactory.createQueueEvents(String(queueName), {
       ...queueOptions,
       connection: this.config.connection,
       telemetry: new BullMQOtel('adonis-jobs'),
@@ -80,10 +88,10 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     return queueEvents
   }
 
-  useFlowProducer(): FlowProducer {
+  useFlowProducer(): BullFlowProducer {
     if (this.#flowProducer) return this.#flowProducer
 
-    this.#flowProducer = new FlowProducer({
+    this.#flowProducer = BullMqFactory.createFlowProducer({
       connection: this.config.connection,
       telemetry: new BullMQOtel('adonis-jobs'),
     })

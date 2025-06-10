@@ -1,10 +1,10 @@
-import type { Job as BullJob, JobNode } from 'bullmq'
+import type { BullJob, BullJobNode } from './bull.js'
 
 type EventWithJob = { job: BullJob }
 
 type EventWithManyJobs = { jobs: BullJob[] }
 
-type EventWithFlow = { flow: JobNode }
+type EventWithFlow = { flow: BullJobNode }
 
 export type JobEvents = {
   'job:dispatched': EventWithJob

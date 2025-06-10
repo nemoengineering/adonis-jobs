@@ -1,13 +1,12 @@
-import type { FlowJob } from 'bullmq'
 import emitter from '@adonisjs/core/services/emitter'
 
 import debuglog from '../debug.js'
-import type { Queues } from '../types/index.js'
 import queueManager from '../../services/main.js'
 import type { JobDispatcher } from './job_dispatcher.js'
+import type { BullFlowJob, Queues } from '../types/index.js'
 
 class FlowBuilder {
-  readonly #flow: FlowJob
+  readonly #flow: BullFlowJob
 
   constructor(job: JobDispatcher) {
     this.#flow = job.$toFlowJob()

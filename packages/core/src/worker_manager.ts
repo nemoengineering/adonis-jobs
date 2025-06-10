@@ -1,13 +1,13 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { trace } from '@opentelemetry/api'
-import { Worker as BullWorker } from 'bullmq'
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
 
 import { rootDir } from '../root_dir.js'
+import { BullMqFactory } from './bull.js'
 import type { BaseJobConstructor } from './job/base_job.js'
-import type { Config, JobEvents, QueueConfig, Queues } from './types/index.js'
+import type { BullWorker, Config, JobEvents, QueueConfig, Queues } from './types/index.js'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService
@@ -43,7 +43,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
     const loggerService = await this.#app.container.make('logger')
     const logger = loggerService.child({ queueName })
 
-    const worker = new BullWorker(
+    const worker = BullMqFactory.createWorker(
       String(queueName),
       async (job, token) => {
         const currentSpan = trace.getActiveSpan()

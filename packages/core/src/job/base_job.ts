@@ -1,9 +1,10 @@
-import { UnrecoverableError, Worker } from 'bullmq'
+import { UnrecoverableError } from 'bullmq'
+import type { RateLimitError } from 'bullmq'
 import type { Logger } from '@adonisjs/core/logger'
 import encryption from '@adonisjs/core/services/encryption'
-import type { Job as BullJob, RateLimitError } from 'bullmq'
 
-import type { InferDataType, InferReturnType, Queues } from '../types/index.js'
+import { BullMqFactory } from '../bull.js'
+import type { BullJob, BullWorker, InferDataType, InferReturnType, Queues } from '../types/index.js'
 
 export type BaseJobConstructor<JobInstance extends BaseJob<any, any> = BaseJob<any, any>> = {
   new (...args: any[]): JobInstance
@@ -40,7 +41,7 @@ export abstract class BaseJob<DataType, ReturnType> {
 
   data!: DataType
   job!: BullJob<DataType, ReturnType>
-  worker!: Worker<DataType, ReturnType>
+  worker!: BullWorker<DataType, ReturnType>
   logger!: Logger
   token?: string
   error?: Error
@@ -67,7 +68,7 @@ export abstract class BaseJob<DataType, ReturnType> {
   async rateLimitQueue(waitTimeSeconds: number): Promise<RateLimitError> {
     await this.worker.rateLimit(waitTimeSeconds * 1000)
     // @ts-expect-error Weird ?
-    return new Worker.RateLimitError()
+    return new BullMqFactory.WorkerClass.RateLimitError()
   }
 
   /**
@@ -110,7 +111,7 @@ export abstract class BaseJob<DataType, ReturnType> {
 
   // @internal
   $init(
-    worker: Worker<DataType, ReturnType>,
+    worker: BullWorker<DataType, ReturnType>,
     jobClass: BaseJobConstructor,
     job: BullJob<DataType, ReturnType>,
     token: string | undefined,

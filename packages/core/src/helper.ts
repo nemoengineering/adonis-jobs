@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module'
 import StringBuilder from '@poppinss/utils/string_builder'
 
 import type { Closure, ClosureConstructor } from '../closure/closure.js'
@@ -40,4 +41,14 @@ return ${payload.fn}
   closure.$setArgs(payload.args)
 
   return closure
+}
+
+export function isModuleInstalled(moduleName: string) {
+  const require = createRequire(import.meta.url)
+  try {
+    require.resolve(moduleName)
+    return true
+  } catch {
+    return false
+  }
 }

@@ -19,4 +19,8 @@ export default queueConfig
 
 declare module '@nemoventures/adonis-jobs/types' {
   interface Queues extends InferQueues<typeof queueConfig> {}
+
+  interface BullVersion {
+    version: 'pro'
+  }
 }

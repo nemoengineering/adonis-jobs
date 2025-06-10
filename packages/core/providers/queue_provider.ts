@@ -2,6 +2,7 @@ import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
 import type { ApplicationService } from '@adonisjs/core/types'
 
+import { BullMqFactory } from '../src/bull.js'
 import { QueueManager } from '../src/queue_manager.js'
 import type { Config, JobEvents, Queues, QueueService } from '../src/types/index.js'
 
@@ -23,6 +24,7 @@ export default class JobProvider {
     this.app.container.singleton('job.queueManager', async () => {
       const queueConfigProvider = this.app.config.get('queue')
 
+      await BullMqFactory.init()
       const config = await configProvider.resolve<Config<Queues>>(this.app, queueConfigProvider)
 
       if (!config) {

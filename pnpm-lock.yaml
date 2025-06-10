@@ -86,9 +86,6 @@ importers:
       '@trpc/server':
         specifier: ^11.3.1
         version: 11.3.1(typescript@5.8.3)
-      bullmq:
-        specifier: ^5.53.2
-        version: 5.53.2
       bullmq-otel:
         specifier: ^1.0.1
         version: 1.0.1
@@ -129,12 +126,18 @@ importers:
       '@swc/core':
         specifier: ^1.11.31
         version: 1.11.31(@swc/helpers@0.5.17)
+      '@taskforcesh/bullmq-pro':
+        specifier: ^7.35.2
+        version: 7.35.2
       '@types/node':
         specifier: ^22.15.30
         version: 22.15.30
       '@types/pluralize':
         specifier: ^0.0.33
         version: 0.0.33
+      bullmq:
+        specifier: ^5.53.2
+        version: 5.53.2
 
   playground:
     dependencies:
@@ -2116,6 +2119,9 @@ packages:
     resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
     engines: {node: '>=12'}
 
+  '@taskforcesh/bullmq-pro@7.35.2':
+    resolution: {integrity: sha512-qpX1+8J2enySTZW7ozNo12fGbMRsP9sd8eBDw0l1xaSMxallkZ0+IxkrJa2HMwwOxgo9lUGdb583GyLxXxNIgA==, tarball: https://npm.taskforce.sh/@taskforcesh/bullmq-pro/-/@taskforcesh/bullmq-pro-7.35.2.tgz}
+
   '@tokenizer/inflate@0.2.7':
     resolution: {integrity: sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg==}
     engines: {node: '>=18'}
@@ -2521,6 +2527,9 @@ packages:
 
   bullmq-otel@1.0.1:
     resolution: {integrity: sha512-9SSBA/iq8bFUJ9I5bDwv1UmtbJAmIGHt796g5lsYZWasqouTqkFA3+Z/n17mCc8VzfxxygCCCBsXdC1mICbxdw==}
+
+  bullmq@5.52.2:
+    resolution: {integrity: sha512-fK/dKIv8ymyys4K+zeNEPA+yuYWzRPmBWUmwIMz8DvYekadl8VG19yUx94Na0n0cLAi+spdn3a/+ufkYK7CBUg==}
 
   bullmq@5.53.2:
     resolution: {integrity: sha512-xHgxrP/yNJHD7VCw1h+eRBh+2TCPBCM39uC9gCyksYc6ufcJP+HTZ/A2lzB2x7qMFWrvsX7tM40AT2BmdkYL/Q==}
@@ -4530,6 +4539,10 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  rxjs@6.6.7:
+    resolution: {integrity: sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==}
+    engines: {npm: '>=2.0.0'}
+
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
 
@@ -4924,6 +4937,9 @@ packages:
         optional: true
       unplugin-unused:
         optional: true
+
+  tslib@1.14.1:
+    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
@@ -7561,6 +7577,16 @@ snapshots:
 
   '@tanstack/table-core@8.21.3': {}
 
+  '@taskforcesh/bullmq-pro@7.35.2':
+    dependencies:
+      bullmq: 5.52.2
+      msgpackr: 1.11.4
+      rxjs: 6.6.7
+      tslib: 2.8.1
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   '@tokenizer/inflate@0.2.7':
     dependencies:
       debug: 4.4.1
@@ -7950,6 +7976,18 @@ snapshots:
     dependencies:
       '@opentelemetry/api': 1.9.0
       bullmq: 5.53.2
+    transitivePeerDependencies:
+      - supports-color
+
+  bullmq@5.52.2:
+    dependencies:
+      cron-parser: 4.9.0
+      ioredis: 5.6.1
+      msgpackr: 1.11.4
+      node-abort-controller: 3.1.1
+      semver: 7.7.2
+      tslib: 2.8.1
+      uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
 
@@ -10131,6 +10169,10 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  rxjs@6.6.7:
+    dependencies:
+      tslib: 1.14.1
+
   rxjs@7.8.2:
     dependencies:
       tslib: 2.8.1
@@ -10518,6 +10560,8 @@ snapshots:
       - oxc-resolver
       - supports-color
       - vue-tsc
+
+  tslib@1.14.1: {}
 
   tslib@2.8.1: {}
 

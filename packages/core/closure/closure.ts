@@ -1,7 +1,7 @@
-import type { Job as BullJob } from 'bullmq'
 import type { Logger } from '@adonisjs/core/logger'
 import type { ApplicationService } from '@adonisjs/core/types'
 
+import type { BullJob } from '../src/types/index.js'
 import type { SerializableValue } from '../src/helper.js'
 
 export type ClosureConstructor = {

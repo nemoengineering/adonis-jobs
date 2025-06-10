@@ -1,10 +1,9 @@
-import type { FlowJob } from 'bullmq'
 import emitter from '@adonisjs/core/services/emitter'
 
 import debuglog from '../debug.js'
-import type { Queues } from '../types/index.js'
 import queueManager from '../../services/main.js'
 import type { JobDispatcher } from './job_dispatcher.js'
+import type { BullFlowJob, Queues } from '../types/index.js'
 
 export class JobChain {
   #jobs: JobDispatcher[]
@@ -28,7 +27,7 @@ export class JobChain {
 
     const flowChain = this.#jobs.reduce(
       (acc, job) => job.$toFlowJob(acc ? [acc] : undefined),
-      undefined as unknown as FlowJob,
+      undefined as unknown as BullFlowJob,
     )
 
     debuglog(JSON.stringify(flowChain, null, 2))
