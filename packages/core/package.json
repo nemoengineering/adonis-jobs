@@ -31,7 +31,6 @@
   },
   "scripts": {
     "test": "c8 npm run quick:test",
-    "clean": "del-cli build",
     "copy:templates": "copyfiles --up 1 \"stubs/**/*.stub\" build",
     "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
@@ -82,7 +81,6 @@
     "@japa/runner": "^4.2.0",
     "@japa/snapshot": "^2.0.8",
     "@julr/adonisjs-prometheus": "^1.0.2",
-    "@swc/core": "^1.11.31",
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "@types/node": "^22.15.30",
     "@types/pluralize": "^0.0.33",
@@ -120,7 +118,7 @@
       "root_dir.ts"
     ],
     "outDir": "./build",
-    "clean": false,
+    "clean": true,
     "format": "esm",
     "dts": false,
     "sourcemap": true,
