@@ -9,7 +9,7 @@ import type {
   FlowProducer,
 } from 'bullmq'
 
-import { isModuleInstalled } from './helper.js'
+import { isModuleInstalled } from './helpers.js'
 import type { BullFlowProducer, BullQueue, BullQueueEvents, BullWorker } from './types/index.js'
 
 /**

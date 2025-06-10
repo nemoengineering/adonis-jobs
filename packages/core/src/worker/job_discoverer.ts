@@ -1,10 +1,10 @@
 import { fileURLToPath } from 'node:url'
 import { fsReadAll, isScriptFile } from '@poppinss/utils'
 
-import { group } from './helper.js'
-import { rootDir } from '../root_dir.js'
-import { type BaseJobConstructor } from './job/base_job.js'
-import { DuplicateJobException } from './errors/duplicate_job_exception.js'
+import { group } from '../helpers.js'
+import { rootDir } from '../../root_dir.js'
+import { type BaseJobConstructor } from '../job/base_job.js'
+import { DuplicateJobException } from '../errors/duplicate_job_exception.js'
 
 /**
  * Discover and load job classes from the application directory.
@@ -82,7 +82,7 @@ export class JobDiscoverer {
    * Discover and load all job classes from the application
    */
   async discoverJobs(): Promise<BaseJobConstructor[]> {
-    const { BaseJob } = await import('./job/base_job.js')
+    const { BaseJob } = await import('../job/base_job.js')
 
     const appJobs = await this.#importAppJobs()
     const builtinJobs = await this.#importBuiltinJobs()

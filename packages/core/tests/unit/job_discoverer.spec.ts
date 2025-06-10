@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 
-import { JobDiscoverer } from '../../src/job_discoverer.js'
+import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
 import { createFakeJob, setupApp, getActiveTestOrFail } from '../helpers.js'
 import { DuplicateJobException } from '../../src/errors/duplicate_job_exception.js'
 

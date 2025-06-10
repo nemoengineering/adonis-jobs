@@ -2,8 +2,8 @@ import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { BullMqFactory } from '../src/bull.js'
-import { QueueManager } from '../src/worker_manager/queue_manager.js'
+import { BullMqFactory } from '../src/bull_factory.js'
+import { QueueManager } from '../src/queue_manager.js'
 import type { Config, JobEvents, Queues, QueueService } from '../src/types/index.js'
 
 /**

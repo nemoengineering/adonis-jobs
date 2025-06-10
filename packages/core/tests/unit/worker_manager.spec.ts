@@ -3,7 +3,7 @@ import { IgnitorFactory } from '@adonisjs/core/factories'
 
 import FakeJob from '../../factories/jobs/job.js'
 import { JobChain } from '../../src/job/job_chain.js'
-import { BulkDispatcher } from '../../src/bulk_dispatcher.js'
+import { BulkDispatcher } from '../../src/job/bulk_dispatcher.js'
 import FakeSubDirJob from '../../factories/jobs/subdir/job.js'
 
 const BASE_URL = new URL('./../../', import.meta.url)

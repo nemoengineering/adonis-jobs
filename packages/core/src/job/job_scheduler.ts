@@ -1,6 +1,6 @@
-import queueManager from '../services/main.js'
-import type { Queues } from './types/index.js'
-import type { ScheduleJobOptions, ScheduledJobInfo } from './types/scheduler.js'
+import type { Queues } from '../types/index.js'
+import queueManager from '../../services/main.js'
+import type { ScheduleJobOptions, ScheduledJobInfo } from '../types/scheduler.js'
 
 export class JobScheduler {
   /**

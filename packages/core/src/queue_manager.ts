@@ -1,7 +1,7 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
-import { BullMqFactory } from '../bull.js'
+import { BullMqFactory } from './bull_factory.js'
 import type {
   BullFlowProducer,
   BullQueue,
@@ -10,7 +10,7 @@ import type {
   JobState,
   QueueConfig,
   Queues,
-} from '../types/index.js'
+} from './types/index.js'
 
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #flowProducer?: BullFlowProducer

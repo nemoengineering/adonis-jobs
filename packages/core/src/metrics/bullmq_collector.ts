@@ -2,7 +2,7 @@ import { configProvider } from '@adonisjs/core'
 import { Collector } from '@julr/adonisjs-prometheus/collectors/collector'
 import type { CommonCollectorOptions, ResolvedPromConfig } from '@julr/adonisjs-prometheus/types'
 
-import type { QueueManager } from '../worker_manager/queue_manager.js'
+import type { QueueManager } from '../queue_manager.js'
 
 /**
  * Create a BullMQ metrics collector for @julr/adonisjs-prometheus
