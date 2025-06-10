@@ -6,5 +6,6 @@ export default await julr({
     'jsonc/no-useless-escape': 'off',
     'import/no-mutable-exports': 'off',
     '@typescript-eslint/no-invalid-void-type': 'off',
+    'unicorn/custom-error-definition': 'off',
   },
 })

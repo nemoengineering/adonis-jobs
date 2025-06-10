@@ -1,11 +1,11 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { trace } from '@opentelemetry/api'
+import { RuntimeException } from '@poppinss/utils'
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
-import { fsReadAll, isScriptFile, RuntimeException } from '@poppinss/utils'
 
-import { rootDir } from '../root_dir.js'
 import { BullMqFactory } from './bull.js'
+import { JobDiscoverer } from './job_discoverer.js'
 import type { BaseJobConstructor } from './job/base_job.js'
 import type { BullWorker, Config, JobEvents, QueueConfig, Queues } from './types/index.js'
 
@@ -141,32 +141,7 @@ export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Que
   }
 
   static async loadJobs(app: ApplicationService): Promise<BaseJobConstructor[]> {
-    const { BaseJob } = await import('./job/base_job.js')
-
-    const jobPath = app.makePath(app.rcFile.directories['jobs'])
-    const appJobs = await fsReadAll(jobPath, {
-      pathType: 'url',
-      ignoreMissingRoot: true,
-      filter: isScriptFile,
-    })
-
-    const builtinJobs = await fsReadAll(new URL('./src/builtin', rootDir), {
-      pathType: 'url',
-      ignoreMissingRoot: true,
-      filter: isScriptFile,
-    })
-
-    const imports = await Promise.all(
-      appJobs.concat(builtinJobs).map(async (file) => {
-        const i = await import(file)
-        if (!i.default) return
-        return i.default
-      }),
-    )
-
-    // TODO: check for duplicate job names
-    return imports
-      .filter((i) => typeof i === 'function')
-      .filter((i) => i.prototype instanceof BaseJob)
+    const discoverer = new JobDiscoverer(app.appRoot)
+    return await discoverer.discoverJobs()
   }
 }

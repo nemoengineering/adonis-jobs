@@ -29,7 +29,11 @@ export default class MakeJob extends BaseCommand {
       flags: this.parsed.flags,
       jobName: jobName(job.name),
       jobFilePath: job.path,
-      jobFileName: new StringBuilder(jobName(job.name)).snakeCase().ext('.ts').toString(),
+      jobFileName: new StringBuilder(jobName(job.name))
+        .snakeCase()
+        .suffix('_job')
+        .ext('.ts')
+        .toString(),
     })
   }
 }

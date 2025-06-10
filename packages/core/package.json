@@ -5,6 +5,9 @@
   "description": "Job queues for your AdonisJS applications",
   "license": "MIT",
   "repository": "https://github.com/nemoengineering/adonis-jobs",
+  "imports": {
+    "#job/*": "./src/job/*.js"
+  },
   "exports": {
     ".": "./build/index.js",
     "./bull": "./build/src/bull.js",

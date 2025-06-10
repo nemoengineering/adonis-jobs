@@ -13,6 +13,7 @@ import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
 
 import SlowJob from '#jobs/slow_job'
 import WriteFileJob from '../app/jobs/write_file_job.js'
+import NotificationJob from '../app/modules/notifications/jobs/notification_job.js'
 
 router.get('/', async () => 'It works!')
 
@@ -24,6 +25,16 @@ router.get('/test-job', async () => {
 router.get('/slow-job/', async () => {
   await SlowJob.dispatch({ data: 'This is a slow job!' })
   return 'SlowJob dispatched!'
+})
+
+router.get('/notification-job', async () => {
+  await NotificationJob.dispatch({
+    body: 'This is a test notification',
+    email: 'foo@ok.com',
+    subject: 'Test Notification',
+  })
+
+  return 'NotificationJob dispatched!'
 })
 
 /**

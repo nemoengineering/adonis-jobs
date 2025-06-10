@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import { assert } from '@japa/assert'
 import { expect } from '@japa/expect'
 import { snapshot } from '@japa/snapshot'
@@ -7,13 +8,14 @@ import { configure, processCLIArgs, run } from '@japa/runner'
 
 processCLIArgs(process.argv.splice(2))
 configure({
-  suites: [
-    // {
-    //   name: 'unit',
-    //   files: ['tests/unit/!**!/!*.spec.ts'],
-    // },
+  files: ['**/*.spec.ts'],
+  plugins: [
+    assert(),
+    fileSystem({ basePath: join(import.meta.dirname, '../tmp') }),
+    expectTypeOf(),
+    snapshot(),
+    expect(),
   ],
-  plugins: [assert(), fileSystem(), expectTypeOf(), snapshot(), expect()],
 })
 
 run()
