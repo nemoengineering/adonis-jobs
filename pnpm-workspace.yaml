@@ -1,0 +1,7 @@
+packages:
+  - 'packages/*'
+  - 'examples/*'
+  - 'playground'
+
+catalog:
+  '@adonisjs/core': '^6.18.0'

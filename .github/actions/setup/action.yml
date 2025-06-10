@@ -1,0 +1,34 @@
+name: 'Setup Environment'
+description: 'Setup Node.js, configure npm registries, and install dependencies'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Enable corepack
+      shell: bash
+      run: corepack enable
+
+    - name: Configure npm registry for BullMQ Pro
+      shell: bash
+      run: |
+        echo "@taskforcesh:registry=https://npm.taskforce.sh/" >> ~/.npmrc
+        echo "//npm.taskforce.sh/:_authToken=${{ env.BULLMQ_PRO_TOKEN }}" >> ~/.npmrc
+        echo "always-auth=true" >> ~/.npmrc
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
+
+    - name: Build core package
+      shell: bash
+      run: pnpm --filter @nemoventures/adonis-jobs build
