@@ -67,8 +67,9 @@ export abstract class BaseJob<DataType, ReturnType> {
    */
   async rateLimitQueue(waitTimeSeconds: number): Promise<RateLimitError> {
     await this.worker.rateLimit(waitTimeSeconds * 1000)
-    // @ts-expect-error Weird ?
-    return new BullMqFactory.WorkerClass.RateLimitError()
+
+    // eslint-disable-next-line unicorn/throw-new-error
+    return BullMqFactory.WorkerClass.RateLimitError()
   }
 
   /**
