@@ -2,23 +2,20 @@ name: Check
 
 on: [push]
 
+env:
+  BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
           node-version: 24
-
-      - name: Enable corepack
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install
-
+        env:
+          BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
       - name: Run lint
         run: pnpm run lint
 
@@ -26,20 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
           node-version: 24
-
-      - name: Enable corepack
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install
-
+        env:
+          BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
       - name: Run typecheck
-
         run: pnpm run typecheck
 
   tests:
@@ -53,15 +43,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Enable corepack
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install
-
+        env:
+          BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
       - name: Run tests
         run: pnpm test
