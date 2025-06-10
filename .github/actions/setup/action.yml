@@ -28,3 +28,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install
+
+    - name: Build core package
+      shell: bash
+      run: pnpm --filter @nemoventures/adonis-jobs build
