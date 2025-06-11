@@ -5,6 +5,7 @@ import type { Logger } from '@adonisjs/core/logger'
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 
+import { JobLogger } from './job_logger.js'
 import { BullMqFactory } from '../bull_factory.js'
 import type { BaseJobConstructor } from '../job/base_job.js'
 import type { BullJob, BullWorker, Config, JobEvents, QueueConfig, Queues } from '../types/index.js'
@@ -64,6 +65,18 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   }
 
   /**
+   * Create a JobLogger instance with the current configuration
+   */
+  #createJobLogger(adonisLogger: Logger, job: BullJob): JobLogger {
+    const multiLoggerEnabled = this.#config.experimental?.multiLogger?.enabled ?? false
+    return new JobLogger({
+      adonisLogger,
+      bullJob: job,
+      options: { logToBullMQ: multiLoggerEnabled },
+    })
+  }
+
+  /**
    * Start processing a job
    */
   async #processJob(job: BullJob, token?: string) {
@@ -71,11 +84,13 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
 
     const currentSpan = trace.getActiveSpan()?.setAttribute('bullmq.job.name', job.name)
     const spanContext = currentSpan?.spanContext()
-    const jobLogger = this.#logger!.child({
+    const adonisLogger = this.#logger!.child({
       trace_id: spanContext?.traceId,
       span_id: spanContext?.spanId,
       trace_flags: spanContext?.traceFlags?.toString(),
     })
+
+    const jobLogger = this.#createJobLogger(adonisLogger, job)
 
     const jobInstance = await this.#app.container.make(JobClass)
     jobInstance.$init(this.#bullWorker!, JobClass, job, token, jobLogger)
@@ -104,7 +119,9 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
     const JobClass = this.#getJobClass(job.name)
     const jobInstance = await this.#app.container.make(JobClass)
 
-    jobInstance.$init(this.#bullWorker!, JobClass, job, token, this.#logger!)
+    const jobLogger = this.#createJobLogger(logger, job)
+
+    jobInstance.$init(this.#bullWorker!, JobClass, job, token, jobLogger)
     jobInstance.$setError(error)
 
     await this.#app.container.call(jobInstance, 'onFailed')
