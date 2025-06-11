@@ -48,6 +48,12 @@ export default class QueueWork extends BaseCommand {
    * It waits for all actives jobs to complete before exiting if `forceExit` is not set.
    */
   async #handleShutdown() {
+    this.#appLogger.info(
+      `Received shutdown signal, stopping workers${
+        this.forceExit ? ' (force exit enabled)' : ' (waiting for active jobs to complete)'
+      }...`,
+    )
+
     await this.#manager.stopWorkers(this.forceExit)
     if (this.forceExit) this.app.terminating(() => process.exit(0))
 
