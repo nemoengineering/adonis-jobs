@@ -1,10 +1,11 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { trace } from '@opentelemetry/api'
+import { Logger } from '@adonisjs/core/logger'
 import { RuntimeException } from '@poppinss/utils'
-import type { Logger } from '@adonisjs/core/logger'
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 
+import { JobLogger } from './job_logger.js'
 import { BullMqFactory } from '../bull_factory.js'
 import type { BaseJobConstructor } from '../job/base_job.js'
 import type { BullJob, BullWorker, Config, JobEvents, QueueConfig, Queues } from '../types/index.js'
@@ -64,23 +65,67 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   }
 
   /**
-   * Start processing a job
+   * Create a JobLogger instance with the current configuration
    */
-  async #processJob(job: BullJob, token?: string) {
-    const JobClass = this.#getJobClass(job.name)
+  #createJobLogger(adonisLogger: Logger, job: BullJob): JobLogger {
+    const multiLoggerEnabled = this.#config.multiLogger?.enabled ?? false
+    return new JobLogger({
+      adonisLogger,
+      bullJob: job,
+      options: { logToBullMQ: multiLoggerEnabled },
+    })
+  }
 
-    const currentSpan = trace.getActiveSpan()?.setAttribute('bullmq.job.name', job.name)
-    const spanContext = currentSpan?.spanContext()
-    const jobLogger = this.#logger!.child({
+  /**
+   * Create a logger with trace context
+   */
+  #createTracedLogger(): Logger {
+    const spanContext = trace.getActiveSpan()?.spanContext()
+    return this.#logger!.child({
       trace_id: spanContext?.traceId,
       span_id: spanContext?.spanId,
       trace_flags: spanContext?.traceFlags?.toString(),
     })
+  }
 
-    const jobInstance = await this.#app.container.make(JobClass)
-    jobInstance.$init(this.#bullWorker!, JobClass, job, token, jobLogger)
+  #getJobClass(jobName: string) {
+    const JobClass = this.#jobs.get(jobName)
+    if (JobClass) return JobClass
 
-    const result = this.#app.container.call(jobInstance, 'process')
+    const message = `Job "${String(jobName)}" was not found. If you changed the Job class name, make sure to use update the 'nameOverride' property.`
+    throw new RuntimeException(message)
+  }
+
+  /**
+   * Create a job instance with all dependencies configured
+   */
+  async #createJobInstance(options: { job: BullJob; token?: string; error?: Error }) {
+    const { job, token, error } = options
+
+    const JobClass = this.#getJobClass(job.name)
+    const adonisLogger = this.#createTracedLogger()
+    const jobLogger = this.#createJobLogger(adonisLogger, job)
+    const resolver = this.#app.container.createResolver()
+
+    resolver.bindValue(Logger, jobLogger)
+
+    const instance = await resolver.make(JobClass)
+    instance.$init(this.#bullWorker!, JobClass, job, token, jobLogger)
+
+    if (error) instance.$setError(error)
+
+    return { instance, resolver }
+  }
+
+  /**
+   * Start processing a job
+   */
+  async #processJob(job: BullJob, token?: string) {
+    trace.getActiveSpan()?.setAttribute('bullmq.job.name', job.name)
+
+    const { instance: jobInstance, resolver } = await this.#createJobInstance({ job, token })
+
+    const result = resolver.call(jobInstance, 'process')
     this.#emitter.emit('job:started', { job })
 
     return await result
@@ -90,28 +135,15 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
    * Called when a job fails
    */
   async #onJobFailed(job: BullJob | undefined, error: Error, token: string) {
-    const spanContext = trace.getActiveSpan()?.spanContext()
-    const logger = this.#logger!.child({
-      trace_id: spanContext?.traceId,
-      span_id: spanContext?.spanId,
-      trace_flags: spanContext?.traceFlags?.toString(),
-    })
-
+    const logger = this.#createTracedLogger()
     if (!job) return logger.error(error.message, 'Job failed')
 
     this.#emitter.emit('job:error', { job, error })
 
-    const JobClass = this.#getJobClass(job.name)
-    const jobInstance = await this.#app.container.make(JobClass)
+    const { instance: jobInstance, resolver } = await this.#createJobInstance({ job, token, error })
+    await resolver.call(jobInstance, 'onFailed')
 
-    jobInstance.$init(this.#bullWorker!, JobClass, job, token, this.#logger!)
-    jobInstance.$setError(error)
-
-    await this.#app.container.call(jobInstance, 'onFailed')
-
-    if (jobInstance.allAttemptsMade()) {
-      this.#emitter.emit('job:failed', { job, error })
-    }
+    if (jobInstance.allAttemptsMade()) this.#emitter.emit('job:failed', { job, error })
   }
 
   /**
@@ -119,14 +151,6 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
    */
   #onJobCompleted(job: BullJob) {
     this.#emitter.emit('job:success', { job })
-  }
-
-  #getJobClass(jobName: string) {
-    const JobClass = this.#jobs.get(jobName)
-    if (JobClass) return JobClass
-
-    const message = `Job "${String(jobName)}" was not found. If you changed the job class name, make sure to use update the 'nameOverride' property.`
-    throw new RuntimeException(message)
   }
 
   /**
