@@ -2,17 +2,47 @@
   exports({ to: app.configPath('queue.ts') })
 }}}
 import { defineConfig } from '@nemoventures/adonis-jobs'
-import env from "#start/env";
 
 const queueConfig = defineConfig({
-  connection: {
-    host: env.get('REDIS_HOST'),
-    port: env.get('REDIS_PORT'),
-    password: env.get('REDIS_PASSWORD'),
-  },
+  /**
+   * The default connection to use. The connection
+   * should be defined in the "config/redis.ts" file.
+   */
+  connection: { connectionName: 'main' },
+
+  /**
+   * When enabled, all queues will use the same Redis connection instance.
+   * This is the recommended setting for most applications.
+   */
+  useSharedConnection: true,
+
+  /**
+   * The name of the queue to use when no queue is explicitly specified
+   * during job dispatching.
+   */
   defaultQueue: 'default',
+
+  /**
+   * Configure your queues here. Each queue can have its own connection,
+   * worker options, and job options
+   */
   queues: {
+    /**
+     * The default queue for processing jobs
+     */
     default: {},
+
+    /**
+     * Example of a queue with specific connection and options
+     */
+    // priority: {
+    //   connection: { connectionName: 'priority' },
+    //   globalConcurrency: 5,
+    //   defaultWorkerOptions: {
+    //     removeOnComplete: 10,
+    //     removeOnFail: 50,
+    //   },
+    // },
   },
 })
 

@@ -9,6 +9,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace'
 import type { Queues } from '../../src/types/index.js'
 import { WorkerManager } from '../../src/worker/worker_manager.js'
 import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
+import { ConnectionResolver } from '../../src/connection_resolver.js'
 
 export default class QueueWork extends BaseCommand {
   static commandName = 'queue:work'
@@ -66,9 +67,11 @@ export default class QueueWork extends BaseCommand {
     const emitter = await this.app.container.make('emitter')
     const queueConfigProvider = this.app.config.get('queue')
     const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
+    const redis = await this.app.container.make('redis')
 
     const jobs = await new JobDiscoverer(this.app.appRoot).discoverJobs()
-    this.#manager = new WorkerManager(this.app, emitter, config, jobs)
+    const connectionResolver = new ConnectionResolver(config, redis)
+    this.#manager = new WorkerManager(this.app, emitter, config, jobs, connectionResolver)
 
     this.app.listen('SIGINT', () => this.#handleShutdown())
     this.app.listen('SIGTERM', () => this.#handleShutdown())
@@ -79,7 +82,7 @@ export default class QueueWork extends BaseCommand {
 
     this.ui.logger.log('Available queues')
     const table = this.ui.table().head(['Name'])
-    availableQueues.forEach((w) => table.row([w]))
+    availableQueues.forEach((w) => table.row([String(w)]))
     table.render()
 
     return await this.terminate()

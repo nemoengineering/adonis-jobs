@@ -46,6 +46,7 @@
   "peerDependencies": {
     "@adonisjs/core": "^6.0.0",
     "@adonisjs/http-server": "^7.6.1",
+    "@adonisjs/redis": "^9.2.0",
     "@julr/adonisjs-prometheus": "^1.0.2",
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "bullmq": "^5.53.2"
@@ -74,6 +75,7 @@
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
     "@adonisjs/core": "catalog:",
+    "@adonisjs/redis": "^9.2.0",
     "@japa/assert": "^4.0.1",
     "@japa/expect": "^3.0.4",
     "@japa/expect-type": "^2.0.3",

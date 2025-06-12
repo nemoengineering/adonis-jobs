@@ -4,6 +4,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 
 import { BullMqFactory } from '../src/bull_factory.js'
 import { QueueManager } from '../src/queue_manager.js'
+import { ConnectionResolver } from '../src/connection_resolver.js'
 import type { Config, JobEvents, Queues, QueueService } from '../src/types/index.js'
 
 /**
@@ -33,7 +34,9 @@ export default class JobProvider {
         )
       }
 
-      return new QueueManager(config)
+      const redis = await this.app.container.make('redis')
+      const connectionResolver = new ConnectionResolver(config, redis)
+      return new QueueManager(config, connectionResolver)
     })
   }
 

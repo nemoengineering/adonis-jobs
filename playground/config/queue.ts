@@ -1,21 +1,32 @@
 import { defineConfig } from '@nemoventures/adonis-jobs'
 
-import env from '#start/env'
-
 const queueConfig = defineConfig({
-  multiLogger: { enabled: true },
+  /**
+   * The default connection to use. The connection
+   * should be defined in the "config/redis.ts" file.
+   */
+  connection: { connectionName: 'queues' },
 
-  connection: {
-    host: env.get('REDIS_HOST'),
-    port: env.get('REDIS_PORT'),
-    password: env.get('REDIS_PASSWORD'),
-  },
+  /**
+   * When enabled, all queues will use the same Redis connection instance.
+   * This is the recommended setting for most applications.
+   */
+  useSharedConnection: true,
 
+  /**
+   * The name of the queue to use when no queue is explicitly specified
+   * during job dispatching.
+   */
   defaultQueue: 'default',
 
+  /**
+   * Configure your queues here. Each queue can have its own connection,
+   * worker options, and job options
+   */
   queues: {
     default: {},
-    test: {},
+    notifications: {},
+    mails: {},
   },
 })
 
@@ -23,8 +34,4 @@ export default queueConfig
 
 declare module '@nemoventures/adonis-jobs/types' {
   interface Queues extends InferQueues<typeof queueConfig> {}
-
-  interface BullVersion {
-    version: 'pro'
-  }
 }

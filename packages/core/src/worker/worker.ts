@@ -8,6 +8,7 @@ import type { EmitterLike } from '@adonisjs/core/types/events'
 import { JobLogger } from './job_logger.js'
 import { BullMqFactory } from '../bull_factory.js'
 import type { BaseJobConstructor } from '../job/base_job.js'
+import type { ConnectionResolver } from '../connection_resolver.js'
 import type { BullJob, BullWorker, Config, JobEvents, QueueConfig, Queues } from '../types/index.js'
 
 export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
@@ -18,6 +19,7 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #queueName: keyof KnownQueues
   #config: Config<KnownQueues>
   #jobs: Map<string, BaseJobConstructor>
+  #connectionResolver: ConnectionResolver
 
   constructor(options: {
     app: ApplicationService
@@ -25,12 +27,14 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
     jobs: Map<string, BaseJobConstructor>
     queueName: keyof KnownQueues
     config: Config<KnownQueues>
+    connectionResolver: ConnectionResolver
   }) {
     this.#app = options.app
     this.#emitter = options.emitter
     this.#jobs = options.jobs
     this.#queueName = options.queueName
     this.#config = options.config
+    this.#connectionResolver = options.connectionResolver
   }
 
   /**
@@ -38,13 +42,14 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
    */
   #createBullWorker(): BullWorker {
     const queueConfig = this.#config.queues[this.#queueName]
+    const connection = this.#connectionResolver.resolve(queueConfig.connection)
 
     return BullMqFactory.createWorker(
       String(this.#queueName),
       async (job, token) => this.#processJob(job, token),
       {
         autorun: false,
-        connection: this.#config.connection,
+        connection,
         telemetry: new BullMQOtel('adonis-jobs'),
         ...queueConfig.defaultWorkerOptions,
         ...(queueConfig?.globalConcurrency && { concurrency: queueConfig.globalConcurrency }),

@@ -10,7 +10,7 @@ const app = new AppFactory().create(BASE_URL, () => {}) as ApplicationService
 await app.init()
 
 const queueConfigProvider = defineConfig({
-  connection: {},
+  connection: { connectionName: 'default' as never },
   defaultQueue: 'default',
   queues: {
     default: {},
