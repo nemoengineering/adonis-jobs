@@ -3,7 +3,7 @@ import { defineConfig } from '@nemoventures/adonis-jobs'
 import env from '#start/env'
 
 const queueConfig = defineConfig({
-  experimental: { multiLogger: { enabled: true } },
+  multiLogger: { enabled: true },
 
   connection: {
     host: env.get('REDIS_HOST'),

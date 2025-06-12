@@ -15,14 +15,12 @@ export type Config<KnownQueues extends Record<string, QueueConfig>> = {
   connection: BullConnectionOptions
   defaultQueue: keyof KnownQueues
   queues: KnownQueues
-  experimental?: {
-    /**
-     * Multi logger allows you to use the AdonisJS logger as usual within your jobs,
-     * but logs will be sent to both your configured Pino destinations (console, files, etc.)
-     * AND to the BullMQ job logs (visible in the queue dashboard).
-     */
-    multiLogger?: { enabled?: boolean }
-  }
+  /**
+   * Multi logger allows you to use the AdonisJS logger as usual within your jobs,
+   * but logs will be sent to both your configured Pino destinations (console, files, etc.)
+   * AND to the BullMQ job logs (visible in the queue dashboard).
+   */
+  multiLogger?: { enabled?: boolean }
 }
 
 export type QueueConfig = Omit<BullQueueOptions, 'connection' | 'skipVersionCheck'> & {

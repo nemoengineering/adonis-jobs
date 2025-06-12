@@ -68,7 +68,7 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
    * Create a JobLogger instance with the current configuration
    */
   #createJobLogger(adonisLogger: Logger, job: BullJob): JobLogger {
-    const multiLoggerEnabled = this.#config.experimental?.multiLogger?.enabled ?? false
+    const multiLoggerEnabled = this.#config.multiLogger?.enabled ?? false
     return new JobLogger({
       adonisLogger,
       bullJob: job,
