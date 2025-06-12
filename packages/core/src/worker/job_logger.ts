@@ -63,6 +63,7 @@ export class JobLogger extends Logger<any> {
    * Generic log method that handles both Pino and BullMQ logging
    */
   #log(level: string, mergingObjectOrMessage: any, message?: string, ...values: any[]): void {
+    const timestamp = new Date().toISOString()
     const pinoLogMethod = this.#adonisLogger[level as keyof Logger] as (...args: any[]) => void
 
     /**
@@ -73,7 +74,7 @@ export class JobLogger extends Logger<any> {
 
       if (!this.#logToBullMQ) return
       const prefix = level.toUpperCase()
-      this.#bullJob.log(`${prefix}: ${mergingObjectOrMessage}`)
+      this.#bullJob.log(`[${timestamp}] ${prefix}: ${mergingObjectOrMessage}`)
 
       return
     }
@@ -85,7 +86,9 @@ export class JobLogger extends Logger<any> {
 
     if (!this.#logToBullMQ) return
     const prefix = level.toUpperCase()
-    this.#bullJob.log(`${prefix}: ${this.#formatMessage(message || '', mergingObjectOrMessage)}`)
+    this.#bullJob.log(
+      `[${timestamp}] ${prefix}: ${this.#formatMessage(message || '', mergingObjectOrMessage)}`,
+    )
   }
 
   info(mergingObject: any, message?: string, ...values: any[]): void
