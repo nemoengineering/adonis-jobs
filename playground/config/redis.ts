@@ -26,6 +26,16 @@ const redisConfig = defineConfig({
       retryStrategy(times) {
         return times > 10 ? null : times * 50
       },
+      maxRetriesPerRequest: null,
+    },
+
+    queues: {
+      host: env.get('REDIS_HOST'),
+      port: 6380,
+      password: env.get('REDIS_PASSWORD', ''),
+      db: 0,
+      keyPrefix: '',
+      maxRetriesPerRequest: null,
     },
   },
 })

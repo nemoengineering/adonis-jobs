@@ -1,8 +1,9 @@
 import type { ConfigProvider } from '@adonisjs/core/types'
+import type { RedisConnections } from '@adonisjs/redis/types'
 
 import type { BaseJob } from '../job/base_job.js'
 import type { QueueManager } from '../queue_manager.js'
-import type { BullQueueOptions, BullWorkerOptions, BullConnectionOptions } from './bull.js'
+import type { BullQueueOptions, BullWorkerOptions } from './bull.js'
 
 export * from './scheduler.js'
 export * from './events.js'
@@ -11,10 +12,19 @@ export type { JobConstructor } from '../job/job.js'
 
 export interface QueueService extends QueueManager {}
 
-export type Config<KnownQueues extends Record<string, QueueConfig>> = {
-  connection: BullConnectionOptions
+/**
+ * Connection configuration types
+ */
+export interface QueueConnectionConfig {
+  connectionName: keyof RedisConnections
+}
+
+export interface Config<KnownQueues extends Record<string, QueueConfig>> {
+  connection: QueueConnectionConfig
+  useSharedConnection?: boolean
   defaultQueue: keyof KnownQueues
   queues: KnownQueues
+
   /**
    * Multi logger allows you to use the AdonisJS logger as usual within your jobs,
    * but logs will be sent to both your configured Pino destinations (console, files, etc.)
@@ -24,6 +34,7 @@ export type Config<KnownQueues extends Record<string, QueueConfig>> = {
 }
 
 export type QueueConfig = Omit<BullQueueOptions, 'connection' | 'skipVersionCheck'> & {
+  connection?: QueueConnectionConfig
   globalConcurrency?: number
   defaultWorkerOptions?: WorkerOptions
 }

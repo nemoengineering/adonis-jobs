@@ -2,6 +2,7 @@ import { BullMQOtel } from 'bullmq-otel'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
 import { BullMqFactory } from './bull_factory.js'
+import type { ConnectionResolver } from './connection_resolver.js'
 import type {
   BullFlowProducer,
   BullQueue,
@@ -17,7 +18,10 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   #queues: Map<keyof KnownQueues, BullQueue> = new Map()
   #queuesEvents: Map<keyof KnownQueues, BullQueueEvents> = new Map()
 
-  constructor(public config: Config<KnownQueues>) {}
+  constructor(
+    public config: Config<KnownQueues>,
+    private connectionResolver: ConnectionResolver,
+  ) {}
 
   /**
    * Get a queue by its name or throw an error if the queue
@@ -61,10 +65,12 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     const cachedQueue = this.#queues.get(queueName)
     if (cachedQueue) return cachedQueue as BullQueue<DataType, ReturnType>
 
-    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
+    const { globalConcurrency, defaultWorkerOptions, connection, ...queueOptions } =
+      this.#getQueue(queueName)
+
     const queue = BullMqFactory.createQueue<DataType, ReturnType>(String(queueName), {
       ...queueOptions,
-      connection: this.config.connection,
+      connection: this.connectionResolver.resolve(connection),
       telemetry: new BullMQOtel('adonis-jobs'),
     })
 
@@ -77,10 +83,12 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     const cachedQueueEvents = this.#queuesEvents.get(queueName)
     if (cachedQueueEvents) return cachedQueueEvents
 
-    const { globalConcurrency, defaultWorkerOptions, ...queueOptions } = this.#getQueue(queueName)
+    const { globalConcurrency, defaultWorkerOptions, connection, ...queueOptions } =
+      this.#getQueue(queueName)
+
     const queueEvents = BullMqFactory.createQueueEvents(String(queueName), {
       ...queueOptions,
-      connection: this.config.connection,
+      connection: this.connectionResolver.resolve(connection),
       telemetry: new BullMQOtel('adonis-jobs'),
     })
 
@@ -92,7 +100,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     if (this.#flowProducer) return this.#flowProducer
 
     this.#flowProducer = BullMqFactory.createFlowProducer({
-      connection: this.config.connection,
+      connection: this.connectionResolver.resolve(this.config.connection),
       telemetry: new BullMQOtel('adonis-jobs'),
     })
 
@@ -140,7 +148,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     const { grace = 0, limit = 100, type = 'completed' } = options ?? {}
 
     const promises = queues.map(async (name) => {
-      const queue = this.useQueue(name)
+      const queue = await this.useQueue(name)
 
       const deletedJobIds = await queue.clean(grace, limit, type)
       return { queue: name, count: deletedJobIds.length }
