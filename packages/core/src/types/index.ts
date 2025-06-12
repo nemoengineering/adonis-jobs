@@ -1,4 +1,5 @@
 import type { ConfigProvider } from '@adonisjs/core/types'
+import type { RedisClusterConnection } from '@adonisjs/redis'
 import type { RedisConnections } from '@adonisjs/redis/types'
 
 import type { BaseJob } from '../job/base_job.js'
@@ -10,6 +11,15 @@ export * from './events.js'
 export * from './bull.js'
 export type { JobConstructor } from '../job/job.js'
 
+/**
+ * Health check configuration
+ */
+export interface HealthCheckConfig {
+  enabled: boolean
+  endpoint?: string
+  checks?: (context: { connection: RedisClusterConnection }) => any[]
+}
+
 export interface QueueService extends QueueManager {}
 
 /**
@@ -19,11 +29,14 @@ export interface QueueConnectionConfig {
   connectionName: keyof RedisConnections
 }
 
-export interface Config<KnownQueues extends Record<string, QueueConfig>> {
+export interface Config<
+  KnownQueues extends Record<string, QueueConfig> = Record<string, QueueConfig>,
+> {
   connection: QueueConnectionConfig
   useSharedConnection?: boolean
   defaultQueue: keyof KnownQueues
   queues: KnownQueues
+  healthCheck?: HealthCheckConfig
 
   /**
    * Multi logger allows you to use the AdonisJS logger as usual within your jobs,

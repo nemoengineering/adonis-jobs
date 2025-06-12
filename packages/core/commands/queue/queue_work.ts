@@ -1,3 +1,5 @@
+/// <reference types="@adonisjs/redis/redis_provider" />
+
 import { createServer } from 'node:http'
 import { Server } from '@adonisjs/http-server'
 import { configProvider } from '@adonisjs/core'
@@ -10,6 +12,7 @@ import type { Queues } from '../../src/types/index.js'
 import { WorkerManager } from '../../src/worker/worker_manager.js'
 import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
 import { ConnectionResolver } from '../../src/connection_resolver.js'
+import { HealthCheckManager } from '../../src/health/health_check_manager.js'
 
 export default class QueueWork extends BaseCommand {
   static commandName = 'queue:work'
@@ -42,6 +45,7 @@ export default class QueueWork extends BaseCommand {
 
   #manager!: WorkerManager
   #appLogger!: LoggerService
+  #healthCheckManager!: HealthCheckManager
   #server: NodeServer | undefined
 
   /**
@@ -72,6 +76,7 @@ export default class QueueWork extends BaseCommand {
     const jobs = await new JobDiscoverer(this.app.appRoot).discoverJobs()
     const connectionResolver = new ConnectionResolver(config, redis)
     this.#manager = new WorkerManager(this.app, emitter, config, jobs, connectionResolver)
+    this.#healthCheckManager = new HealthCheckManager(config, redis)
 
     this.app.listen('SIGINT', () => this.#handleShutdown())
     this.app.listen('SIGTERM', () => this.#handleShutdown())
@@ -99,7 +104,16 @@ export default class QueueWork extends BaseCommand {
     const config = this.app.config.get<any>('app.http')
     const server = new Server(this.app, encryption, emitter, this.#appLogger, config)
 
-    server.getRouter().get('/internal/healthz', ({ response }) => response.ok('ok'))
+    const healthChecks = this.#healthCheckManager.createHealthChecks()
+    if (!healthChecks) return server
+
+    const endpoint = this.#healthCheckManager.getEndpoint()
+    server.getRouter().get(endpoint, async ({ response }) => {
+      const report = await healthChecks.run()
+      if (report.isHealthy) return response.ok(report)
+
+      return response.serviceUnavailable(report)
+    })
 
     return server
   }
