@@ -48,6 +48,7 @@ export default defineConfig({
     },
     () => import('@nemoventures/adonis-jobs/queue_provider'),
     () => import('@julr/adonisjs-prometheus/prometheus_provider'),
+    () => import('#providers/app_provider'),
   ],
 
   /*
