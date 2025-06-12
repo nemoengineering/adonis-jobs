@@ -9,6 +9,7 @@
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "lint": "eslint .",
+    "queue:watch": "node --watch-path=./app ace queue:work -f",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },

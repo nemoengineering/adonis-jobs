@@ -2,6 +2,7 @@
   exports({ to: app.configPath('queue.ts') })
 }}}
 import { defineConfig } from '@nemoventures/adonis-jobs'
+import { RedisCheck, RedisMemoryUsageCheck } from '@adonisjs/redis'
 
 const queueConfig = defineConfig({
   /**
@@ -15,6 +16,20 @@ const queueConfig = defineConfig({
    * This is the recommended setting for most applications.
    */
   useSharedConnection: true,
+
+  /**
+   * Health check configuration for your workers.
+   */
+  healthCheck: {
+    enabled: true,
+    endpoint: '/internal/healthz',
+    checks: ({ connection }) => [
+      new RedisCheck(connection),
+      new RedisMemoryUsageCheck(connection)
+        .warnWhenExceeds('100MB')
+        .failWhenExceeds('200MB'),
+    ],
+  },
 
   /**
    * The name of the queue to use when no queue is explicitly specified
