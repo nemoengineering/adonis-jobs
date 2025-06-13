@@ -33,6 +33,7 @@ export class JobDispatcher<
     this.#jobClass = jobClass
     this.#data = data
     this.#queueName = jobClass.defaultQueue
+    this.#options = { ...jobClass.options }
   }
 
   /**

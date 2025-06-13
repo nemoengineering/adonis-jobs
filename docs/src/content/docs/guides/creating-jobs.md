@@ -119,6 +119,45 @@ export default class SendEmailJob extends Job<SendEmailJobData, void> {
 
 Now all instances of this job will use the `emails` queue unless overridden during dispatch.
 
+## Default Options
+
+Set default BullMQ options for a job class to avoid repeating them every time you dispatch:
+
+```typescript
+import { Job } from '@nemoventures/adonis-jobs'
+import type { BullJobsOptions } from '@nemoventures/adonis-jobs/types'
+
+export default class SyncAirdropsJob extends Job<SyncAirdropsData, void> {
+  static options: BullJobsOptions = {
+    attempts: 5,
+    backoff: {
+      type: 'exponential',
+      delay: 1000,
+    },
+    removeOnComplete: 10,
+    removeOnFail: 50,
+  }
+
+  async process(): Promise<void> {
+    // Job logic
+  }
+}
+```
+
+Now you can dispatch the job without having to specify options every time:
+
+```typescript
+// These options will be automatically applied
+await SyncAirdropsJob.dispatch(data)
+
+// You can still override specific options if needed when dispatching
+await SyncAirdropsJob.dispatch(data)
+  .with('attempts', 3)
+  .with('delay', 5000)
+```
+
+The `.with()` method will merge with and override the default options.
+
 ## Error Handling
 
 ### Failing Jobs
