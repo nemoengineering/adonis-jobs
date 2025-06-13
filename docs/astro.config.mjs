@@ -5,6 +5,7 @@ import starlightNextjsTheme from 'starlight-nextjs-theme'
 
 // https://astro.build/config
 export default defineConfig({
+  base: "adonis-jobs",
 	integrations: [
 		starlight({
       plugins: [starlightNextjsTheme()],
