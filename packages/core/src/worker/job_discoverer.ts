@@ -18,10 +18,11 @@ export class JobDiscoverer {
   }
 
   /**
-   * Import job files from the application directory
+   * Import job files from the application's app directory
    */
   async #importAppJobs() {
-    const jobFiles = await fsReadAll(this.#appRoot, {
+    const appDir = new URL('./app', this.#appRoot)
+    const jobFiles = await fsReadAll(appDir, {
       pathType: 'url',
       ignoreMissingRoot: true,
       filter: (file) => {

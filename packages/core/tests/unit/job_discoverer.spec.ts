@@ -86,4 +86,25 @@ test.group('JobDiscoverer', () => {
       await discoverer.discoverJobs()
     }, DuplicateJobException as any)
   })
+
+  test('ignores jobs outside of ./app directory', async ({ assert }) => {
+    const { app } = await setupApp()
+
+    await createFakeJob({ path: 'app/jobs/user_job.ts', name: 'UserJob' })
+
+    await createFakeJob({ path: 'config/email_job.ts', name: 'EmailJob' })
+    await createFakeJob({ path: 'start/startup_job.ts', name: 'StartupJob' })
+    await createFakeJob({ path: 'providers/provider_job.ts', name: 'ProviderJob' })
+
+    const discoverer = new JobDiscoverer(app.appRoot)
+    const jobs = await discoverer.discoverJobs()
+
+    assert.lengthOf(jobs, 1 + kBuiltinJobs.length)
+
+    const jobNames = jobs.map((job) => job.name)
+    assert.include(jobNames, 'UserJob')
+    assert.notInclude(jobNames, 'EmailJob')
+    assert.notInclude(jobNames, 'StartupJob')
+    assert.notInclude(jobNames, 'ProviderJob')
+  })
 })
