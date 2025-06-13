@@ -17,7 +17,7 @@ A powerful and type-safe job queue system for AdonisJS 6 applications. Built on 
 
 ## Documentation
 
-For complete documentation, examples, and guides, visit: **[https://nemo-jobs.dev](https://nemo-jobs.dev)**
+For complete documentation, examples, and guides, visit: **[https://nemoengineering.github.io/adonis-jobs/](https://nemoengineering.github.io/adonis-jobs/)**
 
 ## Quick Start
 
