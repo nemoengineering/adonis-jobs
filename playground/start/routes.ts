@@ -17,7 +17,7 @@ import Cleanup from '../commands/cleanup.js'
 import WriteFileJob from '../app/jobs/write_file_job.js'
 import NotificationJob from '../app/modules/notifications/jobs/notification_job.js'
 
-router.get('/', async () => 'It works!')
+router.get('/', async ({ view }) => view.render('home'))
 
 router.get('/test-job', async () => {
   await WriteFileJob.dispatch({ data: 'Hello, World!' })
@@ -60,7 +60,7 @@ router.get('/test-scheduler/:queue?', async ({ params }) => {
 router.get('/scheduled-command-job', async () => {
   await JobScheduler.schedule({
     key: 'test-command-job',
-    job: CommandJob.from(Cleanup),
+    job: CommandJob.from(Cleanup as any),
     data: { args: ['--force'] },
     repeat: { pattern: '*/10 * * * * *' },
   })
@@ -69,7 +69,9 @@ router.get('/scheduled-command-job', async () => {
 })
 
 router.get('/command-job', async () => {
-  await CommandJob.from(Cleanup).dispatch({ args: ['--force'] })
+  await CommandJob.from(Cleanup as any).dispatch({ args: ['--force'] })
+
+  return 'Command job dispatched!'
 })
 
 router.get('/list-scheduled', async () => {

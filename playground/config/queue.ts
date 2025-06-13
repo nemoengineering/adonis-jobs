@@ -45,14 +45,13 @@ const queueConfig = defineConfig({
     /**
      * Example of a queue with specific connection and options
      */
-    // priority: {
-    //   connection: { connectionName: 'priority' },
-    //   globalConcurrency: 5,
-    //   defaultWorkerOptions: {
-    //     removeOnComplete: 10,
-    //     removeOnFail: 50,
-    //   },
-    // },
+    priority: {
+      globalConcurrency: 5,
+      defaultWorkerOptions: {
+        removeOnComplete: { count: 100 },
+        removeOnFail: { count: 100 },
+      },
+    },
   },
 })
 

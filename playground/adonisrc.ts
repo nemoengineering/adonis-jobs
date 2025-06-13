@@ -49,7 +49,8 @@ export default defineConfig({
     () => import('@nemoventures/adonis-jobs/queue_provider'),
     () => import('@julr/adonisjs-prometheus/prometheus_provider'),
     () => import('#providers/app_provider'),
-    () => import('@adonisjs/redis/redis_provider')
+    () => import('@adonisjs/redis/redis_provider'),
+    () => import('@adonisjs/core/providers/edge_provider'),
   ],
 
   /*
@@ -88,4 +89,10 @@ export default defineConfig({
   },
 
   directories: { jobs: 'app/jobs' },
+  metaFiles: [
+    {
+      pattern: 'resources/views/**/*.edge',
+      reloadServer: false,
+    },
+  ],
 })
