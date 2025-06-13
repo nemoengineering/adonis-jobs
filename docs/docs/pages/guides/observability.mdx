@@ -3,12 +3,13 @@ title: Observability and Monitoring
 description: Set up Prometheus metrics and Opentelemetry for monitoring your job queues
 ---
 
+# Observability and Monitoring
 
 AdonisJS jobs package provides built-in observability features to help you monitor and manage your job queues effectively. This includes integration with Prometheus for metrics and Opentelemetry for tracing.
 
 ## Prometheus Metrics
 
-The package expose a custom collector for the package [`@julr/adonisjs-prometheus`](https://github.com/Julien-R44/adonisjs-prometheus) to collect metrics from your jobs queues. 
+The package expose a custom collector for the package [`@julr/adonisjs-prometheus`](https://github.com/Julien-R44/adonisjs-prometheus) to collect metrics from your jobs queues.
 
 Make sure to install and configure the `@julr/adonisjs-prometheus` package in your AdonisJS application first, and then, add the following collector to your `config/prometheus` file:
 
@@ -61,7 +62,7 @@ bullmqCollector({
 
 ## Opentelemetry Tracing
 
-This package also supports Opentelemetry for distributed tracing of your job processing. 
+This package also supports Opentelemetry for distributed tracing of your job processing.
 
 Under the hood, it uses the `bullmq-otel` package created by the BullMQ team, which automatically instruments job processing and emits spans for each job.
 
@@ -121,7 +122,7 @@ export default class MyJob extends Job {
   async handle(): Promise<void> {
     // This will be logged to both Pino and BullMQ
     this.logger.info('Starting file write job')
-    
+
     // The service can also use logging that will be properly routed
     await this.email.processData(this.data.data)
   }
@@ -140,7 +141,7 @@ export class TestService {
   /**
    * Here, the MultiLogger will be automatically injected when
    * injected from a Job.
-   * 
+   *
    * If the service is also used outside of a Job context,
    * no worries, the logger will still be available
    * and will log to Pino targets only.
@@ -150,10 +151,8 @@ export class TestService {
   async processData(data: string): Promise<void> {
     // This log will be sent to both Pino and BullMQ when multiLogger is enabled
     this.logger.info('Processing data in service', { dataLength: data.length })
-    
+
     // Your service logic here
   }
 }
 ```
-
-

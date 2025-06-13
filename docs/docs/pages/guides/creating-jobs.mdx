@@ -3,6 +3,8 @@ title: Creating Jobs
 description: Learn how to create and structure jobs in @nemoventures/adonis-jobs
 ---
 
+# Creating Jobs
+
 Jobs are the core building blocks of your queue system. They encapsulate the work that needs to be done in the background.
 
 ## Generate a Job
@@ -39,10 +41,10 @@ export type SendEmailJobReturn = {
 export default class SendEmailJob extends Job<SendEmailJobData, SendEmailJobReturn> {
   async process(): Promise<SendEmailJobReturn> {
     const { to, subject, template, variables } = this.data
-    
+
     // Send email logic here
     const messageId = await sendEmail({ to, subject, template, variables })
-    
+
     return { messageId, success: true }
   }
 }
@@ -86,16 +88,16 @@ export default class SendEmailJob extends Job<SendEmailJobData, SendEmailJobRetu
   async process(): Promise<SendEmailJobReturn> {
     // Job data passed during dispatch
     const emailData = this.data
-    
+
     // BullMQ Job instance
     const jobId = this.job
-    
+
     // BullMQ Worker instance
     const worker = this.worker
-    
+
     // Logger instance
     this.logger.info('Processing email job', { to: emailData.to })
-    
+
     return { messageId: 'abc123', success: true }
   }
 }
@@ -219,18 +221,18 @@ Jobs can be placed anywhere in your codebase. The only requirement is that they:
 
 The package will automatically discover all job files in your codebase, so you don't need to register them manually. What will happen in the background when dispatching a job is that the package will store the job class name in Redis, and when processing the job, it will dynamically import the job file based on the class name.
 
-One caveat of this approach is that if you rename a Job class name (not the file path), and you have already dispatched jobs in the queue, those jobs will fail to process because the package will not be able to find the job class. 
+One caveat of this approach is that if you rename a Job class name (not the file path), and you have already dispatched jobs in the queue, those jobs will fail to process because the package will not be able to find the job class.
 
 To avoid this, you can set the `nameOverride` property in the job class:
 
 ```typescript
 /**
- * Let's say this class was previously named `SendEmailJob` and you 
+ * Let's say this class was previously named `SendEmailJob` and you
  * renamed it to `SendEmailNotificationJob`.
  */
 export default class SendEmailNotificationJob extends Job<SendEmailJobData, void> {
   // This will allow the previously dispatched jobs to be processed correctly
-  static nameOverride = 'SendEmailJob' 
+  static nameOverride = 'SendEmailJob'
 
   async process(): Promise<void> {
     // Job logic

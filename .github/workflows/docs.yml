@@ -2,7 +2,10 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+
+env:
+  BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
 
 permissions:
   contents: read
@@ -16,11 +19,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install, build, and upload site
-        uses: withastro/action@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
-          path: ./docs
-          package-manager: npm
+          node-version: 20
+        env:
+          BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
+
+      - name: Build documentation
+        run: pnpm build
+        working-directory: ./docs
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs/dist
 
   deploy:
     needs: build
