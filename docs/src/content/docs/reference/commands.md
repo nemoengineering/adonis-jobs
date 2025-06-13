@@ -1,0 +1,122 @@
+---
+title: Commands Reference
+description: List of available commands for managing and monitoring job queues in AdonisJS
+---
+
+## make:job
+
+Create a new job class.
+
+```bash
+node ace make:job SendEmail
+```
+
+## queue:work
+
+Start workers to process jobs from queues.
+
+```bash
+# Start workers for all queues
+node ace queue:work
+
+# Start workers for specific queues
+node ace queue:work --queues=emails,notifications
+
+# List available queues
+node ace queue:work --list
+
+# Force exit without waiting for active jobs
+node ace queue:work --force-exit
+
+# Use app router instead of dedicated server
+node ace queue:work --use-app-router
+```
+
+## queue:clear
+
+Remove all jobs from queues.
+
+```bash
+# Clear all queues
+node ace queue:clear
+
+# Clear specific queue
+node ace queue:clear --queue=emails
+
+# Force in production
+node ace queue:clear --force
+```
+
+## queue:drain
+
+Remove all waiting and active jobs from queues.
+
+```bash
+# Drain all queues
+node ace queue:drain
+
+# Drain specific queue
+node ace queue:drain --queue=emails
+
+# Force in production
+node ace queue:drain --force
+```
+
+## queue:clean
+
+Clean jobs of a specific type older than a grace period.
+
+```bash
+# Clean completed jobs (default)
+node ace queue:clean
+
+# Clean specific job type
+node ace queue:clean --type=failed
+
+# Clean with grace period (5 minutes)
+node ace queue:clean --grace=300000
+
+# Clean specific queue with limit
+node ace queue:clean --queue=emails --limit=50 --type=completed
+
+# Force in production
+node ace queue:clean --force
+```
+
+Available job types: `completed`, `wait`, `active`, `paused`, `prioritized`, `delayed`, `failed`
+
+## queue:scheduler:list
+
+List all scheduled jobs.
+
+```bash
+# List all scheduled jobs
+node ace queue:scheduler:list
+
+# Filter by queue
+node ace queue:scheduler:list --queue=emails
+```
+
+## queue:scheduler:clear
+
+Clear all scheduled jobs.
+
+```bash
+# Clear all scheduled jobs
+node ace queue:scheduler:clear
+
+# Clear from specific queue
+node ace queue:scheduler:clear --queue=emails
+
+# Skip confirmation
+node ace queue:scheduler:clear --force
+```
+
+## queue:scheduler:remove
+
+Remove a specific scheduled job by its key.
+
+```bash
+node ace queue:scheduler:remove "my-scheduled-job-key"
+```
+

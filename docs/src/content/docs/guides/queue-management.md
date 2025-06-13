@@ -1,0 +1,75 @@
+---
+title: Queue Management
+description: Monitor, manage and control your job queues with built-in commands and APIs
+---
+
+Now that you have setup your jobs, that you can dispatch them, we need to run a worker to process those jobs. 
+
+A worker is another process that run aside your AdonisJS application and is responsible for processing jobs from the queue. You can run multiple workers to process jobs concurrently, and you can even run workers on different machines to scale your job processing.
+
+## Management Commands
+
+### Start Workers
+
+Start processing jobs on your queues:
+
+```bash
+# Start workers for all queues
+node ace queue:work
+
+# Start workers for specific queues
+node ace queue:work --queue emails
+node ace queue:work --queue emails,reports,background
+```
+
+### Clean Queues
+
+Removes jobs in a specific state, but keeps jobs within a certain grace period.
+
+```bash
+# Clean completed jobs older than 1 hour
+node ace queue:clean --type completed --grace 3600
+
+# Clean failed jobs with limit
+node ace queue:clean --type failed --limit 100
+
+# Clean specific queue
+node ace queue:clean --queue emails --type completed
+```
+
+Options:
+- `--type`: `completed`, `wait`, `active`, `paused`, `prioritized`, `delayed`, `failed`
+- `--grace`: Age in seconds (for time-based cleaning)
+- `--limit`: Maximum number of jobs to clean
+- `--queue`: Specific queue to clean
+
+### Clear Queues
+
+Completely remove all jobs from a queue :
+
+```bash
+# Clear all jobs from default queue
+node ace queue:clear
+
+# Clear specific queue
+node ace queue:clear --queue background-tasks
+
+# Clear without confirmation
+node ace queue:clear --queue critical --force
+```
+
+### Drain Queues
+
+Removes all jobs that are waiting or delayed, but not active, waiting-children, completed or failed 
+
+```bash
+# Drain default queue
+node ace queue:drain
+
+# Drain specific queue
+node ace queue:drain --queue notifications
+```
+
+## Next Steps
+
+Learn how to implement robust [error handling](/guides/error-handling) for your jobs and queues.

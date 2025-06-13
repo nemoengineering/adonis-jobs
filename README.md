@@ -3,208 +3,61 @@
   <p>Job queues for your AdonisJS applications</p>
 </div>
 
-## **Pre-requisites**
+## About
 
-The `@nemoventures/adonis-jobs` package requires `@adonisjs/core >= 6.2.0`
+A powerful and type-safe job queue system for AdonisJS 6 applications. Built on top of BullMQ, it provides a clean API for managing background jobs, scheduled tasks, and complex job workflows.
 
-## **Setup**
+**Features:**
+- Clean BullMQ Integration
+- Dedicated Ace commands for job management
+- Scheduled and delayed job execution
+- Flows: chains and complex workflows
+- Observability with built-in metrics and Opentelemetry support
+- QueueDash integration
 
-Install the package from the npm registry as follows.
+## Documentation
 
-```
-npm i @nemoventures/adonis-jobs
-# or
-yarn add @nemoventures/adonis-jobs
-```
+For complete documentation, examples, and guides, visit: **[https://nemo-jobs.dev](https://nemo-jobs.dev)**
 
-Next, configure the package by running the following ace command.
+## Quick Start
 
-```
+```bash
 node ace configure @nemoventures/adonis-jobs
 ```
 
-And then add the path to the `package.json`
-
-```json
-{
-  "name": "adonis-app",
-  "version": "0.0.0",
-  "imports": {
-    ...
-    "#jobs/*": "./app/jobs/*.js"
-  },
-  ...
-}
-```
-
-# Usage
-
-## Creating a job
-
-To create a new job run `node ace make:job <job name>`. The `process` method implements the work the job should do.
-
-E.g. `node ace make:job concat` will result in the following job to be created
+Create your first job:
 
 ```typescript
 import { Job } from '@nemoventures/adonis-jobs'
 
-export type ConcatJobData = { name: [string, string] }
+type SendEmailJobData = {
+  email: string
+  subject: string
+}
 
-export type ConcatJobReturn = { fullName: string }
-
-export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
-  async process(): Promise<ConcatJobReturn> {
-    return { fullName: this.data.name.join(' ') }
+export default class SendEmailJob extends Job<SendEmailJobData, void> {
+  async handle(payload: { email: string; subject: string }) {
+    // Send email logic here
   }
 }
 ```
 
-You can use `@inject()` to on the constructor or methods like would expect in AdonisJS.
-
-## Dispatching a job
-
-A job can be dispatched and handled in the background, or you can wait for the result of the job.
+Dispatch it:
 
 ```typescript
-import ConcatJob from '#jobs/concat_job'
-import { BulkDispatcher, JobChain } from '@nemoventures/adonis-jobs'
-
-// Dispatch a job
-await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] })
-
-// Dispatch and wait for result
-const { fullName } = await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).waitResult()
-
-// Dispach with retry
-await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] })
-  .with('attempts', 10)
-  .with('backoff', {
-    type: 'exponential',
-    delay: 1000,
-  })
-
-// Dispatch jobs in bulk
-await new BulkDispatcher([
-  ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }),
-  ConcatJob.dispatch({ name: ['Marie', 'Curie'] }),
-]).dispatch()
-
-// Dispatch a sequential jon chain
-await new JobChain([
-  ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }),
-  ConcatJob.dispatch({ name: ['Marie', 'Curie'] }),
-]).dispatch()
-```
-
-## Queues
-
-By default, all jobs are dispatched on the default queue. You can add more queues in the `config/queue.ts` file.
-Also, you can sed default queue / worker settings here.
-
-```typescript
-const queueConfig = defineConfig({
-  defaultQueue: 'default',
-  queues: {
-    default: {},
-    priority: {
-      globalConcurrency: 20,
-      defaultWorkerOptions: {
-        removeOnComplete: { age: string.seconds.parse('3 days') },
-        removeOnFail: { age: string.seconds.parse('7 days') },
-      },
-    },
-  },
+await SendEmailJob.dispatch({ 
+  email: 'user@example.com', 
+  subject: 'Welcome!' 
 })
 ```
 
-### Dispatch a job on a different queue
+And run your worker:
 
-You can send a job to a different queue using `onQueue`.
-
-```typescript
-await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).onQueue('priority')
+```bash
+node ace queue:work
 ```
 
-Or you can set the default queue for a specific job in the class.
+## License
 
-```typescript
-export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
-  static defaultQueue: keyof Queues = 'priority'
-  ...
-}
-```
+MIT
 
-## Dispatching a job flow
-
-Use `JobFlow` to start a flow job. Read more about flow jobs in the [BullMQ docs](https://docs.bullmq.io/guide/flows).
-
-```typescript
-import { JobFlow } from '@nemoventures/adonis-jobs'
-
-const flow = new JobFlow(await RenovateInterior.dispatch({ name: ['Albert', 'Einstein'] }))
-
-flow.addChildJob(RenovateJob.dispatch({ place: 'ceiling' }))
-flow.addChildJob(RenovateJob.dispatch({ place: 'floor' }))
-
-// Add children to this child
-flow.addChildJob(RenovateJob.dispatch({ place: 'walls' }), (childFlow) => {
-  childFlow.addChildJob(RenovateJob.dispatch({ place: 'doors' }))
-})
-
-await flow.dispatch()
-```
-
-## Running a repeated job
-
-You can dispatch a repeated job which automatically runs on the specified schedule. Read more about repeated jobs in the [BullMQ docs](https://docs.bullmq.io/guide/jobs/repeatable)
-
-```typescript
-// Dispatch a repeated job
-await ConcatJob.dispatch({ name: ['Albert', 'Einstein'] }).with('repeat', { pattern: '0 2 * * 0' })
-```
-
-## Handling errors
-
-To react on a failing job you can overwrite the `onFailed` method on the job class.
-
-```typescript
-import { Job } from '@nemoventures/adonis-jobs'
-
-export type ConcatJobData = { name: [string, string] }
-
-export type ConcatJobReturn = { fullName: string }
-
-export default class ConcatJob extends Job<ConcatJobData, ConcatJobReturn> {
-  async process(): Promise<ConcatJobReturn> {
-    if (this.data.name.length === 0) {
-      // this fails the job and skips retries
-      this.fail('Must input a name')
-    }
-
-    return { fullName: this.data.name.join(' ') }
-  }
-
-  async onFailed() {
-    this.logger.error({ error: this.error }, 'concat has failed')
-    if (this.allAttemptsMade()) {
-      // e.g. notify user
-    }
-  }
-}
-```
-
-## Running a Job Worker
-
-To execute the dispatched Jobs run `node ace queue:work`
-
-## Job dashboard
-
-This package ships with [queuedash](https://www.queuedash.com/). To use it you need to register the routes in your `start/routes.ts`
-
-```typescript
-router
-  .group(() => {
-    queueUiRoutes().prefix('/queue')
-  })
-  .prefix('/admin')
-```
