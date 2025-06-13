@@ -75,7 +75,7 @@ For logging inside jobs, we provide a child logger instance that automatically i
 You can use it like this:
 
 ```typescript
-import { Job } from '@nemoengineering/adonis-jobs'
+import { Job } from '@nemoventures/adonis-jobs'
 
 export default class MyJob extends Job {
   async handle() {

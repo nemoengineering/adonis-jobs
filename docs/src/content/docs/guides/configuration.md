@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: Configure queues, workers, and job settings for @nemoengineering/adonis-jobs
+description: Configure queues, workers, and job settings for @nemoventures/adonis-jobs
 ---
 
 The package configuration is managed through the `config/queue.ts` file. This file defines your queues, worker settings, and global options.
@@ -100,7 +100,7 @@ const queueConfig = defineConfig({
 To enable BullMQ Pro features, add the version declaration in the configuration file:
 
 ```typescript
-declare module '@nemoengineering/adonis-jobs/types' {
+declare module '@nemoventures/adonis-jobs/types' {
   interface Queues extends InferQueues<typeof queueConfig> {}
   interface BullVersion {
     version: 'pro' // Enable BullMQ Pro features

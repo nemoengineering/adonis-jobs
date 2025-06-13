@@ -1,9 +1,9 @@
 ---
 title: Introduction
-description: Get started with @nemoengineering/adonis-jobs - A robust job queue system for AdonisJS
+description: Get started with @nemoventures/adonis-jobs - A robust job queue system for AdonisJS
 ---
 
-@nemoengineering/adonis-jobs is a powerful job queue package for AdonisJS 6 applications built on top of BullMQ
+@nemoventures/adonis-jobs is a powerful job queue package for AdonisJS 6 applications built on top of BullMQ
 
 ## Key Features
 

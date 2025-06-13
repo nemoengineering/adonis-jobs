@@ -1,6 +1,6 @@
 ---
 title: Creating Jobs
-description: Learn how to create and structure jobs in @nemoengineering/adonis-jobs
+description: Learn how to create and structure jobs in @nemoventures/adonis-jobs
 ---
 
 Jobs are the core building blocks of your queue system. They encapsulate the work that needs to be done in the background.
@@ -16,7 +16,7 @@ node ace make:job send_email
 This creates a job file at `app/jobs/send_email_job.ts`:
 
 ```typescript
-import { Job } from '@nemoengineering/adonis-jobs'
+import { Job } from '@nemoventures/adonis-jobs'
 
 /**
  * Here you can define the data type your job expects.
@@ -54,7 +54,7 @@ You can inject dependencies with the `@inject()` decorator in your job classes a
 
 ```typescript
 import { inject } from '@adonisjs/core'
-import { Job } from '@nemoengineering/adonis-jobs'
+import { Job } from '@nemoventures/adonis-jobs'
 import MailService from '#services/mail_service'
 
 export type SendEmailJobData = {
@@ -106,7 +106,7 @@ export default class SendEmailJob extends Job<SendEmailJobData, SendEmailJobRetu
 Set a default queue for a job class:
 
 ```typescript
-import { Queues } from '@nemoengineering/adonis-jobs/types'
+import { Queues } from '@nemoventures/adonis-jobs/types'
 
 export default class SendEmailJob extends Job<SendEmailJobData, void> {
   static defaultQueue: keyof Queues = 'emails'

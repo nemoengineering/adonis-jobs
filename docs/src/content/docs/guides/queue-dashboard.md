@@ -11,7 +11,7 @@ Add the dashboard routes to your `start/routes.ts` file:
 
 ```typescript
 import router from '@adonisjs/core/services/router'
-import { queueDashUiRoutes } from '@nemoengineering/adonis-jobs/ui/queuedash'
+import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
 
 // Add queue dashboard routes
 router.group(() => {

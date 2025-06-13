@@ -142,7 +142,7 @@ await new BulkDispatcher(
 Execute jobs sequentially where each job depends on the previous one:
 
 ```typescript
-import { JobChain } from '@nemoengineering/adonis-jobs'
+import { JobChain } from '@nemoventures/adonis-jobs'
 
 await new JobChain([
   ProcessOrderJob.dispatch({ orderId: '123' }),
@@ -158,7 +158,7 @@ If any job in the chain fails, subsequent jobs won't be executed.
 Create complex workflows with parent-child relationships:
 
 ```typescript
-import { JobFlow } from '@nemoengineering/adonis-jobs'
+import { JobFlow } from '@nemoventures/adonis-jobs'
 
 const parentJob = ProcessOrderJob.dispatch({ orderId: '123' })
 const flow = new JobFlow(parentJob)

@@ -8,7 +8,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
       plugins: [starlightNextjsTheme()],
-			title: '@nemoengineering/adonis-jobs',
+			title: '@nemoventures/adonis-jobs',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/nemoengineering/adonis-jobs' }],
 			sidebar: [
 				{

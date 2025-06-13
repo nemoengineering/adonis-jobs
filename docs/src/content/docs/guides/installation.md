@@ -1,9 +1,9 @@
 ---
 title: Installation
-description: Install and configure @nemoengineering/adonis-jobs in your AdonisJS application
+description: Install and configure @nemoventures/adonis-jobs in your AdonisJS application
 ---
 
-Since `@nemoengineering/adonis-jobs` supports both BullMQ and BullMQ Pro, you need to install the appropriate package based on your needs.
+Since `@nemoventures/adonis-jobs` supports both BullMQ and BullMQ Pro, you need to install the appropriate package based on your needs.
 
 ```bash
 # For BullMQ (open-source version)
@@ -21,7 +21,7 @@ Make sure you have already installed and configured `@adonisjs/redis` in your Ad
 Install and configure the package in your AdonisJS application.
 
 ```bash
-node ace configure @nemoengineering/adonis-jobs
+node ace configure @nemoventures/adonis-jobs
 ```
 
 This command will:
