@@ -1,27 +1,11 @@
-import { inject } from '@adonisjs/core'
-import { Logger } from '@adonisjs/core/logger'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-@inject()
-export abstract class PaymentService {
-  constructor(protected logger: Logger) {}
-
-  abstract processPayment(amount: number): Promise<void>
-}
-
-export class StripePaymentService extends PaymentService {
-  async processPayment(amount: number): Promise<void> {
-    this.logger.info(`Processing payment of $${amount} using Stripe`)
-  }
-}
+import { PaymentService, StripePaymentService } from '../app/services/payment_service.js'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
 
-  /**
-   * Register bindings to the container
-   */
-  register() {
+  async register() {
     this.app.container.singleton(PaymentService, (resolver) => resolver.make(StripePaymentService))
   }
 
