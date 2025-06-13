@@ -127,7 +127,7 @@ Set default BullMQ options for a job class to avoid repeating them every time yo
 import { Job } from '@nemoventures/adonis-jobs'
 import type { BullJobsOptions } from '@nemoventures/adonis-jobs/types'
 
-export default class SyncAirdropsJob extends Job<SyncAirdropsData, void> {
+export default class SendEmailJob extends Job<void, void> {
   static options: BullJobsOptions = {
     attempts: 5,
     backoff: {
@@ -148,10 +148,10 @@ Now you can dispatch the job without having to specify options every time:
 
 ```typescript
 // These options will be automatically applied
-await SyncAirdropsJob.dispatch(data)
+await SendEmailJob.dispatch(data)
 
 // You can still override specific options if needed when dispatching
-await SyncAirdropsJob.dispatch(data)
+await SendEmailJob.dispatch(data)
   .with('attempts', 3)
   .with('delay', 5000)
 ```
