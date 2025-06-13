@@ -1,0 +1,44 @@
+---
+title: Installation
+description: Install and configure @nemoengineering/adonis-jobs in your AdonisJS application
+---
+
+Since `@nemoengineering/adonis-jobs` supports both BullMQ and BullMQ Pro, you need to install the appropriate package based on your needs.
+
+```bash
+# For BullMQ (open-source version)
+npm install bullmq
+# For BullMQ Pro (enterprise version)
+npm install @taskforcesh/bullmq-pro
+```
+
+## Install package
+
+:::note
+Make sure you have already installed and configured `@adonisjs/redis` in your AdonisJS application, as this package relies on it for connection management.
+:::
+
+Install and configure the package in your AdonisJS application.
+
+```bash
+node ace configure @nemoengineering/adonis-jobs
+```
+
+This command will:
+- Install the package
+- Create the queue configuration file at `config/queue.ts`
+- Set up the necessary providers/commands in your `adonisrc.ts`
+
+## Verify Installation
+
+Create a test job to verify everything is working:
+
+```bash
+node ace make:job test
+```
+
+This should create a job file at `app/jobs/test_job.ts`. If successful, you're ready to start using the package!
+
+## Next Steps
+
+Now that you have the package installed, learn how to [configure queues and workers](/guides/configuration) for your application.
