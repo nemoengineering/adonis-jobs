@@ -4,7 +4,14 @@ import type { Logger } from '@adonisjs/core/logger'
 import encryption from '@adonisjs/core/services/encryption'
 
 import { BullMqFactory } from '../bull_factory.js'
-import type { BullJob, BullWorker, InferDataType, InferReturnType, Queues } from '../types/index.js'
+import type {
+  BullJob,
+  BullWorker,
+  InferDataType,
+  InferReturnType,
+  Queues,
+  BullJobsOptions,
+} from '../types/index.js'
 
 export type BaseJobConstructor<JobInstance extends BaseJob<any, any> = BaseJob<any, any>> = {
   new (...args: any[]): JobInstance
@@ -12,6 +19,7 @@ export type BaseJobConstructor<JobInstance extends BaseJob<any, any> = BaseJob<a
   nameOverride?: string
   defaultQueue?: keyof Queues
   encrypted?: boolean
+  options?: BullJobsOptions
   jobName: string
 
   isInstanceOf<J extends JobInstance>(
@@ -38,6 +46,12 @@ export abstract class BaseJob<DataType, ReturnType> {
    * Encrypt job data sent to workers
    */
   static encrypted?: boolean
+
+  /**
+   * Default options for this job. These options will be applied to all instances
+   * of this job unless overridden during dispatch.
+   */
+  static options?: BullJobsOptions
 
   data!: DataType
   job!: BullJob<DataType, ReturnType>

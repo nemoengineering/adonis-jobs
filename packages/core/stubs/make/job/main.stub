@@ -4,12 +4,15 @@
   })
 }}}
 import { Job } from '@nemoventures/adonis-jobs'
+import type { BullJobsOptions } from '@nemoventures/adonis-jobs/types'
 
 export type {{ jobName }}Data = { }
 
 export type {{ jobName }}Return = { }
 
 export default class {{ jobName }} extends Job<{{ jobName }}Data, {{ jobName }}Return> {
+  static options: BullJobsOptions = {}
+
   async process(): Promise<{{ jobName }}Return> {
     throw new Error('Job processor not implemented.')
   }
