@@ -3,6 +3,8 @@ title: Dispatching Jobs
 description: Learn how to dispatch jobs, configure options, and handle job results
 ---
 
+# Dispatching Jobs
+
 Once you've created a job, you need to dispatch it to a queue for processing.
 
 ## Basic Dispatching
@@ -67,7 +69,7 @@ Set a default queue for all instances of a job:
 ```typescript
 export default class SendEmailJob extends Job<EmailData, void> {
   static defaultQueue: keyof Queues = 'emails'
-  
+
   async process(): Promise<void> {
     // Job logic
   }
@@ -112,7 +114,7 @@ await JobScheduler.remove('file-writer-scheduler')
 
 ## Flows
 
-Flows allow you to create complex job workflows with parent-child relationships. This is useful for orchestrating multiple jobs that depend on each other. 
+Flows allow you to create complex job workflows with parent-child relationships. This is useful for orchestrating multiple jobs that depend on each other.
 
 Make sure to check the [BullMQ documentation](https://docs.bullmq.io/guide/flows) for more details on flows.
 
@@ -127,7 +129,7 @@ const newUsers = await User
   .where('welcome_email_sent', false)
 
 await new BulkDispatcher(
-  newUsers.map(user => 
+  newUsers.map(user =>
     SendWelcomeEmailJob.dispatch({
       userId: user.id,
       email: user.email,
@@ -180,4 +182,4 @@ await flow.dispatch()
 
 ## Next Steps
 
-Learn how to set up [job scheduling](/guides/job-scheduling) for recurring tasks and cron-like functionality.
+Learn how to manage your queues using the [management commands](/guides/queue-management).

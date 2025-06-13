@@ -3,7 +3,11 @@ title: Commands Reference
 description: List of available commands for managing and monitoring job queues in AdonisJS
 ---
 
-## make:job
+# Commands Reference
+
+List of available commands for managing and monitoring job queues in AdonisJS
+
+## `make:job`
 
 Create a new job class.
 
@@ -11,7 +15,7 @@ Create a new job class.
 node ace make:job SendEmail
 ```
 
-## queue:work
+## `queue:work`
 
 Start workers to process jobs from queues.
 
@@ -32,7 +36,7 @@ node ace queue:work --force-exit
 node ace queue:work --use-app-router
 ```
 
-## queue:clear
+## `queue:clear`
 
 Remove all jobs from queues.
 
@@ -47,7 +51,7 @@ node ace queue:clear --queue=emails
 node ace queue:clear --force
 ```
 
-## queue:drain
+## `queue:drain`
 
 Remove all waiting and active jobs from queues.
 
@@ -62,7 +66,7 @@ node ace queue:drain --queue=emails
 node ace queue:drain --force
 ```
 
-## queue:clean
+## `queue:clean`
 
 Clean jobs of a specific type older than a grace period.
 
@@ -85,7 +89,7 @@ node ace queue:clean --force
 
 Available job types: `completed`, `wait`, `active`, `paused`, `prioritized`, `delayed`, `failed`
 
-## queue:scheduler:list
+## `queue:scheduler:list`
 
 List all scheduled jobs.
 
@@ -97,7 +101,7 @@ node ace queue:scheduler:list
 node ace queue:scheduler:list --queue=emails
 ```
 
-## queue:scheduler:clear
+## `queue:scheduler:clear`
 
 Clear all scheduled jobs.
 
@@ -112,11 +116,10 @@ node ace queue:scheduler:clear --queue=emails
 node ace queue:scheduler:clear --force
 ```
 
-## queue:scheduler:remove
+## `queue:scheduler:remove`
 
 Remove a specific scheduled job by its key.
 
 ```bash
 node ace queue:scheduler:remove "my-scheduled-job-key"
 ```
-

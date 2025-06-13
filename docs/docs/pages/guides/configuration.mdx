@@ -3,6 +3,8 @@ title: Configuration
 description: Configure queues, workers, and job settings for @nemoventures/adonis-jobs
 ---
 
+# Configuration
+
 The package configuration is managed through the `config/queue.ts` file. This file defines your queues, worker settings, and global options.
 
 ## Default Queue
@@ -21,7 +23,7 @@ const queueConfig = defineConfig({
 
 ## Queue Settings
 
-You can define multiple queues to organize your jobs based on different strategies. Common approaches include priority-based queues (`critical`, `normal`, `low`) for task importance, or type-based queues (`emails`, `reports`, `image-processing`...) for functional separation. 
+You can define multiple queues to organize your jobs based on different strategies. Common approaches include priority-based queues (`critical`, `normal`, `low`) for task importance, or type-based queues (`emails`, `reports`, `image-processing`...) for functional separation.
 
 Each queue can have its own configuration:
 
@@ -76,7 +78,7 @@ const queueConfig = defineConfig({
 })
 ```
 
-For most applications, using a shared connection is recommended to reduce resource usage and improve performance. 
+For most applications, using a shared connection is recommended to reduce resource usage and improve performance.
 
 ### Connection per Queue
 
@@ -133,7 +135,7 @@ const queueConfig = defineConfig({
 })
 ```
 
-As you can see, we are using the AdonisJS Health Check module, so make sure you check out the [documentation](https://docs.adonisjs.com/guides/health-check) for more details on it. 
+As you can see, we are using the AdonisJS Health Check module, so make sure you check out the [documentation](https://docs.adonisjs.com/guides/health-check) for more details on it.
 
 Now, you should be able to access the health check endpoint at `/internal/healthz` to monitor the status of your queues and workers.
 

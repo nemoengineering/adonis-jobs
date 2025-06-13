@@ -1,18 +1,21 @@
 {
-  "name": "docs",
+  "name": "adonis-js-jobs",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "vocs dev",
+    "build": "vocs build",
+    "preview": "vocs preview"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.34.3",
-    "astro": "^5.6.1",
-    "sharp": "^0.32.5",
-    "starlight-nextjs-theme": "^0.2.0"
+    "react": "latest",
+    "react-dom": "latest",
+    "vocs": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "tailwindcss": "^4.1.10",
+    "typescript": "latest"
   }
 }
