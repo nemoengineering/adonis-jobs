@@ -9,6 +9,7 @@ import type { BullQueueOptions, BullWorkerOptions } from './bull.js'
 export * from './scheduler.js'
 export * from './events.js'
 export * from './bull.js'
+export * from './job.js'
 export type { JobConstructor } from '../job/job.js'
 
 /**

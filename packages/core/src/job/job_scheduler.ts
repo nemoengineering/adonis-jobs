@@ -1,21 +1,51 @@
 import type { Queues } from '../types/index.js'
 import queueManager from '../../services/main.js'
-import type { ScheduleJobOptions, ScheduledJobInfo } from '../types/scheduler.js'
+import type { PrebuiltJobData } from '../types/job.js'
+import type { BaseJobConstructor } from './base_job.js'
+import type {
+  ScheduleJobOptions,
+  ScheduleJobOptionsWithPrebuilt,
+  ScheduledJobInfo,
+} from '../types/scheduler.js'
 
 export class JobScheduler {
   /**
-   * Schedule a recurring job using BullMQ Job Schedulers
+   * Extract job constructor, data, and queue name from options
    */
-  static async schedule<T>(options: ScheduleJobOptions<T>): Promise<void> {
-    const { key, job, data, repeat, options: jobOptions } = options
-
+  static #extractJobInfo<J extends BaseJobConstructor>(
+    options: ScheduleJobOptions<J> | ScheduleJobOptionsWithPrebuilt<any>,
+  ) {
+    const job = options.job
     const queueName = options.queue || job.defaultQueue || queueManager.config.defaultQueue
-    const queue = queueManager.useQueue(queueName)
 
-    await queue.upsertJobScheduler(key, repeat, {
-      data,
-      name: job.jobName,
-      opts: jobOptions,
+    if (this.#isPrebuiltJobData(options.job)) {
+      return { jobConstructor: job.job, jobData: { ...job.data, ...options.data }, queueName }
+    }
+
+    return { jobConstructor: job, jobData: options.data, queueName }
+  }
+
+  /**
+   * Check if the job parameter is a prebuilt job data object
+   */
+  static #isPrebuiltJobData(job: any): job is PrebuiltJobData<any> {
+    return job && typeof job === 'object' && 'job' in job && 'data' in job
+  }
+
+  static async schedule<J extends BaseJobConstructor>(options: ScheduleJobOptions<J>): Promise<void>
+  static async schedule<TPrebuiltJob extends PrebuiltJobData<any>>(
+    options: ScheduleJobOptionsWithPrebuilt<TPrebuiltJob>,
+  ): Promise<void>
+  static async schedule<J extends BaseJobConstructor>(
+    options: ScheduleJobOptions<J> | ScheduleJobOptionsWithPrebuilt<any>,
+  ): Promise<void> {
+    const { jobConstructor, jobData, queueName } = this.#extractJobInfo(options)
+
+    const queue = queueManager.useQueue(queueName)
+    await queue.upsertJobScheduler(options.key, options.repeat, {
+      data: jobData,
+      name: jobConstructor.jobName,
+      opts: options.options,
     })
   }
 

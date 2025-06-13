@@ -9,9 +9,11 @@
 
 import router from '@adonisjs/core/services/router'
 import { JobScheduler } from '@nemoventures/adonis-jobs'
+import CommandJob from '@nemoventures/adonis-jobs/builtin/command_job'
 import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
 
 import SlowJob from '#jobs/slow_job'
+import Cleanup from '../commands/cleanup.js'
 import WriteFileJob from '../app/jobs/write_file_job.js'
 import NotificationJob from '../app/modules/notifications/jobs/notification_job.js'
 
@@ -50,6 +52,24 @@ router.get('/test-scheduler/:queue?', async ({ params }) => {
   })
 
   return 'Job scheduled via JobScheduler!'
+})
+
+/**
+ * Command Jobs
+ */
+router.get('/scheduled-command-job', async () => {
+  await JobScheduler.schedule({
+    key: 'test-command-job',
+    job: CommandJob.from(Cleanup),
+    data: { args: ['--force'] },
+    repeat: { pattern: '*/10 * * * * *' },
+  })
+
+  return 'Command job scheduled!'
+})
+
+router.get('/command-job', async () => {
+  await CommandJob.from(Cleanup).dispatch({ args: ['--force'] })
 })
 
 router.get('/list-scheduled', async () => {
