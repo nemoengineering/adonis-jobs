@@ -15,6 +15,8 @@ type JobData<J extends BaseJobConstructor> = InstanceType<J>['job']['data']
 
 type JobReturn<J extends BaseJobConstructor> = InstanceType<J>['job']['returnvalue']
 
+type WithOptions = Omit<Required<BullJobsOptions>, 'repeat' | 'repeatJobKey'>
+
 export class JobDispatcher<
   TJobClass extends BaseJobConstructor = BaseJobConstructor,
   TJobData extends JobData<TJobClass> = JobData<TJobClass>,
@@ -36,7 +38,7 @@ export class JobDispatcher<
   /**
    * Set job options for the job. This will override the default options
    */
-  with<K extends keyof Required<BullJobsOptions>>(key: K, value: Required<BullJobsOptions>[K]) {
+  with<K extends keyof WithOptions>(key: K, value: WithOptions[K]) {
     this.#options[key] = value
     return this
   }
