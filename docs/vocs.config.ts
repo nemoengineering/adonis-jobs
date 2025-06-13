@@ -1,6 +1,7 @@
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
+  basePath: '/adonis-jobs',
   title: '@nemoventures/adonis-jobs',
   description: 'BullMQ Integration with AdonisJS',
   editLink: {
