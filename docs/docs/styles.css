@@ -1,2 +1,23 @@
-@import 'tailwindcss';
+@import "tailwindcss" important;
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+[data-layout="landing"] .vocs_Button_button {}
+
+[data-layout="landing"] .vocs_Content {
+  position: inherit;
+}
+
+#home-install .vocs_CodeGroup {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+#home-install .vocs_Tabs_content {
+  flex: 1;
+}
+
+#home-install .vocs_Code {
+  font-size: 18px;
+}

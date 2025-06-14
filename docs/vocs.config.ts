@@ -2,8 +2,10 @@ import { defineConfig } from 'vocs'
 
 export default defineConfig({
   basePath: '/adonis-jobs',
-  title: '@nemoventures/adonis-jobs',
+  title: 'Adonis Jobs',
   description: 'BullMQ Integration with AdonisJS',
+  iconUrl: { light: '/favicon.svg', dark: '/favicon.svg' },
+
   editLink: {
     pattern: 'https://github.com/nemoengineering/adonis-jobs/edit/main/docs/:path',
     text: 'Edit on GitHub',
@@ -13,10 +15,8 @@ export default defineConfig({
     '/docs': 'https://vocs.dev/api/og?logo=%logo&title=%title&description=%description',
   },
   theme: {
-    accentColor: {
-      dark: '#FFEF59',
-      light: '#B8A000',
-    },
+    colorScheme: 'dark',
+    accentColor: "#EDCA2E",
   },
   socials: [
     {
