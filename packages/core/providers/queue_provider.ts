@@ -21,6 +21,8 @@ declare module '@adonisjs/core/types' {
 export default class JobProvider {
   constructor(protected app: ApplicationService) {}
 
+  static isWorkerCommand = false
+
   register() {
     this.app.container.singleton('queue.manager', async () => {
       const queueConfigProvider = this.app.config.get('queue')
@@ -42,6 +44,7 @@ export default class JobProvider {
   }
 
   async shutdown() {
+    if (JobProvider.isWorkerCommand) return
     const manager = await this.app.container.make('queue.manager')
     await manager.shutdown()
   }
