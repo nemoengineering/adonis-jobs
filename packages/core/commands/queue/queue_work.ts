@@ -9,6 +9,7 @@ import type { LoggerService } from '@adonisjs/core/types'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
 import type { Queues } from '../../src/types/index.js'
+import JobProvider from '../../providers/queue_provider.js'
 import { WorkerManager } from '../../src/worker/worker_manager.js'
 import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
 import { ConnectionResolver } from '../../src/connection_resolver.js'
@@ -63,6 +64,12 @@ export default class QueueWork extends BaseCommand {
     if (this.forceExit) this.app.terminating(() => process.exit(0))
 
     this.#server?.close()
+
+    // Wait to allow event handlers to finish work
+    await new Promise((res) => setTimeout(res, 2000))
+    const manager = await this.app.container.make('queue.manager')
+    await manager.shutdown()
+
     await this.terminate()
 
     this.#appLogger.info(`All workers stopped. Good bye!`)
@@ -153,9 +160,10 @@ export default class QueueWork extends BaseCommand {
     })
 
     process.on('unhandledRejection', (reason, promise) => {
-      logger.error({ promise, reason }, 'Unhandled Rejection at: Promise')
+      logger.child(promise).error(reason, 'Unhandled Rejection at: Promise')
     })
 
+    JobProvider.isWorkerCommand = true
     await this.#manager.startWorkers(this.queues)
   }
 }
