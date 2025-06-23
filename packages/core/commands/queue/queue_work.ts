@@ -63,7 +63,9 @@ export default class QueueWork extends BaseCommand {
     if (this.forceExit) this.app.terminating(() => process.exit(0))
 
     this.#server?.close()
-    return this.terminate()
+    await this.terminate()
+
+    this.#appLogger.info(`All workers stopped. Good bye!`)
   }
 
   async prepare() {
@@ -143,6 +145,16 @@ export default class QueueWork extends BaseCommand {
 
     this.#appLogger.info({ queues: this.queues }, `Starting workers`)
     this.#server = await this.#startServer()
+
+    const logger = this.#appLogger
+
+    process.on('uncaughtException', function (err) {
+      logger.error(err, 'Uncaught exception')
+    })
+
+    process.on('unhandledRejection', (reason, promise) => {
+      logger.error({ promise, reason }, 'Unhandled Rejection at: Promise')
+    })
 
     await this.#manager.startWorkers(this.queues)
   }

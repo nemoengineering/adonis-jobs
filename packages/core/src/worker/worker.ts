@@ -172,6 +172,9 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
 
     this.#bullWorker.on('failed', this.#onJobFailed.bind(this))
     this.#bullWorker.on('completed', this.#onJobCompleted.bind(this))
+    this.#bullWorker.on('error', (error) => {
+      this.#logger?.error(error, 'Worker error')
+    })
 
     this.#bullWorker.run()
     return this.#bullWorker

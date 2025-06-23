@@ -1,4 +1,5 @@
 import { BullMQOtel } from 'bullmq-otel'
+import type { Logger } from '@adonisjs/core/logger'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
 import { BullMqFactory } from './bull_factory.js'
@@ -21,6 +22,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   constructor(
     public config: Config<KnownQueues>,
     private connectionResolver: ConnectionResolver,
+    private logger: Logger,
   ) {}
 
   /**
@@ -72,6 +74,10 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       ...queueOptions,
       connection: this.connectionResolver.resolve(connection),
       telemetry: new BullMQOtel('adonis-jobs'),
+    })
+
+    queue.on('error', (err) => {
+      this.logger.child({ queueName }).error(err, 'Queue error')
     })
 
     this.#queues.set(queueName, queue)
