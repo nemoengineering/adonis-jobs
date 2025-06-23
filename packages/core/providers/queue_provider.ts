@@ -36,7 +36,8 @@ export default class JobProvider {
 
       const redis = await this.app.container.make('redis')
       const connectionResolver = new ConnectionResolver(config, redis)
-      return new QueueManager(config, connectionResolver)
+      const logger = await this.app.container.make('logger')
+      return new QueueManager(config, connectionResolver, logger)
     })
   }
 
