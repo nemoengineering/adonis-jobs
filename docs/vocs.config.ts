@@ -1,7 +1,6 @@
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
-  basePath: '/adonis-jobs',
   title: 'Adonis Jobs',
   description: 'BullMQ Integration with AdonisJS',
   iconUrl: { light: '/favicon.svg', dark: '/favicon.svg' },
