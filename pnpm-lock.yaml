@@ -157,6 +157,9 @@ importers:
       bullmq:
         specifier: ^5.53.2
         version: 5.53.2
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(@swc/core@1.11.31(@swc/helpers@0.5.17))(jiti@2.4.2)(postcss@8.5.4)(typescript@5.8.3)(yaml@2.8.0)
 
   playground:
     dependencies:

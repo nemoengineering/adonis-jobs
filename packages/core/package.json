@@ -87,7 +87,8 @@
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "@types/node": "^22.15.30",
     "@types/pluralize": "^0.0.33",
-    "bullmq": "^5.53.2"
+    "bullmq": "^5.53.2",
+    "tsup": "^8.5.0"
   },
   "release-it": {
     "git": {
