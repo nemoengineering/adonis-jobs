@@ -36,7 +36,7 @@
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
     "prerelease": "pnpm build",
-    "release": "pnpm build && pnpm release-it --preRelease=beta",
+    "release": "pnpm build && pnpm release-it",
     "version": "npm run build",
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
