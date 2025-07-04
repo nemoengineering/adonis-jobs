@@ -37,7 +37,7 @@ type SendEmailJobData = {
 }
 
 export default class SendEmailJob extends Job<SendEmailJobData, void> {
-  async handle(payload: { email: string; subject: string }) {
+  async process(): Promise<void> {
     // Send email logic here
   }
 }
