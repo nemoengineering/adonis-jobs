@@ -37,6 +37,19 @@ router.group(() => {
   .use(middleware.auth({ guards: ['basicAuth'] }))
 ```
 
+### Shield Configuration
+
+To enable job deletion and re-running directly from the dashboard, make sure to exclude the dashboard routes from CSRF protection in your config/shield.ts file. Add the /admin/queue path to the exceptRoutes array under the csrf option:
+
+```typescript
+csrf: {
+  enabled: true,
+  exceptRoutes: [
+    '/admin/queue',
+  ],
+},
+```
+
 ## Next Steps
 
 Learn about [monitoring and metrics](./observability.mdx) to set up comprehensive observability for your job queues.
