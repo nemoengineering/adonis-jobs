@@ -23,13 +23,41 @@ Make sure you have already installed and configured `@adonisjs/redis` in your Ad
 Install and configure the package in your AdonisJS application.
 
 ```bash
-node ace configure @nemoventures/adonis-jobs
+node ace add @nemoventures/adonis-jobs
 ```
 
 This command will:
 - Install the package
 - Create the queue configuration file at `config/queue.ts`
 - Set up the necessary providers/commands in your `adonisrc.ts`
+
+## Directory path
+
+After installation, you need to create a directory for your jobs and configure it in your `adonisrc.ts` file.
+
+### 1. Create the jobs directory
+
+First, create the `app/jobs` directory in your project:
+
+```bash
+mkdir app/jobs
+```
+
+### 2. Configure the directory path
+
+Add the jobs directory configuration to your `adonisrc.ts` file:
+
+```ts
+export default defineConfig({
+  // ... existing code ...
+  directories: {
+    jobs: 'app/jobs',
+  },
+  // ... existing code ...
+})
+```
+
+This tells AdonisJS where to find your job files when using the `node ace make:job` command.
 
 ## Verify Installation
 
