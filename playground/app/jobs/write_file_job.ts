@@ -23,8 +23,13 @@ export default class WriteFileJob extends Job<TestJobData, TestJobReturn> {
 
     this.logger.info(`Processing WriteFileJob with ${delayMs}ms delay`)
     this.logger.debug({ data: this.data }, 'WriteFileJob data')
+
+    if (Math.random() < 0.1) {
+      this.logger.error('Simulated error in WriteFileJob')
+      throw new Error('Simulated error in WriteFileJob')
+    }
+
     await new Promise((resolve) => setTimeout(resolve, delayMs))
-    // this.logger.error({ err: new Error('Test error') }, 'An error occurred in WriteFileJob')
 
     await appendFile('test.txt', this.data.data + '\n', 'utf8')
 

@@ -8,7 +8,8 @@
 */
 
 import router from '@adonisjs/core/services/router'
-import { JobScheduler } from '@nemoventures/adonis-jobs'
+import { uiRoutes } from '@nemoventures/adonis-jobs-ui-api'
+import { JobChain, JobScheduler } from '@nemoventures/adonis-jobs'
 import CommandJob from '@nemoventures/adonis-jobs/builtin/command_job'
 import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
 
@@ -83,5 +84,13 @@ router.get('/clear-scheduled', async () => {
   const count = await JobScheduler.clear()
   return { message: `Cleared ${count} scheduled jobs` }
 })
+router.get('/flow-job', async () => {
+  await new JobChain([
+    WriteFileJob.dispatch({ data: 'Step 1' }),
+    WriteFileJob.dispatch({ data: 'Step 2' }),
+    WriteFileJob.dispatch({ data: 'Step 3' }),
+  ]).dispatch()
+})
 
 queueDashUiRoutes().prefix('/admin/queue')
+uiRoutes()

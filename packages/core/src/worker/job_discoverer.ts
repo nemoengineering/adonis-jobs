@@ -82,7 +82,7 @@ export class JobDiscoverer {
   /**
    * Discover and load all job classes from the application
    */
-  async discoverJobs(): Promise<BaseJobConstructor[]> {
+  async discoverAndLoadJobs(): Promise<BaseJobConstructor[]> {
     const { BaseJob } = await import('../job/base_job.js')
 
     const appJobs = await this.#importAppJobs()

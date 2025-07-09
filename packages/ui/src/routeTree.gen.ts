@@ -9,38 +9,148 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestRouteImport } from './routes/test'
+import { Route as SchedulesRouteImport } from './routes/schedules'
+import { Route as RunsRouteImport } from './routes/runs'
+import { Route as QueuesRouteImport } from './routes/queues'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OverviewIndexRouteImport } from './routes/overview/index'
+import { Route as RunJobIdRouteImport } from './routes/run/$jobId'
 
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchedulesRoute = SchedulesRouteImport.update({
+  id: '/schedules',
+  path: '/schedules',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunsRoute = RunsRouteImport.update({
+  id: '/runs',
+  path: '/runs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QueuesRoute = QueuesRouteImport.update({
+  id: '/queues',
+  path: '/queues',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OverviewIndexRoute = OverviewIndexRouteImport.update({
+  id: '/overview/',
+  path: '/overview/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunJobIdRoute = RunJobIdRouteImport.update({
+  id: '/run/$jobId',
+  path: '/run/$jobId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/queues': typeof QueuesRoute
+  '/runs': typeof RunsRoute
+  '/schedules': typeof SchedulesRoute
+  '/test': typeof TestRoute
+  '/run/$jobId': typeof RunJobIdRoute
+  '/overview': typeof OverviewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/queues': typeof QueuesRoute
+  '/runs': typeof RunsRoute
+  '/schedules': typeof SchedulesRoute
+  '/test': typeof TestRoute
+  '/run/$jobId': typeof RunJobIdRoute
+  '/overview': typeof OverviewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/queues': typeof QueuesRoute
+  '/runs': typeof RunsRoute
+  '/schedules': typeof SchedulesRoute
+  '/test': typeof TestRoute
+  '/run/$jobId': typeof RunJobIdRoute
+  '/overview/': typeof OverviewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/queues'
+    | '/runs'
+    | '/schedules'
+    | '/test'
+    | '/run/$jobId'
+    | '/overview'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/queues'
+    | '/runs'
+    | '/schedules'
+    | '/test'
+    | '/run/$jobId'
+    | '/overview'
+  id:
+    | '__root__'
+    | '/'
+    | '/queues'
+    | '/runs'
+    | '/schedules'
+    | '/test'
+    | '/run/$jobId'
+    | '/overview/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  QueuesRoute: typeof QueuesRoute
+  RunsRoute: typeof RunsRoute
+  SchedulesRoute: typeof SchedulesRoute
+  TestRoute: typeof TestRoute
+  RunJobIdRoute: typeof RunJobIdRoute
+  OverviewIndexRoute: typeof OverviewIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schedules': {
+      id: '/schedules'
+      path: '/schedules'
+      fullPath: '/schedules'
+      preLoaderRoute: typeof SchedulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runs': {
+      id: '/runs'
+      path: '/runs'
+      fullPath: '/runs'
+      preLoaderRoute: typeof RunsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/queues': {
+      id: '/queues'
+      path: '/queues'
+      fullPath: '/queues'
+      preLoaderRoute: typeof QueuesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +158,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/overview/': {
+      id: '/overview/'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof OverviewIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/run/$jobId': {
+      id: '/run/$jobId'
+      path: '/run/$jobId'
+      fullPath: '/run/$jobId'
+      preLoaderRoute: typeof RunJobIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  QueuesRoute: QueuesRoute,
+  RunsRoute: RunsRoute,
+  SchedulesRoute: SchedulesRoute,
+  TestRoute: TestRoute,
+  RunJobIdRoute: RunJobIdRoute,
+  OverviewIndexRoute: OverviewIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
