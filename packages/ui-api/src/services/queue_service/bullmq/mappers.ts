@@ -51,7 +51,11 @@ export class BullmqPresenter {
     return DateTime.fromMillis(timestamp).toISO() ?? undefined
   }
 
-  static async remapJob(options: { job: BullJob; queueName: string }): Promise<JobRun> {
+  static async remapJob(options: {
+    job: BullJob
+    queueName: string
+    logs?: string[]
+  }): Promise<JobRun> {
     const { job, queueName } = options
 
     const startedAt = this.#toIsoString(job.processedOn)
@@ -89,6 +93,7 @@ export class BullmqPresenter {
       returnValue: job.returnvalue,
       createdAt: job.timestamp ? this.#toIsoString(job.timestamp)! : this.#toIsoString()!,
       processedAt: job.processedOn ? this.#toIsoString(job.processedOn) : undefined,
+      logs: options.logs || [],
 
       // Flow metadata
       isFlowJob,

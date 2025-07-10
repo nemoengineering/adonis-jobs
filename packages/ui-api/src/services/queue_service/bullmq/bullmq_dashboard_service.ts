@@ -339,7 +339,14 @@ export class BullmqDashboardService implements QueueService {
       const queue = queueManager.useQueue(queueName as any)
 
       const job = await queue.getJob(options.jobId).catch(() => null)
-      if (job) return await BullmqPresenter.remapJob({ job, queueName })
+      if (job) {
+        const logs = await queue.getJobLogs(job.id as string).catch(() => [])
+        return await BullmqPresenter.remapJob({
+          job,
+          queueName,
+          logs: 'logs' in logs ? logs.logs : [],
+        })
+      }
     }
 
     return null

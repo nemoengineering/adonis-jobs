@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Loader2, MoreVertical } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import type { JobStatus, type GetJobRunsValidator } from '@nemoventures/adonis-jobs-ui-api/types'
+import type { JobStatus, GetJobRunsValidator } from '@nemoventures/adonis-jobs-ui-api/types'
 
 import { Badge } from '@/components/ui/badge'
 import { formatTimestamp } from '@/lib/utils'

@@ -54,14 +54,14 @@ export const FlowJobNodeComponent = memo(({ data }: FlowJobNodeProps) => {
     <NodeStatusIndicator status={getNodeStatus()}>
       <BaseNode
         className={cn(
-          'min-w-[280px] z-10 p-2 bg-gray-800 border rounded-lg shadow-md',
+          'min-w-[280px] pt-2 bg-(--slate-2)',
           isSelected ? 'border-blue-500 border' : 'border-gray-600',
         )}
       >
         <Handle type="target" position={Position.Top} isConnectable={false} />
         <Handle type="source" position={Position.Bottom} isConnectable={false} />
 
-        <NodeHeader className="-mx-3 -mt-2 border-b border-gray-600">
+        <NodeHeader className="-mt-2 border-b border-gray-600">
           <NodeHeaderIcon>{getStatusIcon()}</NodeHeaderIcon>
           <NodeHeaderTitle className="truncate max-w-[180px]" title={job.name}>
             {job.name}

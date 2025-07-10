@@ -83,6 +83,7 @@ export interface JobRun {
   returnValue?: any
   createdAt: string
   processedAt?: string
+  logs?: string[]
   // Flow metadata
   isFlowJob?: boolean
   isRootJob?: boolean

@@ -1,5 +1,8 @@
 @import url('https://fonts.cdnfonts.com/css/satoshi');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..600 ;1,400..600  &display=swap');
+
 @import '@radix-ui/colors/mauve-dark.css';
+@import '@radix-ui/colors/slate-dark.css';
 @import '@radix-ui/colors/lime-dark.css';
 
 @import 'tailwindcss';
@@ -19,12 +22,12 @@ body {
 
 :root {
   --radius: 0.3rem;
-  --background: var(--mauve-1);
-  --foreground: var(--mauve-12);
-  --card: var(--mauve-2);
+  --background: var(--slate-1);
+  --foreground: var(--slate-12);
+  --card: var(--slate-2);
   --card-foreground: oklch(0.985 0 0);
-  --popover: var(--mauve-1);
-  --popover-foreground: var(--mauve-12);
+  --popover: var(--slate-1);
+  --popover-foreground: var(--slate-12);
   --primary: var(--lime-9);
   --primary-foreground: oklch(0.21 0.006 285.885);
   --secondary: oklch(0.274 0.006 286.033);
@@ -43,7 +46,7 @@ body {
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: var(--mauve-2);
+  --sidebar: var(--slate-2);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -54,6 +57,9 @@ body {
 }
 
 @theme inline {
+  --font-sans: 'Satoshi', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
