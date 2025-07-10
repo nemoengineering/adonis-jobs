@@ -10,6 +10,8 @@ import type {
   JobRunsResponse,
   QueueListResponse,
   ScheduleListResponse,
+  JobActionRequest,
+  JobActionResponse,
 } from '@nemoventures/adonis-jobs-ui-api/types'
 
 type MaybeArray<T> = T | T[]
@@ -161,6 +163,27 @@ export class DashboardApi {
    */
   async getSchedules() {
     return this.#client.get('schedules').json<ScheduleListResponse>()
+  }
+
+  /**
+   * Retry a failed job
+   */
+  async retryJob(options: JobActionRequest) {
+    return this.#client.post('jobs/retry', { json: options }).json<JobActionResponse>()
+  }
+
+  /**
+   * Rerun a job (create a new instance with same data)
+   */
+  async rerunJob(options: JobActionRequest) {
+    return this.#client.post('jobs/rerun', { json: options }).json<JobActionResponse>()
+  }
+
+  /**
+   * Remove a job from the queue
+   */
+  async removeJob(options: JobActionRequest) {
+    return this.#client.post('jobs/remove', { json: options }).json<JobActionResponse>()
   }
 }
 

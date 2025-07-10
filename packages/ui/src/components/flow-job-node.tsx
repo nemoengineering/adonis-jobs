@@ -4,9 +4,17 @@ import { Handle, Position } from '@xyflow/react'
 import { BaseNode } from './base-node'
 import type { FlowJobNode } from '@/types/flow'
 import { cn, formatDuration } from '@/lib/utils'
+import { JobActionsDropdown } from './job-actions-dropdown'
 import { getJobStatusConfig } from '@/lib/job-status-config'
 import { NodeStatusIndicator } from './node-status-indicator'
 import { JobStatusBadge } from '@/components/job-status-badge'
+import {
+  NodeHeader,
+  NodeHeaderTitle,
+  NodeHeaderActions,
+  NodeHeaderMenuAction,
+  NodeHeaderIcon,
+} from './node-header'
 
 interface FlowJobNodeProps {
   data: FlowJobNode['data']
@@ -46,26 +54,31 @@ export const FlowJobNodeComponent = memo(({ data }: FlowJobNodeProps) => {
     <NodeStatusIndicator status={getNodeStatus()}>
       <BaseNode
         className={cn(
-          'min-w-[280px] z-10 bg-gray-800 border rounded-lg shadow-md',
+          'min-w-[280px] z-10 p-2 bg-gray-800 border rounded-lg shadow-md',
           isSelected ? 'border-blue-500 border' : 'border-gray-600',
         )}
       >
         <Handle type="target" position={Position.Top} isConnectable={false} />
         <Handle type="source" position={Position.Bottom} isConnectable={false} />
 
-        <div className="p-3 border-b border-gray-600">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              {getStatusIcon()}
-              <span className="font-medium text-sm truncate max-w-[180px]" title={job.name}>
-                {job.name}
-              </span>
-            </div>
-            {isRoot && (
-              <span className="text-xs bg-blue-500 text-blue-100 px-2 rounded font-bold">Root</span>
-            )}
-          </div>
+        <NodeHeader className="-mx-3 -mt-2 border-b border-gray-600">
+          <NodeHeaderIcon>{getStatusIcon()}</NodeHeaderIcon>
+          <NodeHeaderTitle className="truncate max-w-[180px]" title={job.name}>
+            {job.name}
+          </NodeHeaderTitle>
+          {isRoot && (
+            <span className="text-xs bg-blue-500 text-blue-100 px-2 rounded font-bold">Root</span>
+          )}
+          <NodeHeaderActions>
+            <NodeHeaderMenuAction label="Job actions">
+              <JobActionsDropdown jobId={job.id} jobStatus={job.status}>
+                {/* Actions will be rendered by JobActionsDropdown */}
+              </JobActionsDropdown>
+            </NodeHeaderMenuAction>
+          </NodeHeaderActions>
+        </NodeHeader>
 
+        <div className="mt-2 px-3 pb-2">
           <div className="flex items-center justify-between">
             <JobStatusBadge status={job.status} />
             <span className="text-xs text-gray-500 font-mono">{job.id.slice(0, 8)}...</span>

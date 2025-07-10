@@ -6,6 +6,7 @@ import {
   getJobRunsValidator,
   toggleQueuePauseValidator,
   dispatchJobValidator,
+  jobActionValidator,
 } from '#validators/dashboard_validator'
 
 @inject()
@@ -92,5 +93,29 @@ export default class DashboardController {
     if (!jobs) return response.notFound()
 
     return jobs
+  }
+
+  /**
+   * Retry a failed job
+   */
+  async retryJob({ request }: HttpContext) {
+    const payload = await request.validateUsing(jobActionValidator)
+    return await this.queueService.retryJob(payload)
+  }
+
+  /**
+   * Rerun a job (create a new instance with same data)
+   */
+  async rerunJob({ request }: HttpContext) {
+    const payload = await request.validateUsing(jobActionValidator)
+    return await this.queueService.rerunJob(payload)
+  }
+
+  /**
+   * Remove a job from the queue
+   */
+  async removeJob({ request }: HttpContext) {
+    const payload = await request.validateUsing(jobActionValidator)
+    return await this.queueService.removeJob(payload)
   }
 }

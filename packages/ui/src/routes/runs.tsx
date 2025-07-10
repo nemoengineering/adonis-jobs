@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, MoreVertical } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { JobStatus, type GetJobRunsValidator } from '@nemoventures/adonis-jobs-ui-api/types'
 
@@ -12,6 +12,12 @@ import { Page, PageHeader } from '@/components/layout/page'
 import { createStatusOption } from '@/lib/job-status-config'
 import { formatDuration, formatTimestamp } from '@/lib/utils'
 import { JobStatusBadge } from '@/components/job-status-badge'
+import { JobActionsDropdown } from '@/components/job-actions-dropdown'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   Table,
   TableBody,
@@ -32,7 +38,7 @@ export function RunsPage() {
   const [sortBy, setSortBy] = useState<GetJobRunsValidator['sortBy']>('createdAt')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [status, setStatus] = useState<JobStatus[]>([])
-  const [onlyRootJobs, setOnlyRootJobs] = useState(false)
+  const [onlyRootJobs, setOnlyRootJobs] = useState(true)
 
   const handleStatusChange = (values: string[]) => {
     setStatus(values as JobStatus[])
@@ -141,12 +147,13 @@ export function RunsPage() {
               </TableHead>
               <TableHead className="cursor-pointer hover:bg-muted/50">Duration</TableHead>
               <TableHead className="cursor-pointer hover:bg-muted/50">Attempts</TableHead>
+              <TableHead className="w-10">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {runs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   No job runs found
                 </TableCell>
               </TableRow>
@@ -205,6 +212,18 @@ export function RunsPage() {
                     <span className={run.attempts > 1 ? 'text-yellow-600' : ''}>
                       {run.attempts} / {run.maxAttempts}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <JobActionsDropdown jobId={run.id} jobStatus={run.status} />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

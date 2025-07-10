@@ -13,4 +13,7 @@ export function uiRoutes() {
   router.get('/schedules', [DashboardController, 'schedules'])
   router.post('/dispatch-job', [DashboardController, 'dispatchJob'])
   router.post('/toggle-queue-pause', [DashboardController, 'toggleQueuePause'])
+  router.post('/jobs/retry', [DashboardController, 'retryJob'])
+  router.post('/jobs/rerun', [DashboardController, 'rerunJob'])
+  router.post('/jobs/remove', [DashboardController, 'removeJob'])
 }

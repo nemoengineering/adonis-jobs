@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query'
 import type {
   DispatchJobRequest,
@@ -61,9 +62,7 @@ export function useDispatchJob() {
   return useMutation({
     mutationFn: (options: DispatchJobRequest) => dashboardApi.dispatchJob(options),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.jobRuns() })
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.overview() })
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.globalStats() })
+      queryClient.invalidateQueries()
     },
   })
 }
@@ -81,11 +80,7 @@ export function useToggleQueuePause() {
   return useMutation({
     mutationFn: (options: { queueName: string; pause: boolean }) =>
       dashboardApi.toggleQueuePause(options),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.queues() })
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.overview() })
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.globalStats() })
-    },
+    onSuccess: () => queryClient.invalidateQueries(),
   })
 }
 
@@ -109,3 +104,60 @@ export const getFlowJobsTreeQueryOptions = (jobId: string) =>
     queryFn: () => dashboardApi.getFlowJobsTree(jobId),
     refetchInterval: POLLING_INTERVAL,
   })
+
+export function useRetryJob() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (options: { jobId: string }) => dashboardApi.retryJob(options),
+    onSuccess: (response, variables) => {
+      if (response.success) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message)
+      }
+      queryClient.invalidateQueries()
+    },
+    onError: (error) => {
+      toast.error(`Failed to retry job: ${error.message}`)
+    },
+  })
+}
+
+export function useRerunJob() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (options: { jobId: string }) => dashboardApi.rerunJob(options),
+    onSuccess: (response, variables) => {
+      if (response.success) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message)
+      }
+      queryClient.invalidateQueries()
+    },
+    onError: (error) => {
+      toast.error(`Failed to rerun job: ${error.message}`)
+    },
+  })
+}
+
+export function useRemoveJob() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (options: { jobId: string }) => dashboardApi.removeJob(options),
+    onSuccess: (response, variables) => {
+      if (response.success) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message)
+      }
+      queryClient.invalidateQueries()
+    },
+    onError: (error) => {
+      toast.error(`Failed to remove job: ${error.message}`)
+    },
+  })
+}

@@ -39,3 +39,12 @@ export const dispatchJobValidator = vine.compile(
     data: vine.any().optional(),
   }),
 )
+
+/**
+ * Validates job action requests (retry, rerun, remove)
+ */
+export const jobActionValidator = vine.compile(
+  vine.object({
+    jobId: vine.string().trim().minLength(1),
+  }),
+)

@@ -351,4 +351,83 @@ export class BullmqDashboardService implements QueueService {
   async getFlowJobsFromJobId(jobId: string): Promise<JobRun[] | null> {
     return await this.#flowJobsService.getFlowJobsFromJobId(jobId)
   }
+
+  /**
+   * Retry a failed job
+   */
+  async retryJob(options: { jobId: string }): Promise<{ success: boolean; message: string }> {
+    const queueNames = this.#getQueueNames()
+
+    for (const queueName of queueNames) {
+      const queue = queueManager.useQueue(queueName as any)
+      const job = await queue.getJob(options.jobId).catch(() => null)
+
+      if (!job) continue
+
+      try {
+        await job.retry()
+        return { success: true, message: `Job ${options.jobId} has been queued for retry` }
+      } catch (error) {
+        return { success: false, message: `Failed to retry job: ${error.message}` }
+      }
+    }
+
+    return { success: false, message: `Job ${options.jobId} not found` }
+  }
+
+  /**
+   * Rerun a job (create a new instance with same data)
+   */
+  async rerunJob(options: {
+    jobId: string
+  }): Promise<{ success: boolean; message: string; newJobId?: string }> {
+    const queueNames = this.#getQueueNames()
+
+    for (const queueName of queueNames) {
+      const queue = queueManager.useQueue(queueName as any)
+      const job = await queue.getJob(options.jobId).catch(() => null)
+      if (!job) continue
+
+      try {
+        const newJob = await queue.add(job.name, job.data, {
+          ...job.opts,
+          jobId: undefined,
+          delay: 0,
+        })
+
+        return {
+          success: true,
+          message: `Job ${job.name} has been rerun successfully`,
+          newJobId: newJob.id?.toString(),
+        }
+      } catch (error) {
+        return { success: false, message: `Failed to rerun job: ${error.message}` }
+      }
+    }
+
+    return { success: false, message: `Job ${options.jobId} not found` }
+  }
+
+  /**
+   * Remove a job from the queue
+   */
+  async removeJob(options: { jobId: string }): Promise<{ success: boolean; message: string }> {
+    const queueNames = this.#getQueueNames()
+
+    for (const queueName of queueNames) {
+      const queue = queueManager.useQueue(queueName as any)
+      const job = await queue.getJob(options.jobId).catch(() => null)
+
+      if (!job) continue
+
+      try {
+        await job.remove()
+        return { success: true, message: `Job ${options.jobId} has been removed successfully` }
+      } catch (error) {
+        return { success: false, message: `Failed to remove job: ${error.message}` }
+      }
+    }
+
+    return { success: false, message: `Job ${options.jobId} not found` }
+  }
 }

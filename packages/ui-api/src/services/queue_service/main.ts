@@ -73,6 +73,23 @@ export abstract class QueueService {
   abstract getSchedules(): Promise<ScheduleListResponse>
 
   /**
+   * Retry a failed job
+   */
+  abstract retryJob(options: { jobId: string }): Promise<{ success: boolean; message: string }>
+
+  /**
+   * Rerun a job (create a new instance with same data)
+   */
+  abstract rerunJob(options: {
+    jobId: string
+  }): Promise<{ success: boolean; message: string; newJobId?: string }>
+
+  /**
+   * Remove a job from the queue
+   */
+  abstract removeJob(options: { jobId: string }): Promise<{ success: boolean; message: string }>
+
+  /**
    * Get a specific job by its ID
    */
   abstract getJobById(options: { jobId: string }): Promise<JobRun | null>

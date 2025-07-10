@@ -108,5 +108,47 @@ router.get('/flow-job', async () => {
   await flow.dispatch()
 })
 
+router.get('/flow-job-2', async () => {
+  const parentJob = WriteFileJob.dispatch({ data: 'Main Flow Start' })
+  const flow = new JobFlow(parentJob)
+
+  flow.addChildJob(WriteFileJob.dispatch({ data: 'Data Validation' }), (dataFlow) => {
+    for (let i = 1; i <= 3; i++) {
+      dataFlow.addChildJob(WriteFileJob.dispatch({ data: `Process Batch ${i}` }), (batchFlow) => {
+        batchFlow
+          .addChildJob(WriteFileJob.dispatch({ data: `Batch ${i} - Transform` }))
+          .addChildJob(WriteFileJob.dispatch({ data: `Batch ${i} - Validate` }))
+      })
+    }
+  })
+
+  flow.addChildJob(WriteFileJob.dispatch({ data: 'Notification Setup' }), (notifFlow) => {
+    notifFlow
+      .addChildJob(WriteFileJob.dispatch({ data: 'Email Queue' }), (emailFlow) => {
+        for (let i = 1; i <= 2; i++) {
+          emailFlow.addChildJob(WriteFileJob.dispatch({ data: `Email Batch ${i}` }))
+        }
+      })
+      .addChildJob(WriteFileJob.dispatch({ data: 'SMS Queue' }), (smsFlow) => {
+        smsFlow.addChildJob(WriteFileJob.dispatch({ data: 'SMS Processing' }))
+      })
+  })
+
+  flow.addChildJob(WriteFileJob.dispatch({ data: 'Cleanup Start' }), (cleanupFlow) => {
+    cleanupFlow
+      .addChildJob(WriteFileJob.dispatch({ data: 'Temp Files Cleanup' }))
+      .addChildJob(WriteFileJob.dispatch({ data: 'Generate Report' }), (reportFlow) => {
+        reportFlow
+          .addChildJob(WriteFileJob.dispatch({ data: 'Collect Metrics' }))
+          .addChildJob(WriteFileJob.dispatch({ data: 'Generate Summary' }))
+          .addChildJob(WriteFileJob.dispatch({ data: 'Send Report' }))
+      })
+  })
+
+  await flow.dispatch()
+
+  return 'Complex flow job dispatched with 20 jobs!'
+})
+
 queueDashUiRoutes().prefix('/admin/queue')
 uiRoutes()

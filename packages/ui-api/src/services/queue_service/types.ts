@@ -156,3 +156,18 @@ export type AvailableJobResponse = Array<{
   name: string
   defaultQueue?: string
 }>
+
+/**
+ * ----------------------------------
+ * Job Actions API Types
+ * ----------------------------------
+ */
+export interface JobActionRequest {
+  jobId: string
+}
+
+export interface JobActionResponse {
+  success: boolean
+  message: string
+  newJobId?: string // Only for rerun action
+}
