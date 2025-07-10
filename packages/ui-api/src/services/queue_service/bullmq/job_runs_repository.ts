@@ -33,9 +33,9 @@ export class JobRunsRepository {
   }
 
   /**
-   * Applies complex filters that require post-processing
+   * Applies filtering options
    */
-  #applyComplexFilters(jobs: JobRun[], options: GetJobRunsValidator): JobRun[] {
+  #applyFiltering(jobs: JobRun[], options: GetJobRunsValidator): JobRun[] {
     let filteredJobs = jobs
 
     if (options.onlyRootJobs) {
@@ -88,7 +88,7 @@ export class JobRunsRepository {
       limit: limit + 1, // Fetch one extra to determine if there's a next page
     })
 
-    const filteredJobs = this.#applyComplexFilters(allRuns, options)
+    const filteredJobs = this.#applyFiltering(allRuns, options)
 
     const sortedRuns = this.#sortJobRuns(filteredJobs, sortBy, sortOrder)
     const hasNextPage = sortedRuns.length > limit

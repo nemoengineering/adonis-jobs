@@ -13,9 +13,9 @@ import {
   type Node,
 } from '@xyflow/react'
 
-import useAutoLayout from './flows/layout/use-auto-layout'
-import { FlowJobNodeComponent } from '@/components/flow-job-node'
+import useAutoLayout from '../auto-layout/use-auto-layout'
 import { FlowVisualizationService } from '@/services/flow-visualization'
+import { FlowJobNodeComponent } from '@/features/flows/components/flow-job-node'
 
 interface FlowVisualizationProps {
   jobs: JobRun[]

@@ -6,8 +6,8 @@ import type { QueueInfo } from '@nemoventures/adonis-jobs-ui-api/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Page, PageHeader } from '@/components/layout/page'
+import { getQueuesQueryOptions, useToggleQueuePause } from '@/queries'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getQueuesQueryOptions, useToggleQueuePause } from '@/hooks/use-dashboard'
 import {
   Table,
   TableBody,

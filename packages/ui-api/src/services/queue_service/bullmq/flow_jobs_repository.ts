@@ -4,7 +4,7 @@ import queueManager from '@nemoventures/adonis-jobs/services/main'
 import type { JobRun } from '../types.js'
 import { BullmqPresenter } from './mappers.js'
 
-export class FlowJobsService {
+export class FlowJobsRepository {
   /**
    * Gets list of queue names from configuration
    */

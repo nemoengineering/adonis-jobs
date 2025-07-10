@@ -6,7 +6,7 @@ import type { JobStatus, GetJobRunsValidator } from '@nemoventures/adonis-jobs-u
 import { Badge } from '@/components/ui/badge'
 import { formatTimestamp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { useJobRuns } from '@/hooks/use-dashboard'
+import { useJobRuns } from '@/queries'
 import { Pagination } from '@/components/ui/pagination'
 import { RunsToolbar } from './-components/runs-toolbar'
 import { Page, PageHeader } from '@/components/layout/page'

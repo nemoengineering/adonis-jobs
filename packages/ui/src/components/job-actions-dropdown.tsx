@@ -1,7 +1,7 @@
 import { RotateCcw, Play, Trash } from 'lucide-react'
 import { JobStatus } from '@nemoventures/adonis-jobs-ui-api/types'
 
-import { useRerunJob, useRetryJob, useRemoveJob } from '@/hooks/use-dashboard'
+import { useRerunJob, useRetryJob, useRemoveJob } from '@/queries'
 import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 
 interface JobActionsDropdownProps {

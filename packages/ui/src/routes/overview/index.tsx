@@ -3,9 +3,9 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { formatTimestamp } from '@/lib/utils'
+import { getOverviewQueryOptions } from '@/queries'
 import { Page, PageHeader } from '@/components/layout/page'
 import { JobStatusBadge } from '@/components/job-status-badge'
-import { getOverviewQueryOptions } from '@/hooks/use-dashboard'
 import { OverviewStats } from '@/routes/overview/-components/overview-stats'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 

@@ -2,12 +2,12 @@ import { memo } from 'react'
 import { Handle, Position } from '@xyflow/react'
 
 import { BaseNode } from './base-node'
-import type { FlowJobNode } from '@/types/flow'
 import { cn, formatDuration } from '@/lib/utils'
-import { JobActionsDropdown } from './job-actions-dropdown'
 import { getJobStatusConfig } from '@/lib/job-status-config'
 import { NodeStatusIndicator } from './node-status-indicator'
+import type { FlowJobNode } from '@/features/flows/types/flow'
 import { JobStatusBadge } from '@/components/job-status-badge'
+import { JobActionsDropdown } from '../../../components/job-actions-dropdown'
 import {
   NodeHeader,
   NodeHeaderTitle,

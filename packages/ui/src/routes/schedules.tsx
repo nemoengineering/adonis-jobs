@@ -2,11 +2,11 @@ import dayjs from 'dayjs'
 import { createFileRoute } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { MoreHorizontal, Clock, Calendar } from 'lucide-react'
+import type { ScheduleInfo } from '@nemoventures/adonis-jobs-ui-api/types'
 
-import type { ScheduleInfo } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { getSchedulesQueryOptions } from '@/hooks/use-dashboard'
+import { getSchedulesQueryOptions } from '@/queries'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,

@@ -6,10 +6,10 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { JobLogs } from '@/routes/runs/-components/job-logs'
 import { JobStatusBadge } from '@/components/job-status-badge'
-import { FlowVisualization } from '@/components/flow-visualization'
 import { JobOverview } from '@/routes/runs/-components/job-overview'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { getFlowJobsTreeQueryOptions, getJobByIdQueryOptions } from '@/hooks/use-dashboard'
+import { getFlowJobsTreeQueryOptions, getJobByIdQueryOptions } from '@/queries'
+import { FlowVisualization } from '@/features/flows/components/flow-visualization'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 
 export const Route = createFileRoute('/runs/$jobId')({

@@ -1,16 +1,11 @@
 import dayjs from 'dayjs'
 import { Clock, Play } from 'lucide-react'
+import type { JobRun } from '@nemoventures/adonis-jobs-ui-api/types'
 
 import { formatDuration } from '@/lib/utils'
 
 interface JobDurationCellProps {
-  run: {
-    createdAt: string
-    startedAt?: string | null
-    completedAt?: string | null
-    failedAt?: string | null
-    duration?: number | null
-  }
+  run: JobRun
 }
 
 export function JobDurationCell({ run }: JobDurationCellProps) {

@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Combobox } from '@/components/ui/combobox'
 import { Page, PageHeader } from '@/components/layout/page'
+import { getAvailableJobsQueryOptions, useDispatchJob } from '@/queries'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { getAvailableJobsQueryOptions, useDispatchJob } from '@/hooks/use-dashboard'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/test')({

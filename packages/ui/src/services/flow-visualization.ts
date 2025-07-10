@@ -1,6 +1,11 @@
 import type { JobRun } from '@nemoventures/adonis-jobs-ui-api/types'
 
-import type { FlowJobNode, FlowJobEdge, FlowVisualizationData, FlowHierarchy } from '@/types/flow'
+import type {
+  FlowJobNode,
+  FlowJobEdge,
+  FlowVisualizationData,
+  FlowHierarchy,
+} from '@/features/flows/types/flow'
 
 export class FlowVisualizationService {
   /**
