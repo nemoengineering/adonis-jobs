@@ -7,6 +7,7 @@ export function uiRoutes() {
   router.get('/global-stats', [DashboardController, 'globalStats'])
   router.get('/runs', [DashboardController, 'runs'])
   router.get('/runs/:jobId', [DashboardController, 'jobById'])
+  router.get('/flows/job/:jobId/tree', [DashboardController, 'flowJobsTree'])
   router.get('/available-jobs', [DashboardController, 'availableJobs'])
   router.get('/queues', [DashboardController, 'queues'])
   router.get('/schedules', [DashboardController, 'schedules'])

@@ -89,6 +89,7 @@ export interface JobRun {
   flowId?: string
   flowKey?: string
   parentJobId?: string
+  parentKey?: string
 }
 
 export type JobRunsResponse = PaginatedResponse<JobRun>

@@ -9,7 +9,7 @@ export function JobStatusBadge({ status }: { status: JobStatus | string }) {
 
   return (
     <Badge variant={config.variant} className={`flex items-center gap-1 ${config.className}`}>
-      <Icon />
+      <Icon className={config.iconColor} />
       {status}
     </Badge>
   )

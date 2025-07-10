@@ -1,16 +1,11 @@
+import type { JobState } from '@nemoventures/adonis-jobs/types'
 import queueManager from '@nemoventures/adonis-jobs/services/main'
 
 import type { JobRun, JobRunsResponse } from '../types.js'
 import { BullmqPresenter, remapJobStatus } from './mappers.js'
 import type { GetJobRunsValidator } from '#validators/dashboard_validator'
 
-/**
- * Service dedicated to handling job runs retrieval, filtering, and pagination
- */
 export class BullmqJobRunsService {
-  /**
-   * Gets list of queue names from configuration
-   */
   #getQueueNames(): string[] {
     return Object.keys(queueManager.config.queues)
   }
@@ -24,7 +19,9 @@ export class BullmqJobRunsService {
     sortOrder: 'asc' | 'desc',
   ): JobRun[] {
     return runs.toSorted((a, b) => {
+      // @ts-expect-error-next-line
       const aValue = a[sortBy]
+      // @ts-expect-error-next-line
       const bValue = b[sortBy]
 
       if (!aValue && !bValue) return 0
@@ -44,13 +41,9 @@ export class BullmqJobRunsService {
   #applyComplexFilters(jobs: JobRun[], options: GetJobRunsValidator): JobRun[] {
     let filteredJobs = jobs
 
-    // Filter for root jobs only if requested
     if (options.onlyRootJobs) {
       filteredJobs = filteredJobs.filter((job) => job.isRootJob)
     }
-
-    // Add more complex filters here as needed
-    // e.g., date range filters, custom job name patterns, etc.
 
     return filteredJobs
   }
@@ -60,7 +53,7 @@ export class BullmqJobRunsService {
    */
   async #fetchJobsFromQueues(options: {
     queueNames: string[]
-    statuses?: string[]
+    statuses?: JobState[]
     startIndex: number
     fetchLimit: number
   }): Promise<JobRun[]> {
@@ -91,11 +84,9 @@ export class BullmqJobRunsService {
     const queueNames = queueName ? [queueName] : this.#getQueueNames()
     const statuses = options.status?.map((status) => remapJobStatus(status)) || undefined
 
-    // Pour vérifier s'il y a une page suivante, on récupère limit + 1 jobs
     const fetchLimit = limit + 1
     const startIndex = (page - 1) * limit
 
-    // Fetch jobs from all queues
     const allRuns = await this.#fetchJobsFromQueues({
       queueNames,
       statuses,
@@ -103,16 +94,9 @@ export class BullmqJobRunsService {
       fetchLimit,
     })
 
-    // Apply complex filters (like onlyRootJobs)
     const filteredJobs = this.#applyComplexFilters(allRuns, options)
-
-    // Sort the results
     const sortedRuns = this.#sortJobRuns(filteredJobs, sortBy, sortOrder)
-
-    // Détermine s'il y a une page suivante en vérifiant si on a plus d'items que demandé
     const hasNextPage = sortedRuns.length > limit
-
-    // Ne retourne que le nombre demandé d'items
     const items = sortedRuns.slice(0, limit)
 
     return {

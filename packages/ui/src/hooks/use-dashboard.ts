@@ -15,9 +15,13 @@ export const dashboardQueryKeys = {
   jobRuns: (options?: GetJobRunsValidator) =>
     [...dashboardQueryKeys.all, 'job-runs', options] as const,
   jobById: (jobId: string) => [...dashboardQueryKeys.all, 'job-by-id', jobId] as const,
+  flowJobs: (flowId: string) => [...dashboardQueryKeys.all, 'flow-jobs', flowId] as const,
+  flowJobsTree: (jobId: string) => [...dashboardQueryKeys.all, 'flow-jobs-tree', jobId] as const,
   availableJobs: () => [...dashboardQueryKeys.all, 'available-jobs'] as const,
   queues: () => [...dashboardQueryKeys.all, 'queues'] as const,
   schedules: () => [...dashboardQueryKeys.all, 'schedules'] as const,
+  jobDependencies: (jobId: string, queueName: string) =>
+    [...dashboardQueryKeys.all, 'job-dependencies', jobId, queueName] as const,
 } as const
 
 export const getOverviewQueryOptions = () =>
@@ -99,6 +103,9 @@ export const getJobByIdQueryOptions = (jobId: string) =>
     refetchInterval: POLLING_INTERVAL,
   })
 
-export function useJobById(jobId: string) {
-  return useQuery(getJobByIdQueryOptions(jobId))
-}
+export const getFlowJobsTreeQueryOptions = (jobId: string) =>
+  queryOptions({
+    queryKey: dashboardQueryKeys.flowJobsTree(jobId),
+    queryFn: () => dashboardApi.getFlowJobsTree(jobId),
+    refetchInterval: POLLING_INTERVAL,
+  })

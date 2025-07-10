@@ -122,6 +122,13 @@ export class DashboardApi {
   }
 
   /**
+   * Fetch complete flow tree starting from any job in the flow
+   */
+  async getFlowJobsTree(jobId: string) {
+    return this.#client.get(`flows/job/${jobId}/tree`).json<JobRun[]>()
+  }
+
+  /**
    * Fetch available jobs list
    */
   async getAvailableJobs() {

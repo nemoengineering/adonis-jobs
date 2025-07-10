@@ -1,22 +1,31 @@
 import { ArrowLeft } from 'lucide-react'
+import { ReactFlowProvider } from '@xyflow/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import { formatTimestamp, formatDuration } from '@/lib/utils'
-import { getJobByIdQueryOptions } from '@/hooks/use-dashboard'
 import { JobStatusBadge } from '@/components/job-status-badge'
+import { FlowVisualization } from '@/components/flow-visualization'
+import { getFlowJobsTreeQueryOptions, getJobByIdQueryOptions } from '@/hooks/use-dashboard'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 
 export const Route = createFileRoute('/run/$jobId')({
   component: JobDetailsPage,
-  loader: ({ context: { queryClient }, params }) =>
-    queryClient.ensureQueryData(getJobByIdQueryOptions(params.jobId)),
+  loader: ({ context: { queryClient }, params }) => {
+    return Promise.all([
+      queryClient.ensureQueryData(getJobByIdQueryOptions(params.jobId)),
+      queryClient.ensureQueryData(getFlowJobsTreeQueryOptions(params.jobId)),
+    ])
+  },
 })
 
 function JobDetailsPage() {
   const { jobId } = Route.useParams()
   const { data: job } = useSuspenseQuery(getJobByIdQueryOptions(jobId))
+  const router = useRouter()
+
+  const { data: flowJobs } = useSuspenseQuery(getFlowJobsTreeQueryOptions(jobId))
 
   return (
     <div className="flex-1 flex flex-col">
@@ -51,16 +60,17 @@ function JobDetailsPage() {
 
       <ResizablePanelGroup direction="horizontal" className="h-full">
         <ResizablePanel defaultSize={70} minSize={30}>
-          <div className="h-full p-6 bg-muted/20">
-            <div className="h-full border-2 border-dashed border-muted-foreground/25 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-4xl mb-4">🔄</div>
-                <h3 className="text-lg font-semibold text-muted-foreground">Canvas Area</h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Future job visualization will be displayed here
-                </p>
-              </div>
-            </div>
+          <div className="h-full">
+            <ReactFlowProvider>
+              <FlowVisualization
+                jobs={flowJobs}
+                selectedJob={job}
+                onJobSelect={(selectedJob) => {
+                  if (selectedJob.id === jobId) return
+                  router.navigate({ to: '/run/$jobId', params: { jobId: selectedJob.id } })
+                }}
+              />
+            </ReactFlowProvider>
           </div>
         </ResizablePanel>
 

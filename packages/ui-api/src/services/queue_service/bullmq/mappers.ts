@@ -18,6 +18,7 @@ export function remapJobState(bullJobStatus: JobState | string): JobStatus {
     case 'prioritized':
       return JobStatus.Waiting
     case 'waiting':
+    case 'waiting-children':
       return JobStatus.Waiting
     default:
       return JobStatus.Unknown
@@ -93,7 +94,9 @@ export class BullmqPresenter {
       isFlowJob,
       isRootJob,
       flowId: flowId?.toString(),
+      flowKey: job.opts?.parent?.queue || undefined,
       parentJobId: job.parent?.id?.toString(),
+      parentKey: job.parentKey || undefined,
     }
   }
 }

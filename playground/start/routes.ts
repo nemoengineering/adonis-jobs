@@ -9,9 +9,9 @@
 
 import router from '@adonisjs/core/services/router'
 import { uiRoutes } from '@nemoventures/adonis-jobs-ui-api'
-import { JobChain, JobScheduler } from '@nemoventures/adonis-jobs'
 import CommandJob from '@nemoventures/adonis-jobs/builtin/command_job'
 import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
+import { JobChain, JobFlow, JobScheduler } from '@nemoventures/adonis-jobs'
 
 import SlowJob from '#jobs/slow_job'
 import Cleanup from '../commands/cleanup.js'
@@ -84,12 +84,28 @@ router.get('/clear-scheduled', async () => {
   const count = await JobScheduler.clear()
   return { message: `Cleared ${count} scheduled jobs` }
 })
-router.get('/flow-job', async () => {
+router.get('/chain-job', async () => {
   await new JobChain([
-    WriteFileJob.dispatch({ data: 'Step 1' }),
-    WriteFileJob.dispatch({ data: 'Step 2' }),
-    WriteFileJob.dispatch({ data: 'Step 3' }),
+    WriteFileJob.dispatch({ data: 'XXStep 1' }),
+    WriteFileJob.dispatch({ data: 'XXStep 2' }),
+    WriteFileJob.dispatch({ data: 'XXStep 3' }),
   ]).dispatch()
+})
+
+router.get('/flow-job', async () => {
+  const parentJob = WriteFileJob.dispatch({ data: 'Step 1' })
+  const flow = new JobFlow(parentJob)
+
+  flow.addChildJob(WriteFileJob.dispatch({ data: 'Step 2' }))
+  flow
+    .addChildJob(WriteFileJob.dispatch({ data: 'Step 3' }), (child) => {
+      child
+        .addChildJob(WriteFileJob.dispatch({ data: 'Step3.1' }))
+        .addChildJob(WriteFileJob.dispatch({ data: 'Step 3.2' }))
+    })
+    .addChildJob(WriteFileJob.dispatch({ data: 'Step 4' }))
+
+  await flow.dispatch()
 })
 
 queueDashUiRoutes().prefix('/admin/queue')

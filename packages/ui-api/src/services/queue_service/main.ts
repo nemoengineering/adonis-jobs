@@ -76,6 +76,11 @@ export abstract class QueueService {
    * Get a specific job by its ID
    */
   abstract getJobById(options: { jobId: string }): Promise<JobRun | null>
+
+  /**
+   * Get all jobs in a flow tree by job ID
+   */
+  abstract getFlowJobsFromJobId(jobId: string): Promise<JobRun[] | null>
 }
 
 export type { GetJobRunsValidator }

@@ -83,4 +83,14 @@ export default class DashboardController {
 
     return await this.queueService.dispatchJob(payload)
   }
+
+  /**
+   * Returns the complete flow tree for a job by job ID
+   */
+  async flowJobsTree({ params, response }: HttpContext) {
+    const jobs = await this.queueService.getFlowJobsFromJobId(params.jobId)
+    if (!jobs) return response.notFound()
+
+    return jobs
+  }
 }

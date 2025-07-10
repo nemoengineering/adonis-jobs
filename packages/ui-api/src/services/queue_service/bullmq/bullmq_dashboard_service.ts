@@ -2,6 +2,7 @@ import queueManager from '@nemoventures/adonis-jobs/services/main'
 
 import { BullmqPresenter } from './mappers.js'
 import { JobStatus, QueueStatus } from '../types.js'
+import { FlowJobsService } from './flow_jobs_service.js'
 import { JobRunsRepository } from './job_runs_repository.js'
 import type { QueueListResponse, QueueService } from '../main.js'
 import type { GetJobRunsValidator } from '#validators/dashboard_validator'
@@ -19,6 +20,7 @@ import type {
 
 export class BullmqDashboardService implements QueueService {
   #jobRunsRepository = new JobRunsRepository()
+  #flowJobsService = new FlowJobsService()
 
   /**
    * Calculates global statistics across all queues
@@ -341,5 +343,12 @@ export class BullmqDashboardService implements QueueService {
     }
 
     return null
+  }
+
+  /**
+   * Retrieves all jobs in a flow tree starting from any job ID
+   */
+  async getFlowJobsFromJobId(jobId: string): Promise<JobRun[] | null> {
+    return await this.#flowJobsService.getFlowJobsFromJobId(jobId)
   }
 }
