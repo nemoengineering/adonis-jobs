@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { Loader2, MoreVertical } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { JobStatus, type GetJobRunsValidator } from '@nemoventures/adonis-jobs-ui-api/types'
+import type { JobStatus, type GetJobRunsValidator } from '@nemoventures/adonis-jobs-ui-api/types'
 
 import { Badge } from '@/components/ui/badge'
+import { formatTimestamp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import { useJobRuns } from '@/hooks/use-dashboard'
-import { MultiSelect } from '@/components/ui/multi-select'
+import { Pagination } from '@/components/ui/pagination'
+import { RunsToolbar } from './-components/runs-toolbar'
 import { Page, PageHeader } from '@/components/layout/page'
-import { createStatusOption } from '@/lib/job-status-config'
-import { formatDuration, formatTimestamp } from '@/lib/utils'
 import { JobStatusBadge } from '@/components/job-status-badge'
+import { JobDurationCell } from './-components/job-duration-cell'
 import { JobActionsDropdown } from '@/components/job-actions-dropdown'
+import { DurationHeaderWithTooltip } from './-components/duration-header-tooltip'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-export const Route = createFileRoute('/runs')({
+export const Route = createFileRoute('/runs/')({
   component: RunsPage,
 })
 
@@ -45,7 +46,7 @@ export function RunsPage() {
   }
 
   const handleJobClick = (jobId: string) => {
-    navigate({ to: '/run/$jobId', params: { jobId } })
+    navigate({ to: '/runs/$jobId', params: { jobId } })
   }
 
   const {
@@ -87,15 +88,6 @@ export function RunsPage() {
 
   const runs = runsData?.items || []
 
-  const statusOptions = [
-    createStatusOption(JobStatus.Active),
-    createStatusOption(JobStatus.Waiting),
-    createStatusOption(JobStatus.Delayed),
-    createStatusOption(JobStatus.Completed),
-    createStatusOption(JobStatus.Failed),
-    createStatusOption(JobStatus.Paused),
-  ]
-
   const handleSort = (field: GetJobRunsValidator['sortBy']) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
@@ -108,22 +100,12 @@ export function RunsPage() {
   return (
     <Page>
       <PageHeader title="Job Runs" description={`View and manage recent job executions`}>
-        <div className="flex items-center space-x-4">
-          <MultiSelect
-            options={statusOptions}
-            value={status}
-            onValueChange={handleStatusChange}
-            placeholder="Filter by status..."
-            className="w-[220px]"
-            maxDisplayItems={2}
-          />
-          <div className="flex items-center space-x-2">
-            <Switch checked={onlyRootJobs} onCheckedChange={setOnlyRootJobs} />
-            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Root jobs only
-            </label>
-          </div>
-        </div>
+        <RunsToolbar
+          status={status}
+          onStatusChange={handleStatusChange}
+          onlyRootJobs={onlyRootJobs}
+          onOnlyRootJobsChange={setOnlyRootJobs}
+        />
       </PageHeader>
 
       <div>
@@ -145,7 +127,9 @@ export function RunsPage() {
               >
                 Completed {sortBy === 'completedAt' && (sortOrder === 'asc' ? '↑' : '↓')}
               </TableHead>
-              <TableHead className="cursor-pointer hover:bg-muted/50">Duration</TableHead>
+              <TableHead className="cursor-pointer hover:bg-muted/50">
+                <DurationHeaderWithTooltip />
+              </TableHead>
               <TableHead className="cursor-pointer hover:bg-muted/50">Attempts</TableHead>
               <TableHead className="w-10">Actions</TableHead>
             </TableRow>
@@ -202,11 +186,7 @@ export function RunsPage() {
                   <TableCell>{formatTimestamp(run.startedAt || run.createdAt)}</TableCell>
                   <TableCell>{formatTimestamp(run.completedAt || run.failedAt)}</TableCell>
                   <TableCell>
-                    <span
-                      className={run.duration && run.duration > 10_000 ? 'text-yellow-600' : ''}
-                    >
-                      {formatDuration(run.duration)}
-                    </span>
+                    <JobDurationCell run={run} />
                   </TableCell>
                   <TableCell>
                     <span className={run.attempts > 1 ? 'text-yellow-600' : ''}>
@@ -231,28 +211,13 @@ export function RunsPage() {
           </TableBody>
         </Table>
 
-        {runsData && (runsData.hasPreviousPage || runsData.hasNextPage) && (
-          <div className="flex items-center justify-between space-x-2 py-4">
-            <div className="text-sm text-muted-foreground">Page {runsData.currentPage}</div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(page - 1)}
-                disabled={!runsData.hasPreviousPage}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(page + 1)}
-                disabled={!runsData.hasNextPage}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+        {runsData && (
+          <Pagination
+            currentPage={runsData.currentPage}
+            hasNextPage={runsData.hasNextPage}
+            hasPreviousPage={runsData.hasPreviousPage}
+            onPageChange={setPage}
+          />
         )}
       </div>
     </Page>

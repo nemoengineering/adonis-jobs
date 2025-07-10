@@ -110,7 +110,7 @@ export function useRetryJob() {
 
   return useMutation({
     mutationFn: (options: { jobId: string }) => dashboardApi.retryJob(options),
-    onSuccess: (response, variables) => {
+    onSuccess: (response) => {
       if (response.success) {
         toast.success(response.message)
       } else {
@@ -129,7 +129,7 @@ export function useRerunJob() {
 
   return useMutation({
     mutationFn: (options: { jobId: string }) => dashboardApi.rerunJob(options),
-    onSuccess: (response, variables) => {
+    onSuccess: (response) => {
       if (response.success) {
         toast.success(response.message)
       } else {
@@ -148,7 +148,7 @@ export function useRemoveJob() {
 
   return useMutation({
     mutationFn: (options: { jobId: string }) => dashboardApi.removeJob(options),
-    onSuccess: (response, variables) => {
+    onSuccess: (response) => {
       if (response.success) {
         toast.success(response.message)
       } else {

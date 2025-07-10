@@ -10,7 +10,7 @@ import { FlowVisualization } from '@/components/flow-visualization'
 import { getFlowJobsTreeQueryOptions, getJobByIdQueryOptions } from '@/hooks/use-dashboard'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 
-export const Route = createFileRoute('/run/$jobId')({
+export const Route = createFileRoute('/runs/$jobId')({
   component: JobDetailsPage,
   loader: ({ context: { queryClient }, params }) => {
     return Promise.all([
@@ -67,7 +67,7 @@ function JobDetailsPage() {
                 selectedJob={job}
                 onJobSelect={(selectedJob) => {
                   if (selectedJob.id === jobId) return
-                  router.navigate({ to: '/run/$jobId', params: { jobId: selectedJob.id } })
+                  router.navigate({ to: '/runs/$jobId', params: { jobId: selectedJob.id } })
                 }}
               />
             </ReactFlowProvider>

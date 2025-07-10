@@ -47,7 +47,7 @@ export function OverviewPage() {
               overview.recentActivity.recentJobs.map((job) => (
                 <Link
                   key={job.id}
-                  to="/run/$jobId"
+                  to="/runs/$jobId"
                   params={{ jobId: job.id }}
                   className="block p-3 rounded-lg border hover:bg-accent hover:border-accent-foreground/20 transition-colors"
                 >
@@ -89,7 +89,7 @@ export function OverviewPage() {
               overview.recentActivity.recentErrors.map((error) => (
                 <Link
                   key={error.jobId}
-                  to="/run/$jobId"
+                  to="/runs/$jobId"
                   params={{ jobId: error.jobId }}
                   className="block p-3 rounded-lg border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors"
                 >

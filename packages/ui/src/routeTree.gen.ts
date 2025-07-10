@@ -11,11 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as SchedulesRouteImport } from './routes/schedules'
-import { Route as RunsRouteImport } from './routes/runs'
 import { Route as QueuesRouteImport } from './routes/queues'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RunsIndexRouteImport } from './routes/runs/index'
 import { Route as OverviewIndexRouteImport } from './routes/overview/index'
-import { Route as RunJobIdRouteImport } from './routes/run/$jobId'
+import { Route as RunsJobIdRouteImport } from './routes/runs/$jobId'
 
 const TestRoute = TestRouteImport.update({
   id: '/test',
@@ -25,11 +25,6 @@ const TestRoute = TestRouteImport.update({
 const SchedulesRoute = SchedulesRouteImport.update({
   id: '/schedules',
   path: '/schedules',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RunsRoute = RunsRouteImport.update({
-  id: '/runs',
-  path: '/runs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QueuesRoute = QueuesRouteImport.update({
@@ -42,83 +37,88 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RunsIndexRoute = RunsIndexRouteImport.update({
+  id: '/runs/',
+  path: '/runs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OverviewIndexRoute = OverviewIndexRouteImport.update({
   id: '/overview/',
   path: '/overview/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RunJobIdRoute = RunJobIdRouteImport.update({
-  id: '/run/$jobId',
-  path: '/run/$jobId',
+const RunsJobIdRoute = RunsJobIdRouteImport.update({
+  id: '/runs/$jobId',
+  path: '/runs/$jobId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/queues': typeof QueuesRoute
-  '/runs': typeof RunsRoute
   '/schedules': typeof SchedulesRoute
   '/test': typeof TestRoute
-  '/run/$jobId': typeof RunJobIdRoute
+  '/runs/$jobId': typeof RunsJobIdRoute
   '/overview': typeof OverviewIndexRoute
+  '/runs': typeof RunsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/queues': typeof QueuesRoute
-  '/runs': typeof RunsRoute
   '/schedules': typeof SchedulesRoute
   '/test': typeof TestRoute
-  '/run/$jobId': typeof RunJobIdRoute
+  '/runs/$jobId': typeof RunsJobIdRoute
   '/overview': typeof OverviewIndexRoute
+  '/runs': typeof RunsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/queues': typeof QueuesRoute
-  '/runs': typeof RunsRoute
   '/schedules': typeof SchedulesRoute
   '/test': typeof TestRoute
-  '/run/$jobId': typeof RunJobIdRoute
+  '/runs/$jobId': typeof RunsJobIdRoute
   '/overview/': typeof OverviewIndexRoute
+  '/runs/': typeof RunsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/queues'
-    | '/runs'
     | '/schedules'
     | '/test'
-    | '/run/$jobId'
+    | '/runs/$jobId'
     | '/overview'
+    | '/runs'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/queues'
-    | '/runs'
     | '/schedules'
     | '/test'
-    | '/run/$jobId'
+    | '/runs/$jobId'
     | '/overview'
+    | '/runs'
   id:
     | '__root__'
     | '/'
     | '/queues'
-    | '/runs'
     | '/schedules'
     | '/test'
-    | '/run/$jobId'
+    | '/runs/$jobId'
     | '/overview/'
+    | '/runs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   QueuesRoute: typeof QueuesRoute
-  RunsRoute: typeof RunsRoute
   SchedulesRoute: typeof SchedulesRoute
   TestRoute: typeof TestRoute
-  RunJobIdRoute: typeof RunJobIdRoute
+  RunsJobIdRoute: typeof RunsJobIdRoute
   OverviewIndexRoute: typeof OverviewIndexRoute
+  RunsIndexRoute: typeof RunsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -137,13 +137,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchedulesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/runs': {
-      id: '/runs'
-      path: '/runs'
-      fullPath: '/runs'
-      preLoaderRoute: typeof RunsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/queues': {
       id: '/queues'
       path: '/queues'
@@ -158,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/runs/': {
+      id: '/runs/'
+      path: '/runs'
+      fullPath: '/runs'
+      preLoaderRoute: typeof RunsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/overview/': {
       id: '/overview/'
       path: '/overview'
@@ -165,11 +165,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OverviewIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/run/$jobId': {
-      id: '/run/$jobId'
-      path: '/run/$jobId'
-      fullPath: '/run/$jobId'
-      preLoaderRoute: typeof RunJobIdRouteImport
+    '/runs/$jobId': {
+      id: '/runs/$jobId'
+      path: '/runs/$jobId'
+      fullPath: '/runs/$jobId'
+      preLoaderRoute: typeof RunsJobIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -178,11 +178,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   QueuesRoute: QueuesRoute,
-  RunsRoute: RunsRoute,
   SchedulesRoute: SchedulesRoute,
   TestRoute: TestRoute,
-  RunJobIdRoute: RunJobIdRoute,
+  RunsJobIdRoute: RunsJobIdRoute,
   OverviewIndexRoute: OverviewIndexRoute,
+  RunsIndexRoute: RunsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
