@@ -39,10 +39,7 @@ function useAutoLayout() {
       setEdges(nextEdges)
 
       if (!isLayoutApplied) {
-        setTimeout(() => {
-          fitView({ padding: 0.2, minZoom: 0.1, maxZoom: 1.5 })
-        }, 50)
-
+        setTimeout(() => fitView({ padding: 0.2 }), 50)
         setIsLayoutApplied(true)
       }
     }
