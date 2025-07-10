@@ -83,6 +83,7 @@ export class BullmqPresenter {
       completedAt,
       failedAt,
       duration,
+      options: job.opts || {},
       attempts: job.attemptsMade || 0,
       maxAttempts: job.opts?.attempts || 1,
       progress: job.progress ? { percentage: job.progress as number } : undefined,

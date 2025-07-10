@@ -70,7 +70,7 @@ export function JobOverview({ job }: JobOverviewProps) {
         <div>
           <h3 className="text-lg font-semibold mb-4">Job Options</h3>
           <div className="bg-card border rounded-lg p-4">
-            <pre className="text-xs overflow-auto">Options are not available for this job.</pre>
+            <pre className="text-xs overflow-auto">{JSON.stringify(job.options, null, 2)}</pre>
           </div>
         </div>
 

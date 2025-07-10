@@ -72,6 +72,7 @@ export interface JobRun {
   queueName: string
   status: JobStatus
   data: Record<string, any>
+  options?: Record<string, any>
   startedAt?: string
   completedAt?: string
   failedAt?: string
