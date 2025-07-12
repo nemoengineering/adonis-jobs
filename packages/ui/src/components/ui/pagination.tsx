@@ -13,7 +13,7 @@ export function Pagination(props: PaginationProps) {
   }
 
   return (
-    <div className="flex items-center justify-between space-x-2 py-4">
+    <div className="flex items-center justify-between space-x-2 px-4 py-4">
       <div className="text-sm text-muted-foreground">Page {props.currentPage}</div>
       <div className="space-x-2">
         <Button

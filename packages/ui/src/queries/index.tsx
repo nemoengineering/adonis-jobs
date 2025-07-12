@@ -71,7 +71,6 @@ export const getQueuesQueryOptions = () =>
   queryOptions({
     queryKey: dashboardQueryKeys.queues(),
     queryFn: () => dashboardApi.getQueues(),
-    refetchInterval: POLLING_INTERVAL,
   })
 
 export function useToggleQueuePause() {

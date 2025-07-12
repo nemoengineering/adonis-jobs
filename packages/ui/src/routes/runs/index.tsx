@@ -3,13 +3,13 @@ import { Loader2, MoreVertical } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { JobStatus, GetJobRunsValidator } from '@nemoventures/adonis-jobs-ui-api/types'
 
-import { useJobRuns } from '@/queries'
 import { Badge } from '@/components/ui/badge'
 import { formatTimestamp } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Pagination } from '@/components/ui/pagination'
 import { RunsToolbar } from './-components/runs-toolbar'
 import { Page, PageHeader } from '@/components/layout/page'
+import { useJobRuns, getQueuesQueryOptions } from '@/queries'
 import { JobStatusBadge } from '@/components/job-status-badge'
 import { JobDurationCell } from './-components/job-duration-cell'
 import { JobActionsDropdown } from '@/components/job-actions-dropdown'
@@ -30,6 +30,9 @@ import {
 
 export const Route = createFileRoute('/runs/')({
   component: RunsPage,
+  loader: ({ context: { queryClient } }) => {
+    return queryClient.ensureQueryData(getQueuesQueryOptions())
+  },
 })
 
 export function RunsPage() {
@@ -39,10 +42,15 @@ export function RunsPage() {
   const [sortBy, setSortBy] = useState<GetJobRunsValidator['sortBy']>('createdAt')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [status, setStatus] = useState<JobStatus[]>([])
+  const [queueName, setQueueName] = useState<string | undefined>(undefined)
   const [onlyRootJobs, setOnlyRootJobs] = useState(true)
 
   const handleStatusChange = (values: string[]) => {
     setStatus(values as JobStatus[])
+  }
+
+  const handleQueueNameChange = (value: string | undefined) => {
+    setQueueName(value)
   }
 
   const handleJobClick = (jobId: string) => {
@@ -59,6 +67,7 @@ export function RunsPage() {
     sortBy,
     sortOrder,
     status: status.length > 0 ? status : undefined,
+    queueName,
     onlyRootJobs: onlyRootJobs ? true : undefined,
   })
 
@@ -107,6 +116,8 @@ export function RunsPage() {
       <RunsToolbar
         status={status}
         onStatusChange={handleStatusChange}
+        queueName={queueName}
+        onQueueNameChange={handleQueueNameChange}
         onlyRootJobs={onlyRootJobs}
         onOnlyRootJobsChange={setOnlyRootJobs}
       />
@@ -165,9 +176,9 @@ export function RunsPage() {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-xs text-muted-foreground">ID: {run.id}</div>
+                      <div className="text-xs text-muted-foreground/60">ID: {run.id}</div>
                       {run.flowId && (
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-muted-foreground/60">
                           Flow ID: {run.flowId}
                           {run.flowKey && ` (${run.flowKey})`}
                         </div>

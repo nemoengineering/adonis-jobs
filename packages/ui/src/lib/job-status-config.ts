@@ -22,7 +22,7 @@ export const JOB_STATUS_CONFIG: Record<JobStatus, JobStatusConfig> = {
     icon: IconCheck,
     className: 'bg-green-900 text-foreground',
     label: 'Completed',
-    iconColor: 'text-foreground',
+    iconColor: 'text-green-500',
   },
   [JobStatus.Active]: {
     variant: 'secondary',

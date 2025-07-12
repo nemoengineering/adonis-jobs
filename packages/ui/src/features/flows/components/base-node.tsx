@@ -10,7 +10,7 @@ export const BaseNode = forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative rounded border bg-card text-card-foreground',
+      'relative border bg-card text-card-foreground',
       className,
       selected ? 'border-muted-foreground shadow-lg' : '',
       'hover:ring-1',

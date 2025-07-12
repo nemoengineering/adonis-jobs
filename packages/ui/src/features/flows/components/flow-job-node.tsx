@@ -54,7 +54,7 @@ export const FlowJobNodeComponent = memo(({ data }: FlowJobNodeProps) => {
     <NodeStatusIndicator status={getNodeStatus()}>
       <BaseNode
         className={cn(
-          'min-w-[280px] pt-2 bg-(--slate-2)',
+          'min-w-[280px] pt-2 bg-card',
           isSelected ? 'border-blue-500 border' : 'border-gray-600',
         )}
       >
@@ -71,9 +71,7 @@ export const FlowJobNodeComponent = memo(({ data }: FlowJobNodeProps) => {
           )}
           <NodeHeaderActions>
             <NodeHeaderMenuAction label="Job actions">
-              <JobActionsDropdown jobId={job.id} jobStatus={job.status}>
-                {/* Actions will be rendered by JobActionsDropdown */}
-              </JobActionsDropdown>
+              <JobActionsDropdown jobId={job.id} jobStatus={job.status} />
             </NodeHeaderMenuAction>
           </NodeHeaderActions>
         </NodeHeader>
@@ -124,7 +122,7 @@ export const FlowJobNodeComponent = memo(({ data }: FlowJobNodeProps) => {
           </div>
 
           {job.error && (
-            <div className="mt-2 p-2 bg-red-900 rounded text-xs">
+            <div className="mt-2 p-2 bg-red-900 text-xs">
               <div className="font-medium text-red-200">Error</div>
               <div className="text-red-300 truncate" title={job.error.message}>
                 {job.error.message}
