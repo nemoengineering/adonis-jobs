@@ -19,10 +19,17 @@ export function NavMain({ items }: { items: { title: string; url: string; icon?:
               <SidebarMenuButton tooltip={item.title} asChild>
                 <Link
                   to={item.url}
-                  activeProps={{ className: '!text-black !bg-primary !hover:bg-primary/40' }}
+                  activeProps={{
+                    className: '!text-primary border !bg-sidebar-primary !border-border',
+                  }}
+                  className="flex items-center gap-2 border border-transparent"
                 >
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+                  {({ isActive }) => (
+                    <>
+                      {item.icon && <item.icon className={isActive ? 'text-primary' : ''} />}
+                      <span>{item.title}</span>
+                    </>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

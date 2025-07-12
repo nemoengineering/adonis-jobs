@@ -22,7 +22,7 @@ export function RunsToolbar(props: RunsToolbarProps) {
   ]
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 p-4 border-b">
       <MultiSelect
         options={statusOptions}
         value={props.status}
@@ -33,9 +33,7 @@ export function RunsToolbar(props: RunsToolbarProps) {
       />
       <div className="flex items-center space-x-2">
         <Switch checked={props.onlyRootJobs} onCheckedChange={props.onOnlyRootJobsChange} />
-        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-          Root jobs only
-        </label>
+        <label className="text-sm font-medium leading-none">Root jobs only</label>
       </div>
     </div>
   )

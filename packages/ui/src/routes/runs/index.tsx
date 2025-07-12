@@ -99,20 +99,22 @@ export function RunsPage() {
 
   return (
     <Page>
-      <PageHeader title="Job Runs" description={`View and manage recent job executions`}>
-        <RunsToolbar
-          status={status}
-          onStatusChange={handleStatusChange}
-          onlyRootJobs={onlyRootJobs}
-          onOnlyRootJobsChange={setOnlyRootJobs}
-        />
-      </PageHeader>
+      <PageHeader
+        title="Job Runs"
+        description={`View and manage recent job executions`}
+      ></PageHeader>
 
+      <RunsToolbar
+        status={status}
+        onStatusChange={handleStatusChange}
+        onlyRootJobs={onlyRootJobs}
+        onOnlyRootJobsChange={setOnlyRootJobs}
+      />
       <div>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="cursor-pointer hover:bg-muted/50">Job Name</TableHead>
+              <TableHead className="cursor-pointer hover:bg-muted/50 px-4">Job Name</TableHead>
               <TableHead>Queue</TableHead>
               <TableHead>Status</TableHead>
               <TableHead
@@ -131,7 +133,7 @@ export function RunsPage() {
                 <DurationHeaderWithTooltip />
               </TableHead>
               <TableHead className="cursor-pointer hover:bg-muted/50">Attempts</TableHead>
-              <TableHead className="w-10">Actions</TableHead>
+              <TableHead className="w-10 px-4">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -145,10 +147,10 @@ export function RunsPage() {
               runs.map((run) => (
                 <TableRow
                   key={run.id}
-                  className="cursor-pointer hover:bg-muted/50"
+                  className="cursor-pointer hover:bg-card"
                   onClick={() => handleJobClick(run.id)}
                 >
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium px-4">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{run.name}</span>

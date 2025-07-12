@@ -118,13 +118,6 @@ export function MultiSelect({
                   e.stopPropagation()
                   handleClearAll()
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    handleClearAll()
-                  }
-                }}
               >
                 <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
               </div>

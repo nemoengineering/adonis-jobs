@@ -6,16 +6,21 @@ import {
   IconListDetails,
   IconFlask,
   IconClock,
+  IconBrandGithub,
+  IconBook,
+  IconExternalLink,
 } from '@tabler/icons-react'
 
 import { NavMain } from '@/components/layout/nav-main'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from '@/components/ui/sidebar'
 
 const data = {
@@ -43,9 +48,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      <SidebarSeparator />
       <SidebarContent>
         <NavMain items={data.navMain} />
-      </SidebarContent>
+      </SidebarContent>{' '}
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-2">
+              <a
+                href="https://github.com/nemoengineering/adonis-jobs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <IconBrandGithub className="!size-4" />
+                <span className="text-sm">GitHub</span>
+                <IconExternalLink className="!size-3 ml-auto" />
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-2">
+              <a
+                href="https://adonis-jobs.nemo.engineering/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <IconBook className="!size-4" />
+                <span className="text-sm">Documentation</span>
+                <IconExternalLink className="!size-3 ml-auto" />
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

@@ -1,9 +1,8 @@
-@import url('https://fonts.cdnfonts.com/css/satoshi');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..600 ;1,400..600  &display=swap');
 
-@import '@radix-ui/colors/mauve-dark.css';
-@import '@radix-ui/colors/slate-dark.css';
-@import '@radix-ui/colors/lime-dark.css';
+@import '@radix-ui/colors/violet-dark.css';
+@import '@radix-ui/colors/gray-dark.css';
 
 @import 'tailwindcss';
 
@@ -13,7 +12,7 @@
 
 body {
   @apply m-0;
-  font-family: 'Satoshi', sans-serif;
+  font-family: 'Manrope', sans-serif;
 
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;
@@ -21,15 +20,15 @@ body {
 }
 
 :root {
-  --radius: 0.3rem;
-  --background: var(--slate-1);
-  --foreground: var(--slate-12);
-  --card: var(--slate-2);
+  --radius: 0.2rem;
+  --background: var(--gray-1);
+  --foreground: var(--gray-12);
+  --card: var(--gray-2);
   --card-foreground: oklch(0.985 0 0);
-  --popover: var(--slate-1);
-  --popover-foreground: var(--slate-12);
-  --primary: var(--lime-9);
-  --primary-foreground: oklch(0.21 0.006 285.885);
+  --popover: var(--gray-1);
+  --popover-foreground: var(--gray-12);
+  --primary: var(--violet-11);
+  --primary-foreground: var(--violet-1);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
@@ -46,13 +45,13 @@ body {
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: var(--slate-2);
+  --sidebar: var(--card);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: var(--gray-4);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.274 0.006 286.033);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.274 0.006 286.033);
+  --sidebar-border: var(--gray-3);
   --sidebar-ring: oklch(0.442 0.017 285.786);
 }
 
@@ -84,10 +83,12 @@ body {
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);

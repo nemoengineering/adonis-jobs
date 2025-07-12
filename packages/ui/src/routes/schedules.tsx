@@ -7,7 +7,7 @@ import type { ScheduleInfo } from '@nemoventures/adonis-jobs-ui-api/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getSchedulesQueryOptions } from '@/queries'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Page, PageHeader } from '@/components/layout/page'
 import {
   Table,
   TableBody,
@@ -82,83 +82,73 @@ function SchedulesPage() {
   const { data: schedules } = useSuspenseQuery(getSchedulesQueryOptions())
 
   return (
-    <div className="@container/main h-full">
-      <div className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Schedules</h1>
-            <p className="text-muted-foreground">Manage and monitor your scheduled jobs</p>
-          </div>
-        </div>
+    <Page>
+      <PageHeader title="Schedules" description="Manage and monitor your scheduled jobs" />
 
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>All Schedules</CardTitle>
-          </CardHeader>
-          <CardContent>
+      <div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-4">Schedule Name</TableHead>
+              <TableHead>Queue</TableHead>
+              <TableHead>Pattern/Interval</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Next Run</TableHead>
+              <TableHead>Job Template</TableHead>
+              <TableHead className="w-10 px-4">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {schedules.schedules.length === 0 ? (
-              <div className="py-8 text-center text-muted-foreground">
-                No schedules found. Create repeatable jobs to see them here.
-              </div>
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  No schedules found. Create repeatable jobs to see them here.
+                </TableCell>
+              </TableRow>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Schedule Name</TableHead>
-                    <TableHead>Queue</TableHead>
-                    <TableHead>Pattern/Interval</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Next Run</TableHead>
-                    <TableHead>Job Template</TableHead>
-                    <TableHead className="w-12"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {schedules.schedules.map((schedule) => (
-                    <TableRow key={schedule.id}>
-                      <TableCell className="font-medium">{schedule.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{schedule.queueName}</Badge>
-                      </TableCell>
-                      <TableCell>{formatPattern(schedule)}</TableCell>
-                      <TableCell>{getStatusBadge(schedule.status)}</TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {dayjs(schedule.nextRunAt).fromNow()}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {schedule.jobTemplate?.name ? (
-                          <code className="text-xs bg-muted px-1 py-0.5 rounded">
-                            {schedule.jobTemplate.name}
-                          </code>
-                        ) : (
-                          <span className="text-muted-foreground">N/A</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="size-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="size-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem disabled>View Details</DropdownMenuItem>
-                            <DropdownMenuItem disabled>Pause Schedule</DropdownMenuItem>
-                            <DropdownMenuItem disabled>Remove Schedule</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              schedules.schedules.map((schedule) => (
+                <TableRow key={schedule.id}>
+                  <TableCell className="font-medium px-4">{schedule.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{schedule.queueName}</Badge>
+                  </TableCell>
+                  <TableCell>{formatPattern(schedule)}</TableCell>
+                  <TableCell>{getStatusBadge(schedule.status)}</TableCell>
+                  <TableCell>
+                    <span className="text-sm text-muted-foreground">
+                      {dayjs(schedule.nextRunAt).fromNow()}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    {schedule.jobTemplate?.name ? (
+                      <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                        {schedule.jobTemplate.name}
+                      </code>
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="px-4">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="size-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem disabled>View Details</DropdownMenuItem>
+                        <DropdownMenuItem disabled>Pause Schedule</DropdownMenuItem>
+                        <DropdownMenuItem disabled>Remove Schedule</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
-          </CardContent>
-        </Card>
+          </TableBody>
+        </Table>
       </div>
-    </div>
+    </Page>
   )
 }

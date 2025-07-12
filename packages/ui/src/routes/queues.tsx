@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Page, PageHeader } from '@/components/layout/page'
 import { getQueuesQueryOptions, useToggleQueuePause } from '@/queries'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -41,7 +40,7 @@ function QueueActionButton({ queue }: { queue: QueueInfo }) {
 
   return (
     <Button
-      variant="outline"
+      // variant="outline"
       size="sm"
       onClick={handleTogglePause}
       disabled={toggleQueuePause.isPending}
@@ -70,55 +69,52 @@ function QueuesPage() {
     <Page>
       <PageHeader title="Queues" description={`Manage and monitor your job queues`} />
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>All Queues</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {queues.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              No queues found. Make sure your jobs are properly configured.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Queue Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-center">Waiting</TableHead>
-                  <TableHead className="text-center">Active</TableHead>
-                  <TableHead className="text-center">Failed</TableHead>
-                  <TableHead className="text-center">Concurrency</TableHead>
-                  <TableHead className="text-center"></TableHead>
+      <div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-4">Queue Name</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center">Waiting</TableHead>
+              <TableHead className="text-center">Active</TableHead>
+              <TableHead className="text-center">Failed</TableHead>
+              <TableHead className="text-center">Concurrency</TableHead>
+              <TableHead className="w-10 px-4">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {queues.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  No queues found. Make sure your jobs are properly configured.
+                </TableCell>
+              </TableRow>
+            ) : (
+              queues.map((queue) => (
+                <TableRow key={queue.name}>
+                  <TableCell className="font-medium px-4">{queue.name}</TableCell>
+                  <TableCell>{getStatusBadge(queue.status)}</TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline">{queue.stats.waiting}</Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="secondary">{queue.stats.active}</Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant={queue.stats.failed > 0 ? 'destructive' : 'outline'}>
+                      {queue.stats.failed}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">{queue.concurrency}</TableCell>
+                  <TableCell className="px-4">
+                    <QueueActionButton queue={queue} />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {queues.map((queue) => (
-                  <TableRow key={queue.name}>
-                    <TableCell className="font-medium">{queue.name}</TableCell>
-                    <TableCell>{getStatusBadge(queue.status)}</TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="outline">{queue.stats.waiting}</Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="secondary">{queue.stats.active}</Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={queue.stats.failed > 0 ? 'destructive' : 'outline'}>
-                        {queue.stats.failed}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">{queue.concurrency}</TableCell>
-                    <TableCell className="text-right">
-                      <QueueActionButton queue={queue} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </Page>
   )
 }
