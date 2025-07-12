@@ -13,7 +13,7 @@ test.group('JobDiscoverer', () => {
     await createFakeJob({ path: 'app/services/notification_job.ts', name: 'NotificationJob' })
 
     const discoverer = new JobDiscoverer(app.appRoot)
-    const jobs = await discoverer.discoverJobs()
+    const jobs = await discoverer.discoverAndLoadJobs()
 
     const jobNames = jobs.map((job) => job.name)
     assert.include(jobNames, 'UserJob')
@@ -30,7 +30,7 @@ test.group('JobDiscoverer', () => {
     await test.context.fs.create('app/jobs/helper.js', '')
 
     const discoverer = new JobDiscoverer(app.appRoot)
-    const jobs = await discoverer.discoverJobs()
+    const jobs = await discoverer.discoverAndLoadJobs()
 
     // Only the _job.ts file should be discovered
     assert.lengthOf(jobs, 1 + kBuiltinJobs.length)
@@ -45,7 +45,7 @@ test.group('JobDiscoverer', () => {
     await createFakeJob({ path: 'app/services/email/newsletter_job.ts', name: 'NewsletterJob' })
 
     const discoverer = new JobDiscoverer(app.appRoot)
-    const jobs = await discoverer.discoverJobs()
+    const jobs = await discoverer.discoverAndLoadJobs()
 
     assert.lengthOf(jobs, 3 + kBuiltinJobs.length)
     const jobNames = jobs.map((job) => job.name).sort()
@@ -69,7 +69,7 @@ test.group('JobDiscoverer', () => {
     )
 
     const discoverer = new JobDiscoverer(app.appRoot)
-    const jobs = await discoverer.discoverJobs()
+    const jobs = await discoverer.discoverAndLoadJobs()
 
     assert.lengthOf(jobs, 1 + kBuiltinJobs.length)
     assert.equal(jobs[0].name, 'UserJob')
@@ -83,7 +83,7 @@ test.group('JobDiscoverer', () => {
 
     const discoverer = new JobDiscoverer(app.appRoot)
     await assert.rejects(async () => {
-      await discoverer.discoverJobs()
+      await discoverer.discoverAndLoadJobs()
     }, DuplicateJobException as any)
   })
 
@@ -97,7 +97,7 @@ test.group('JobDiscoverer', () => {
     await createFakeJob({ path: 'providers/provider_job.ts', name: 'ProviderJob' })
 
     const discoverer = new JobDiscoverer(app.appRoot)
-    const jobs = await discoverer.discoverJobs()
+    const jobs = await discoverer.discoverAndLoadJobs()
 
     assert.lengthOf(jobs, 1 + kBuiltinJobs.length)
 

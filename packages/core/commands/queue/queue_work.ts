@@ -82,7 +82,7 @@ export default class QueueWork extends BaseCommand {
     const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
     const redis = await this.app.container.make('redis')
 
-    const jobs = await new JobDiscoverer(this.app.appRoot).discoverJobs()
+    const jobs = await new JobDiscoverer(this.app.appRoot).discoverAndLoadJobs()
     const connectionResolver = new ConnectionResolver(config, redis)
     this.#manager = new WorkerManager(this.app, emitter, config, jobs, connectionResolver)
     this.#healthCheckManager = new HealthCheckManager(config, redis)

@@ -3,6 +3,7 @@ import type { Logger } from '@adonisjs/core/logger'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
 import { BullMqFactory } from './bull_factory.js'
+import { JobDiscoverer } from './worker/job_discoverer.js'
 import type { ConnectionResolver } from './connection_resolver.js'
 import type {
   BullFlowProducer,
@@ -18,12 +19,16 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
   #flowProducer?: BullFlowProducer
   #queues: Map<keyof KnownQueues, BullQueue> = new Map()
   #queuesEvents: Map<keyof KnownQueues, BullQueueEvents> = new Map()
+  #jobDiscoverer: JobDiscoverer
 
   constructor(
+    appRoot: URL,
     public config: Config<KnownQueues>,
     private connectionResolver: ConnectionResolver,
     private logger: Logger,
-  ) {}
+  ) {
+    this.#jobDiscoverer = new JobDiscoverer(appRoot)
+  }
 
   /**
    * Get a queue by its name or throw an error if the queue
@@ -161,6 +166,11 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     })
 
     return await Promise.all(promises)
+  }
+
+  async getAvailableJobs() {
+    const jobs = await this.#jobDiscoverer.discoverAndLoadJobs()
+    return jobs
   }
 
   async shutdown() {

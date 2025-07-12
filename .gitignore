@@ -13,3 +13,11 @@ dist
 shrinkwrap.yaml
 test.txt
 .astro
+.DS_Store
+dist
+dist-ssr
+*.local
+count.txt
+.env
+.nitro
+.tanstack

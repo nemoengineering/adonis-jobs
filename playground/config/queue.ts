@@ -2,6 +2,8 @@ import { defineConfig } from '@nemoventures/adonis-jobs'
 import { RedisCheck, RedisMemoryUsageCheck } from '@adonisjs/redis'
 
 const queueConfig = defineConfig({
+  multiLogger: { enabled: true },
+
   /**
    * The default connection to use. The connection
    * should be defined in the "config/redis.ts" file.
