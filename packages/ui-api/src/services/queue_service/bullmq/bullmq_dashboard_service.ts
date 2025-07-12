@@ -34,17 +34,18 @@ export class BullmqDashboardService implements QueueService {
     let failedJobs = 0
     let waitingJobs = 0
     let delayedJobs = 0
-    const pausedJobs = 0
+    let pausedJobs = 0
 
     for (const queueName of queueNames) {
       const queue = queueManager.useQueue(queueName as any)
 
-      const [waiting, active, completed, failed, delayed] = await Promise.all([
+      const [waiting, active, completed, failed, delayed, paused] = await Promise.all([
         queue.getWaiting(),
         queue.getActive(),
         queue.getCompleted(),
         queue.getFailed(),
         queue.getDelayed(),
+        queue.getJobs(['paused']),
       ])
 
       waitingJobs += waiting.length
@@ -52,6 +53,7 @@ export class BullmqDashboardService implements QueueService {
       completedJobs += completed.length
       failedJobs += failed.length
       delayedJobs += delayed.length
+      pausedJobs += paused.length
     }
 
     totalJobs = waitingJobs + activeJobs + completedJobs + failedJobs + delayedJobs + pausedJobs
@@ -209,12 +211,13 @@ export class BullmqDashboardService implements QueueService {
     for (const queueName of queueNames) {
       const queue = queueManager.useQueue(queueName as any)
 
-      const [waiting, active, completed, failed, delayed] = await Promise.all([
+      const [waiting, active, completed, failed, delayed, paused] = await Promise.all([
         queue.getWaiting(),
         queue.getActive(),
         queue.getCompleted(),
         queue.getFailed(),
         queue.getDelayed(),
+        queue.getJobs(['paused']),
       ])
 
       const isPaused = await queue.isPaused()
@@ -230,7 +233,7 @@ export class BullmqDashboardService implements QueueService {
           completed: completed.length,
           failed: failed.length,
           delayed: delayed.length,
-          paused: 0,
+          paused: paused.length,
         },
         isPaused,
         concurrency,

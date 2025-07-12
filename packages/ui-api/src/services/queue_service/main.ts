@@ -18,6 +18,7 @@ export interface QueueStats {
   completed: number
   failed: number
   delayed: number
+  paused: number
 }
 
 export interface QueueInfo {

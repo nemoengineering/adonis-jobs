@@ -107,6 +107,7 @@ function QueuesPage() {
               <TableHead className="text-center">Completed</TableHead>
               <TableHead className="text-center">Failed</TableHead>
               <TableHead className="text-center">Delayed</TableHead>
+              <TableHead className="text-center">Paused</TableHead>
               <TableHead className="text-center">Concurrency</TableHead>
               <TableHead className="w-10 px-4">Actions</TableHead>
             </TableRow>
@@ -114,7 +115,7 @@ function QueuesPage() {
           <TableBody>
             {queues.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                   No queues found. Make sure your jobs are properly configured.
                 </TableCell>
               </TableRow>
@@ -127,18 +128,19 @@ function QueuesPage() {
                     <Badge variant="outline">{queue.stats.waiting}</Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant="secondary">{queue.stats.active}</Badge>
+                    <Badge variant="outline">{queue.stats.active}</Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant="default">{queue.stats.completed}</Badge>
+                    <Badge variant="outline">{queue.stats.completed}</Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant={queue.stats.failed > 0 ? 'destructive' : 'outline'}>
-                      {queue.stats.failed}
-                    </Badge>
+                    <Badge variant={'outline'}>{queue.stats.failed}</Badge>
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge variant="outline">{queue.stats.delayed}</Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline">{queue.stats.paused}</Badge>
                   </TableCell>
                   <TableCell className="text-center">{queue.concurrency}</TableCell>
                   <TableCell className="px-4">
