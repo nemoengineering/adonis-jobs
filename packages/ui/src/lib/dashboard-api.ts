@@ -185,6 +185,15 @@ export class DashboardApi {
   async removeJob(options: JobActionRequest) {
     return this.#client.post('jobs/remove', { json: options }).json<JobActionResponse>()
   }
+
+  /**
+   * Clean a queue by removing jobs with specific statuses
+   */
+  async cleanQueue(options: { queueName: string; statuses?: string[] }) {
+    return this.#client
+      .post('queue/clean', { json: options })
+      .json<{ success: boolean; message: string }>()
+  }
 }
 
 export const dashboardApi = new DashboardApi()

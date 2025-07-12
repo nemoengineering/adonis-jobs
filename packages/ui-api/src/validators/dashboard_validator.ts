@@ -48,3 +48,15 @@ export const jobActionValidator = vine.compile(
     jobId: vine.string().trim().minLength(1),
   }),
 )
+
+/**
+ * Validates the clean queue request
+ */
+export const cleanQueueValidator = vine.compile(
+  vine.object({
+    queueName: vine.string().trim(),
+    statuses: vine.array(vine.enum(JobStatus)).optional(),
+  }),
+)
+
+export type CleanQueueValidator = Infer<typeof cleanQueueValidator>

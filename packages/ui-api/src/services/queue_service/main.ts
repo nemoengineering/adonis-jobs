@@ -7,6 +7,7 @@ import type {
   GlobalStats,
   JobRun,
   JobRunsResponse,
+  JobStatus,
   QueueStatus,
   ScheduleListResponse,
 } from './types.js'
@@ -88,6 +89,14 @@ export abstract class QueueService {
    * Remove a job from the queue
    */
   abstract removeJob(options: { jobId: string }): Promise<{ success: boolean; message: string }>
+
+  /**
+   * Clean a queue by removing jobs with specific statuses
+   */
+  abstract cleanQueue(options: {
+    queueName: string
+    statuses?: JobStatus[]
+  }): Promise<{ success: boolean; message: string }>
 
   /**
    * Get a specific job by its ID

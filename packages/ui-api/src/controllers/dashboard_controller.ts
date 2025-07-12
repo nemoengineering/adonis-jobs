@@ -7,6 +7,7 @@ import {
   toggleQueuePauseValidator,
   dispatchJobValidator,
   jobActionValidator,
+  cleanQueueValidator,
 } from '#validators/dashboard_validator'
 
 @inject()
@@ -117,5 +118,13 @@ export default class DashboardController {
   async removeJob({ request }: HttpContext) {
     const payload = await request.validateUsing(jobActionValidator)
     return await this.queueService.removeJob(payload)
+  }
+
+  /**
+   * Clean a queue by removing jobs with specific statuses
+   */
+  async cleanQueue({ request }: HttpContext) {
+    const payload = await request.validateUsing(cleanQueueValidator)
+    return await this.queueService.cleanQueue(payload)
   }
 }

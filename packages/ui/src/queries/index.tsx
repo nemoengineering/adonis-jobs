@@ -160,3 +160,23 @@ export function useRemoveJob() {
     },
   })
 }
+
+export function useCleanQueue() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (options: { queueName: string; statuses?: string[] }) =>
+      dashboardApi.cleanQueue(options),
+    onSuccess: (response: { success: boolean; message: string }) => {
+      if (response.success) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message)
+      }
+      queryClient.invalidateQueries()
+    },
+    onError: (error) => {
+      toast.error(`Failed to clean queue: ${error.message}`)
+    },
+  })
+}

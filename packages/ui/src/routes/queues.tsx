@@ -1,11 +1,13 @@
-import { Play, Pause } from 'lucide-react'
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { Play, Pause, MoreHorizontal, Trash2 } from 'lucide-react'
 import type { QueueInfo } from '@nemoventures/adonis-jobs-ui-api/types'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Page, PageHeader } from '@/components/layout/page'
+import { CleanQueueModal } from '@/components/clean-queue-modal'
 import { getQueuesQueryOptions, useToggleQueuePause } from '@/queries'
 import {
   Table,
@@ -15,6 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export const Route = createFileRoute('/queues')({
   component: QueuesPage,
@@ -33,31 +41,50 @@ function getStatusBadge(status: string) {
 
 function QueueActionButton({ queue }: { queue: QueueInfo }) {
   const toggleQueuePause = useToggleQueuePause()
+  const [cleanModalOpen, setCleanModalOpen] = useState(false)
 
   const handleTogglePause = async () => {
     await toggleQueuePause.mutateAsync({ queueName: queue.name, pause: !queue.isPaused })
   }
 
   return (
-    <Button
-      // variant="outline"
-      size="sm"
-      onClick={handleTogglePause}
-      disabled={toggleQueuePause.isPending}
-      className="min-w-[80px]"
-    >
-      {queue.isPaused ? (
-        <>
-          <Play className="mr-1 size-3" />
-          Resume
-        </>
-      ) : (
-        <>
-          <Pause className="mr-1 size-3" />
-          Pause
-        </>
-      )}
-    </Button>
+    <div className="flex items-center justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm">
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => handleTogglePause()}
+            disabled={toggleQueuePause.isPending}
+          >
+            {queue.isPaused ? (
+              <>
+                <Play className="mr-2 size-4" />
+                Resume Queue
+              </>
+            ) : (
+              <>
+                <Pause className="mr-2 size-4" />
+                Pause Queue
+              </>
+            )}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setCleanModalOpen(true)}>
+            <Trash2 className="mr-2 size-4" />
+            Clean Queue
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <CleanQueueModal
+        isOpen={cleanModalOpen}
+        onClose={() => setCleanModalOpen(false)}
+        queueName={queue.name}
+      />
+    </div>
   )
 }
 
@@ -77,7 +104,9 @@ function QueuesPage() {
               <TableHead>Status</TableHead>
               <TableHead className="text-center">Waiting</TableHead>
               <TableHead className="text-center">Active</TableHead>
+              <TableHead className="text-center">Completed</TableHead>
               <TableHead className="text-center">Failed</TableHead>
+              <TableHead className="text-center">Delayed</TableHead>
               <TableHead className="text-center">Concurrency</TableHead>
               <TableHead className="w-10 px-4">Actions</TableHead>
             </TableRow>
@@ -85,7 +114,7 @@ function QueuesPage() {
           <TableBody>
             {queues.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                   No queues found. Make sure your jobs are properly configured.
                 </TableCell>
               </TableRow>
@@ -101,9 +130,15 @@ function QueuesPage() {
                     <Badge variant="secondary">{queue.stats.active}</Badge>
                   </TableCell>
                   <TableCell className="text-center">
+                    <Badge variant="default">{queue.stats.completed}</Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
                     <Badge variant={queue.stats.failed > 0 ? 'destructive' : 'outline'}>
                       {queue.stats.failed}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline">{queue.stats.delayed}</Badge>
                   </TableCell>
                   <TableCell className="text-center">{queue.concurrency}</TableCell>
                   <TableCell className="px-4">

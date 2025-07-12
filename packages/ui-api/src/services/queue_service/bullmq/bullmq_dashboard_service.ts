@@ -1,8 +1,8 @@
 import queueManager from '@nemoventures/adonis-jobs/services/main'
 
-import { BullmqPresenter } from './mappers.js'
 import { JobStatus, QueueStatus } from '../types.js'
 import { JobRunsRepository } from './job_runs_repository.js'
+import { BullmqPresenter, remapJobStatus } from './mappers.js'
 import { FlowJobsRepository } from './flow_jobs_repository.js'
 import type { QueueListResponse, QueueService } from '../main.js'
 import type { GetJobRunsValidator } from '#validators/dashboard_validator'
@@ -436,5 +436,41 @@ export class BullmqDashboardService implements QueueService {
     }
 
     return { success: false, message: `Job ${options.jobId} not found` }
+  }
+
+  /**
+   * Clean a queue by removing jobs with specific statuses
+   */
+  async cleanQueue(options: {
+    queueName: string
+    statuses?: JobStatus[]
+  }): Promise<{ success: boolean; message: string }> {
+    const queue = queueManager.useQueue(options.queueName as any)
+
+    if (!options.statuses?.length) {
+      options.statuses = [
+        JobStatus.Completed,
+        JobStatus.Failed,
+        JobStatus.Active,
+        JobStatus.Waiting,
+        JobStatus.Delayed,
+        JobStatus.Paused,
+      ]
+    }
+
+    let totalCleaned = 0
+    const cleanPromises = options.statuses.map(async (jobStatus) => {
+      const bullMQStatus = remapJobStatus(jobStatus)
+      const cleaned = await queue.clean(0, 0, bullMQStatus)
+      return cleaned.length || 0
+    })
+
+    const cleanedCounts = await Promise.all(cleanPromises)
+    totalCleaned = cleanedCounts.reduce((sum, count) => sum + count, 0)
+
+    return {
+      success: true,
+      message: `Queue ${options.queueName} cleaned successfully. ${totalCleaned} jobs removed.`,
+    }
   }
 }
