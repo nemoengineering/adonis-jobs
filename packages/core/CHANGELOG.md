@@ -1,5 +1,11 @@
 # @nemoventures/adonis-jobs
 
+## 1.1.0-beta.1
+
+### Minor Changes
+
+- 663cdb7: This change introduces the "Metrics per worker" feature, allowing each worker HTTP Server to expose its own Prometheus metrics endpoint.
+
 ## 1.1.0-beta.0
 
 ### Minor Changes

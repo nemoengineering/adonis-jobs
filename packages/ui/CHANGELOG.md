@@ -1,5 +1,11 @@
 # @nemoventures/adonis-jobs-ui
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- @nemoventures/adonis-jobs-ui-api@1.0.0-beta.6
+
 ## 1.1.0-beta.0
 
 ### Minor Changes
