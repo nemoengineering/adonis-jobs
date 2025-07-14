@@ -13,13 +13,17 @@
     "./ui_provider": "./src/providers/app_provider.ts",
     "./package.json": "./package.json"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "scripts": {
+    "build": "tsdown",
+    "prerelease": "pnpm build"
+  },
   "imports": {
     "#services/*": "./src/services/*.js",
     "#validators/*": "./src/validators/*.js",
     "#controllers/*": "./src/controllers/*.js"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "peerDependencies": {
     "@adonisjs/core": "catalog:",
     "@nemoventures/adonis-jobs": "workspace:*",

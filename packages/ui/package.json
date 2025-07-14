@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "vite --port 3000",
     "start": "vite --port 3000",
+    "prerelease": "pnpm build",
     "build": "vite build && tsc && tsc -p tsconfig.node.json",
     "serve": "vite preview"
   },
