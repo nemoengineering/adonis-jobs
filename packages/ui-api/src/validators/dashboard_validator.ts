@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine'
 import type { Infer } from '@vinejs/vine/types'
 
-import { JobStatus } from '#services/queue_service/types'
+import { JobStatus } from '../types.js'
 
 export const getJobRunsValidator = vine.compile(
   vine.object({

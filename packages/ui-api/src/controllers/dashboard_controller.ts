@@ -3,14 +3,14 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
-import { QueueService } from '#services/queue_service/main'
+import { QueueService } from '../services/queue_service/main.js'
 import {
   getJobRunsValidator,
   toggleQueuePauseValidator,
   dispatchJobValidator,
   jobActionValidator,
   cleanQueueValidator,
-} from '#validators/dashboard_validator'
+} from '../validators/dashboard_validator.js'
 
 @inject()
 export default class DashboardController {

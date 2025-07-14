@@ -1,7 +1,7 @@
 {
   "name": "@nemoventures/adonis-jobs-ui-api",
   "type": "module",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.5",
   "packageManager": "pnpm@10.12.1",
   "description": "",
   "author": "Julien Ripouteau <julien@ripouteau.com>",
@@ -22,11 +22,6 @@
   "scripts": {
     "build": "tsc",
     "prerelease": "pnpm build"
-  },
-  "imports": {
-    "#services/*": "./src/services/*.js",
-    "#validators/*": "./src/validators/*.js",
-    "#controllers/*": "./src/controllers/*.js"
   },
   "peerDependencies": {
     "@adonisjs/core": "catalog:",
@@ -50,7 +45,7 @@
     "exports": {
       ".": "./dist/index.js",
       "./types": "./dist/types.js",
-      "./ui_provider": "./dist/ui_provider.js",
+      "./ui_provider": "./dist/providers/app_provider.js",
       "./package.json": "./package.json"
     }
   }

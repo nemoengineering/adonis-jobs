@@ -1,7 +1,7 @@
 import router from '@adonisjs/core/services/router'
 import { renderJobsUi } from '@nemoventures/adonis-jobs-ui'
 
-const DashboardController = () => import('#controllers/dashboard_controller')
+const DashboardController = () => import('./controllers/dashboard_controller.js')
 
 export function uiRoutes() {
   return router.group(() => {

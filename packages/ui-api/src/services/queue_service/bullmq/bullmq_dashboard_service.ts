@@ -5,7 +5,7 @@ import { JobRunsRepository } from './job_runs_repository.js'
 import { BullmqPresenter, remapJobStatus } from './mappers.js'
 import { FlowJobsRepository } from './flow_jobs_repository.js'
 import type { QueueListResponse, QueueService } from '../main.js'
-import type { GetJobRunsValidator } from '#validators/dashboard_validator'
+import type { GetJobRunsValidator } from '../../../validators/dashboard_validator.js'
 import type {
   JobRun,
   JobRunsResponse,

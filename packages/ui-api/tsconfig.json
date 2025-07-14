@@ -1,7 +1,8 @@
 {
   "extends": "@adonisjs/tsconfig/tsconfig.package.json",
   "compilerOptions": {
-    "rootDir": "./",
+    "emitDecoratorMetadata": true,
+    "rootDir": "./src",
     "outDir": "./dist",
     "stripInternal": true
   },

@@ -2,7 +2,7 @@ import queueManager from '@nemoventures/adonis-jobs/services/main'
 
 import type { JobRun, JobRunsResponse } from '../types.js'
 import { BullmqPresenter, remapJobStatus } from './mappers.js'
-import type { GetJobRunsValidator } from '#validators/dashboard_validator'
+import type { GetJobRunsValidator } from '../../../validators/dashboard_validator.js'
 
 export class JobRunsRepository {
   #getQueueNames(): string[] {

@@ -1,4 +1,4 @@
-import type { GetJobRunsValidator } from '#validators/dashboard_validator'
+import type { GetJobRunsValidator } from '../../validators/dashboard_validator.js'
 import type {
   AvailableJobResponse,
   DashboardOverview,
