@@ -29,6 +29,15 @@ const queueConfig = defineConfig({
   },
 
   /**
+   * Workers metrics configuration. @julr/adonisjs-prometheus needs to be installed
+   * to use this feature.
+   */
+  // metrics: {
+  //   enabled: false,
+  //   endpoint: '/internal/metrics',
+  // },
+
+  /**
    * The name of the queue to use when no queue is explicitly specified
    * during job dispatching.
    */

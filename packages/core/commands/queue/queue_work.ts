@@ -8,8 +8,8 @@ import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { LoggerService } from '@adonisjs/core/types'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import type { Queues } from '../../src/types/index.js'
 import JobProvider from '../../providers/queue_provider.js'
+import type { Config, Queues } from '../../src/types/index.js'
 import { WorkerManager } from '../../src/worker/worker_manager.js'
 import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
 import { ConnectionResolver } from '../../src/connection_resolver.js'
@@ -47,6 +47,7 @@ export default class QueueWork extends BaseCommand {
   #manager!: WorkerManager
   #appLogger!: LoggerService
   #healthCheckManager!: HealthCheckManager
+  #config!: Config
   #server: NodeServer | undefined
 
   /**
@@ -76,16 +77,17 @@ export default class QueueWork extends BaseCommand {
   }
 
   async prepare() {
+    this.#config = (await configProvider.resolve(this.app, this.app.config.get('queue')))!
     this.#appLogger = await this.app.container.make('logger')
+
     const emitter = await this.app.container.make('emitter')
-    const queueConfigProvider = this.app.config.get('queue')
-    const config = await configProvider.resolve<any>(this.app, queueConfigProvider)
     const redis = await this.app.container.make('redis')
 
     const jobs = await new JobDiscoverer(this.app.appRoot).discoverAndLoadJobs()
-    const connectionResolver = new ConnectionResolver(config, redis)
-    this.#manager = new WorkerManager(this.app, emitter, config, jobs, connectionResolver)
-    this.#healthCheckManager = new HealthCheckManager(config, redis)
+    const resolver = new ConnectionResolver(this.#config, redis)
+
+    this.#manager = new WorkerManager(this.app, emitter, this.#config as any, jobs, resolver)
+    this.#healthCheckManager = new HealthCheckManager(this.#config, redis)
 
     this.app.listen('SIGINT', () => this.#handleShutdown())
     this.app.listen('SIGTERM', () => this.#handleShutdown())
@@ -102,27 +104,51 @@ export default class QueueWork extends BaseCommand {
     return await this.terminate()
   }
 
+  async #addHealthEndpoint(server: Server) {
+    const healthChecks = this.#healthCheckManager.createHealthChecks()
+    if (!healthChecks) return
+
+    const router = server.getRouter()
+    const healthEndpoint = this.#healthCheckManager.getEndpoint()
+
+    router.get(healthEndpoint, async ({ response }) => {
+      const report = await healthChecks.run()
+      if (report.isHealthy) return response.ok(report)
+
+      return response.serviceUnavailable(report)
+    })
+  }
+
+  async #addMetricsEndpoint(server: Server) {
+    const config = this.#config.metrics
+    if (!config?.enabled) return
+
+    const { PrometheusMetricController } = await import(
+      '@julr/adonisjs-prometheus/controllers/prometheus_metric_controller'
+    )
+
+    const router = server.getRouter()
+    const metricsEndpoint = config.endpoint || this.app.config.get<string>('prometheus.endpoint')
+
+    router.get(metricsEndpoint, [PrometheusMetricController, 'handle']).as('prometheus.metrics')
+  }
+
   async #makeServer() {
     if (this.useAppRouter) {
       this.#appLogger.info('Using app router')
       return await this.app.container.make('server')
     }
 
-    const encryption = await this.app.container.make('encryption')
-    const emitter = await this.app.container.make('emitter')
-    const config = this.app.config.get<any>('app.http')
-    const server = new Server(this.app, encryption, emitter, this.#appLogger, config)
+    const server = new Server(
+      this.app,
+      await this.app.container.make('encryption'),
+      await this.app.container.make('emitter'),
+      this.#appLogger,
+      this.app.config.get<any>('app.http'),
+    )
 
-    const healthChecks = this.#healthCheckManager.createHealthChecks()
-    if (!healthChecks) return server
-
-    const endpoint = this.#healthCheckManager.getEndpoint()
-    server.getRouter().get(endpoint, async ({ response }) => {
-      const report = await healthChecks.run()
-      if (report.isHealthy) return response.ok(report)
-
-      return response.serviceUnavailable(report)
-    })
+    await this.#addHealthEndpoint(server)
+    await this.#addMetricsEndpoint(server)
 
     return server
   }

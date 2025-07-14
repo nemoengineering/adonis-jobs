@@ -21,6 +21,22 @@ export interface HealthCheckConfig {
   checks?: (context: { connection: RedisClusterConnection }) => any[]
 }
 
+/**
+ * Metrics configuration for workers. @julr/adonisjs-prometheus needs to be installed
+ * to use this feature.
+ */
+export interface MetricsConfig {
+  /**
+   * If enabled, each worker will expose a metrics endpoint that can be scraped by Prometheus.
+   */
+  enabled: boolean
+
+  /**
+   * Endpoint for the metrics. If not set, defaults to `prometheus.endpoint` config
+   */
+  endpoint?: string
+}
+
 export interface QueueService extends QueueManager {}
 
 /**
@@ -38,6 +54,7 @@ export interface Config<
   defaultQueue: keyof KnownQueues
   queues: KnownQueues
   healthCheck?: HealthCheckConfig
+  metrics?: MetricsConfig
 
   /**
    * Multi logger allows you to use the AdonisJS logger as usual within your jobs,

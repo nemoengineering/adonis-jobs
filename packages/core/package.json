@@ -46,7 +46,7 @@
     "@adonisjs/core": "^6.0.0",
     "@adonisjs/http-server": "^7.6.1",
     "@adonisjs/redis": "^9.2.0",
-    "@julr/adonisjs-prometheus": "^1.0.2",
+    "@julr/adonisjs-prometheus": "^1.1.0",
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "bullmq": "^5.53.2"
   },
@@ -82,7 +82,7 @@
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
     "@japa/snapshot": "^2.0.8",
-    "@julr/adonisjs-prometheus": "^1.0.2",
+    "@julr/adonisjs-prometheus": "^1.1.0",
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "@types/node": "^22.15.30",
     "@types/pluralize": "^0.0.33",

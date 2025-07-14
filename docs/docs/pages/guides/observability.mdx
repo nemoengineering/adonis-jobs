@@ -60,6 +60,26 @@ bullmqCollector({
 })
 ```
 
+### Expose metrics for each worker
+
+By default, the metrics endpoint will be exposed by your main AdonisJS HTTP server.
+
+[As a reminder](./configuration.mdx#health-checks), the `node ace queue:work` command will create a worker that also starts an HTTP server to expose health checks. You can also use this server to expose the Prometheus metrics for each worker.
+
+To enable this feature, make sure to enable the `metrics` configuration in your `config/queue.ts` file:
+
+```typescript
+const queueConfig = defineConfig({
+  // ...
+  metrics: {
+    enabled: true,
+    endpoint: '/internal/metrics',
+  },
+})
+```
+
+Now, every worker will expose its own metrics endpoint at the specified endpoint.
+
 ## Opentelemetry Tracing
 
 This package also supports Opentelemetry for distributed tracing of your job processing.

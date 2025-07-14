@@ -4,7 +4,6 @@ import type { CommonCollectorOptions, ResolvedPromConfig } from '@julr/adonisjs-
 
 import type { BullJob } from '../types/bull.js'
 import type { QueueManager } from '../queue_manager.js'
-import JobProvider from '../../providers/queue_provider.js'
 
 export interface BullMQCollectorOptions {
   /**
@@ -58,8 +57,6 @@ class BullMQCollector extends Collector {
    * Start listening to queue events for completing/processing times
    */
   #startEventListeners(): void {
-    if (!JobProvider.isWorkerCommand) return
-
     const queueNames = Object.keys(this.#queue.config.queues)
 
     for (const queueName of queueNames) {
@@ -85,8 +82,6 @@ class BullMQCollector extends Collector {
    * Register metrics collection
    */
   async register(): Promise<void> {
-    if (!JobProvider.isWorkerCommand) return
-
     this.#jobCountGauge = this.createGauge({
       name: 'bullmq_job_count',
       help: 'Number of jobs in the queue by state',
