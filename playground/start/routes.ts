@@ -151,4 +151,4 @@ router.get('/flow-job-2', async () => {
 })
 
 queueDashUiRoutes().prefix('/admin/queue')
-uiRoutes()
+uiRoutes().prefix('/admin/jobs')

@@ -5,8 +5,8 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createHashHistory, RouterProvider, createRouter } from '@tanstack/react-router'
 
 import { routeTree } from './routeTree.gen'
 
@@ -20,6 +20,7 @@ const router = createRouter({
   context: { queryClient },
   defaultPreload: 'intent',
   scrollRestoration: true,
+  history: createHashHistory(),
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
 })
@@ -45,3 +46,13 @@ if (rootElement && !rootElement.innerHTML) {
     </StrictMode>,
   )
 }
+
+declare global {
+  interface Window {
+    __JOB_DASHBOARD_OPTS__: {
+      baseUrl: string
+    }
+  }
+}
+
+window.__JOB_DASHBOARD_OPTS__ ||= { baseUrl: 'http://localhost:3333' }

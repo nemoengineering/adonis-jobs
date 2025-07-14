@@ -70,7 +70,7 @@ export class DashboardApi {
 
   constructor(config: ApiConfig = {}) {
     const defaultConfig = {
-      baseUrl: 'http://localhost:3333',
+      baseUrl: window.__JOB_DASHBOARD_OPTS__?.baseUrl || 'http://localhost:3333',
       timeout: 10_000,
       ...config,
     }

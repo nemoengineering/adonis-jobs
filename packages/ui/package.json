@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite --port 3000",
     "start": "vite --port 3000",
-    "build": "vite build && tsc",
+    "build": "vite build && tsc && tsc -p tsconfig.node.json",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -58,13 +58,14 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-resizable-panels": "^3.0.3",
-    "recharts": "^3.0.2",
+    "recharts": "^2.15.4",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.6",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-radix-colors": "^2.1.0",
     "vaul": "^1.1.2",
+    "vite-plugin-singlefile": "^2.3.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

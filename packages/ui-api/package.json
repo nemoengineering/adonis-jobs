@@ -26,6 +26,7 @@
     "@vinejs/vine": "^3.0.1"
   },
   "dependencies": {
+    "@nemoventures/adonis-jobs-ui": "workspace:*",
     "luxon": "^3.6.1"
   },
   "devDependencies": {
