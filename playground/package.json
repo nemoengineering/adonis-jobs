@@ -34,9 +34,13 @@
   },
   "dependencies": {
     "@adonisjs/core": "catalog:",
+    "@adonisjs/cors": "^2.2.1",
     "@adonisjs/redis": "^9.2.0",
+    "@adonisjs/static": "^1.1.1",
     "@julr/adonisjs-prometheus": "^1.0.2",
     "@nemoventures/adonis-jobs": "workspace:*",
+    "@nemoventures/adonis-jobs-ui": "workspace:*",
+    "@nemoventures/adonis-jobs-ui-api": "workspace:*",
     "@opentelemetry/auto-instrumentations-node": "^0.60.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0.202.0",
     "@opentelemetry/exporter-metrics-otlp-proto": "^0.202.0",

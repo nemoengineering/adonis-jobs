@@ -1,0 +1,48 @@
+{
+  "name": "@nemoventures/adonis-jobs-ui-api",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.12.1",
+  "description": "",
+  "author": "Julien Ripouteau <julien@ripouteau.com>",
+  "license": "ISC",
+  "keywords": [],
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./ui_provider": "./src/providers/app_provider.ts",
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#services/*": "./src/services/*.js",
+    "#validators/*": "./src/validators/*.js",
+    "#controllers/*": "./src/controllers/*.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "peerDependencies": {
+    "@adonisjs/core": "catalog:",
+    "@nemoventures/adonis-jobs": "workspace:*",
+    "@vinejs/vine": "^3.0.1"
+  },
+  "dependencies": {
+    "@nemoventures/adonis-jobs-ui": "workspace:*",
+    "luxon": "^3.6.1"
+  },
+  "devDependencies": {
+    "@adonisjs/core": "catalog:",
+    "@nemoventures/adonis-jobs": "workspace:*",
+    "@types/luxon": "^3.6.2",
+    "@vinejs/vine": "^3.0.1",
+    "bullmq": "^5.53.2",
+    "tsdown": "^0.12.9"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./types": "./dist/types.js",
+      "./ui_provider": "./dist/ui_provider.js",
+      "./package.json": "./package.json"
+    }
+  }
+}

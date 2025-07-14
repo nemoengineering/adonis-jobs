@@ -1,8 +1,8 @@
 packages:
-  - 'packages/*'
-  - 'examples/*'
-  - 'playground'
-  - 'docs'
+  - packages/*
+  - examples/*
+  - playground
+  - docs
 
 catalog:
-  '@adonisjs/core': '^6.18.0'
+  '@adonisjs/core': 6.18.0

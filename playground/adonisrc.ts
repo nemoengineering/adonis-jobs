@@ -41,6 +41,7 @@ export default defineConfig({
   */
   providers: [
     () => import('@adonisjs/core/providers/app_provider'),
+    () => import('@adonisjs/core/providers/vinejs_provider'),
     () => import('@adonisjs/core/providers/hash_provider'),
     {
       file: () => import('@adonisjs/core/providers/repl_provider'),
@@ -51,6 +52,9 @@ export default defineConfig({
     () => import('#providers/app_provider'),
     () => import('@adonisjs/redis/redis_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),
+    () => import('@adonisjs/cors/cors_provider'),
+    () => import('@nemoventures/adonis-jobs-ui-api/ui_provider'),
+    () => import('@adonisjs/static/static_provider'),
   ],
 
   /*
@@ -92,6 +96,10 @@ export default defineConfig({
   metaFiles: [
     {
       pattern: 'resources/views/**/*.edge',
+      reloadServer: false,
+    },
+    {
+      pattern: 'public/**',
       reloadServer: false,
     },
   ],
