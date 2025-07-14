@@ -1,7 +1,7 @@
 {
   "name": "@nemoventures/adonis-jobs-ui",
   "type": "module",
-  "private": true,
+  "version": "1.0.0",
   "exports": {
     ".": "./index.ts"
   },

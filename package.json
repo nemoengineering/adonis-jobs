@@ -8,12 +8,14 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "build": "pnpm run -r build",
+    "release": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@adonisjs/tsconfig": "^1.4.1",
+    "@changesets/cli": "^2.29.5",
     "@julr/tooling-configs": "^4.0.0",
-    "@release-it/conventional-changelog": "^10.0.1",
     "@swc/core": "^1.11.31",
     "@types/node": "^22.15.30",
     "c8": "^10.1.3",
@@ -22,7 +24,6 @@
     "eslint": "^9.28.0",
     "prettier": "^3.5.3",
     "radashi": "^12.5.1",
-    "release-it": "^19.0.3",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"

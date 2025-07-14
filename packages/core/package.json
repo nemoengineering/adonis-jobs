@@ -36,7 +36,6 @@
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
     "prerelease": "pnpm build",
-    "release": "pnpm build && pnpm release-it",
     "version": "npm run build",
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
@@ -89,30 +88,6 @@
     "@types/pluralize": "^0.0.33",
     "bullmq": "^5.53.2",
     "tsup": "^8.5.0"
-  },
-  "release-it": {
-    "git": {
-      "requireCleanWorkingDir": true,
-      "requireUpstream": true,
-      "commitMessage": "chore(release): ${version}",
-      "tagAnnotation": "v${version}",
-      "push": true,
-      "tagName": "v${version}"
-    },
-    "github": {
-      "release": true
-    },
-    "npm": {
-      "publish": true,
-      "skipChecks": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": {
-          "name": "angular"
-        }
-      }
-    }
   },
   "c8": {
     "reporter": [
