@@ -1,3 +1,5 @@
+/// <reference types="@adonisjs/core/providers/vinejs_provider" />
+
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
