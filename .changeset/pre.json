@@ -6,5 +6,7 @@
     "@nemoventures/adonis-jobs-ui": "1.0.0",
     "@nemoventures/adonis-jobs-ui-api": "1.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "young-loops-press"
+  ]
 }
