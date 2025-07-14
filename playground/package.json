@@ -36,7 +36,7 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/redis": "^9.2.0",
     "@adonisjs/static": "^1.1.1",
-    "@julr/adonisjs-prometheus": "^1.0.2",
+    "@julr/adonisjs-prometheus": "^1.1.0",
     "@nemoventures/adonis-jobs": "workspace:*",
     "@nemoventures/adonis-jobs-ui": "workspace:*",
     "@nemoventures/adonis-jobs-ui-api": "workspace:*",
