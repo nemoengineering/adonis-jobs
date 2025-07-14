@@ -3,8 +3,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./dist/index.js",
-    "./types": "./src/types/index.ts"
+    ".": "./index.ts"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -78,5 +77,11 @@
   },
   "overrides": {
     "@tanstack/react-router": "^1.121.2"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }
