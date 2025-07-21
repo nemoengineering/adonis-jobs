@@ -1,5 +1,11 @@
 # @nemoventures/adonis-jobs
 
+## 1.1.0-beta.3
+
+### Patch Changes
+
+- 41d64d6: Make UIs work on subdomains
+
 ## 1.1.0-beta.1
 
 ### Minor Changes
