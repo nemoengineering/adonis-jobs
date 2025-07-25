@@ -11,18 +11,17 @@ import { DuplicateJobException } from '../errors/duplicate_job_exception.js'
  * Ensure that all job names are unique.
  */
 export class JobDiscoverer {
-  #appRoot: URL
+  #jobsDirectory: URL
 
-  constructor(appRoot: URL) {
-    this.#appRoot = appRoot
+  constructor(jobsDirectory: URL) {
+    this.#jobsDirectory = jobsDirectory
   }
 
   /**
    * Import job files from the application's app directory
    */
   async #importAppJobs() {
-    const appDir = new URL('./app', this.#appRoot)
-    const jobFiles = await fsReadAll(appDir, {
+    const jobFiles = await fsReadAll(this.#jobsDirectory, {
       pathType: 'url',
       ignoreMissingRoot: true,
       filter: (file) => {
@@ -76,7 +75,7 @@ export class JobDiscoverer {
       .filter(([_, jobs]) => (jobs || []).length > 1)
       .map(([jobName, jobs]) => ({ jobName, jobs }))
 
-    if (duplicates.length > 0) throw new DuplicateJobException(this.#appRoot, duplicates)
+    if (duplicates.length > 0) throw new DuplicateJobException(this.#jobsDirectory, duplicates)
   }
 
   /**
