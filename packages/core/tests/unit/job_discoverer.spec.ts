@@ -96,7 +96,9 @@ test.group('JobDiscoverer', () => {
     await createFakeJob({ path: 'start/startup_job.ts', name: 'StartupJob' })
     await createFakeJob({ path: 'providers/provider_job.ts', name: 'ProviderJob' })
 
-    const discoverer = new JobDiscoverer(app.appRoot)
+    const jobsDir = app.config?.get('directories.jobs') || 'app/jobs'
+    const jobsDirUrl = new URL(jobsDir, app.appRoot)
+    const discoverer = new JobDiscoverer(jobsDirUrl)
     const jobs = await discoverer.discoverAndLoadJobs()
 
     assert.lengthOf(jobs, 1 + kBuiltinJobs.length)
@@ -106,5 +108,20 @@ test.group('JobDiscoverer', () => {
     assert.notInclude(jobNames, 'EmailJob')
     assert.notInclude(jobNames, 'StartupJob')
     assert.notInclude(jobNames, 'ProviderJob')
+  })
+
+  test('discovers jobs from custom directory', async ({ assert }) => {
+    const { app } = await setupApp()
+
+    await createFakeJob({ path: 'app/jobs/user_job.ts', name: 'UserJob' })
+    await createFakeJob({ path: 'src/jobs/payment_job.ts', name: 'PaymentJob' })
+
+    const discoverer = new JobDiscoverer(new URL('./src/jobs/', app.appRoot))
+    const jobs = await discoverer.discoverAndLoadJobs()
+
+    const jobNames = jobs.map((job) => job.name)
+    assert.include(jobNames, 'PaymentJob')
+    assert.notInclude(jobNames, 'UserJob')
+    assert.lengthOf(jobs, 1 + kBuiltinJobs.length)
   })
 })
