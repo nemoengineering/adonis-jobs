@@ -21,7 +21,7 @@ export function uiRoutes() {
     router.post('/jobs/remove', [DashboardController, 'removeJob'])
 
     router.get('/app', async ({ response, request }) => {
-      const baseUrl = request.completeUrl().slice(0, -4) // Remove '/app' from the URL
+      const baseUrl = request.url().slice(0, -4)
 
       const html = await renderJobsUi({ baseUrl })
       return response.type('html').send(html)
