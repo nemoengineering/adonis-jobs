@@ -39,14 +39,14 @@ router.group(() => {
 
 ### Shield Configuration
 
-To enable job deletion and re-running directly from the dashboard, make sure to exclude the dashboard routes from CSRF protection in your config/shield.ts file. Add the /admin/queue path to the exceptRoutes array under the csrf option:
+To enable job deletion and re-running directly from the dashboard, make sure to exclude the dashboard routes from [CSRF protection](https://docs.adonisjs.com/guides/security/securing-ssr-applications#config-reference) in your `config/shield.ts` file. Exempt all routes starting with `/admin/queue` under the csrf option:
 
 ```typescript
 csrf: {
   enabled: true,
-  exceptRoutes: [
-    '/admin/queue',
-  ],
+  exceptRoutes: (ctx) => {
+    return ctx.request.url().startsWith('/admin/queue')
+  },
 },
 ```
 
