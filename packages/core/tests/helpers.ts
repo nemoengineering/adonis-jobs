@@ -37,7 +37,7 @@ export async function setupApp() {
   const test = getActiveTestOrFail()
 
   const ignitor = new IgnitorFactory()
-    .merge({ rcFileContents: { directories: {} } })
+    .merge({ rcFileContents: { directories: { jobs: 'app/jobs' } } })
     .withCoreConfig()
     .withCoreProviders()
     .create(test.context.fs.baseUrl)

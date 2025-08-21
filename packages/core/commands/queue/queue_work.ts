@@ -83,7 +83,9 @@ export default class QueueWork extends BaseCommand {
     const emitter = await this.app.container.make('emitter')
     const redis = await this.app.container.make('redis')
 
-    const jobs = await new JobDiscoverer(this.app.appRoot).discoverAndLoadJobs()
+    const jobsDir = this.app.config.get('directories.jobs') || 'app/jobs'
+    const jobsDirUrl = new URL(jobsDir, this.app.appRoot)
+    const jobs = await new JobDiscoverer(jobsDirUrl).discoverAndLoadJobs()
     const resolver = new ConnectionResolver(this.#config, redis)
 
     this.#manager = new WorkerManager(this.app, emitter, this.#config as any, jobs, resolver)
