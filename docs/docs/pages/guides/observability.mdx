@@ -88,6 +88,22 @@ Under the hood, it uses the `bullmq-otel` package created by the BullMQ team, wh
 
 For every job processed, we are internally adding a `bullmq.job.name` attribute to the span, which contains the job class name.
 
+You can also define additional attributes for each span created during the job process.
+For example, if you want to add a default attribute `apm.root_name` containing the job name, you can configure the `otel` option in your `config/queue.ts` file:
+
+```typescript
+const queueConfig = defineConfig({
+  // ...
+  otel: {
+    defaultJobAttributes: (jobInstance) => ({
+      ['apm.root_name']: jobInstance.job.name,
+    }),
+  },
+})
+
+```
+
+
 Make sure to check out the [BullMQ OpenTelemetry documentation](https://docs.bullmq.io/guide/telemetry/getting-started) if you are new to using OpenTelemetry as it provides a quick start guide for setting up tracing in your application.
 
 ## Job Logging

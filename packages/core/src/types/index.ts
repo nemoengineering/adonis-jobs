@@ -1,3 +1,4 @@
+import type { Attributes } from '@opentelemetry/api'
 import type { ConfigProvider } from '@adonisjs/core/types'
 import type { RedisClusterConnection } from '@adonisjs/redis'
 import type { RedisConnections } from '@adonisjs/redis/types'
@@ -37,6 +38,17 @@ export interface MetricsConfig {
   endpoint?: string
 }
 
+/**
+ * OpenTelemetry configuration
+ */
+export interface OtelConfig {
+  /**
+   * Additional default attributes for the span created within each job.
+   * Internally, we already add an attribute `bullmq.job.name` with the job name.
+   */
+  defaultJobAttributes?: (job: BaseJob<any, any>) => Attributes
+}
+
 export interface QueueService extends QueueManager {}
 
 /**
@@ -55,6 +67,7 @@ export interface Config<
   queues: KnownQueues
   healthCheck?: HealthCheckConfig
   metrics?: MetricsConfig
+  otel?: OtelConfig
 
   /**
    * Multi logger allows you to use the AdonisJS logger as usual within your jobs,

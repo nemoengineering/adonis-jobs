@@ -7,8 +7,8 @@ import type { EmitterLike } from '@adonisjs/core/types/events'
 
 import { JobLogger } from './job_logger.js'
 import { BullMqFactory } from '../bull_factory.js'
-import type { BaseJobConstructor } from '../job/base_job.js'
 import type { ConnectionResolver } from '../connection_resolver.js'
+import type { BaseJob, BaseJobConstructor } from '../job/base_job.js'
 import type { BullJob, BullWorker, Config, JobEvents, QueueConfig, Queues } from '../types/index.js'
 
 export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
@@ -123,12 +123,24 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   }
 
   /**
+   * Set default job attributes for the active span
+   */
+  #setDefaultSpanAttributes(jobInstance: BaseJob<any, any>) {
+    trace.getActiveSpan()?.setAttribute('bullmq.job.name', jobInstance.job.name)
+
+    const defaultJobAttributes = this.#config.otel?.defaultJobAttributes
+    if (defaultJobAttributes) {
+      trace.getActiveSpan()?.setAttributes(defaultJobAttributes(jobInstance))
+    }
+  }
+
+  /**
    * Start processing a job
    */
   async #processJob(job: BullJob, token?: string) {
-    trace.getActiveSpan()?.setAttribute('bullmq.job.name', job.name)
-
     const { instance: jobInstance, resolver } = await this.#createJobInstance({ job, token })
+
+    this.#setDefaultSpanAttributes(jobInstance)
 
     const result = resolver.call(jobInstance, 'process')
     this.#emitter.emit('job:started', { job })

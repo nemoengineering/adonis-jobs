@@ -41,6 +41,19 @@ const queueConfig = defineConfig({
   // },
 
   /**
+   * OpenTelemetry configuration
+   */
+  // otel: {
+  //   /**
+  //    * Additional default attributes for the span created within each job.
+  //    * Internally, we already add an attribute `bullmq.job.name` with the job name.
+  //    */
+  //   defaultJobAttributes: (jobInstance) => ({
+  //     ['apm.root_name']: jobInstance.job.name,
+  //   }),
+  // },
+
+  /**
    * The name of the queue to use when no queue is explicitly specified
    * during job dispatching.
    */
