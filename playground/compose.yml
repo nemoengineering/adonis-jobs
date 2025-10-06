@@ -1,13 +1,26 @@
 services:
   redis:
     image: redis:8-alpine
+    profiles: ["redis"]
     ports:
-      - '6379:6379'
+      - "6379:6379"
     environment:
       - REDIS_ARGS=--save 60 1000 --loglevel warning
+
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    profiles: ["dragonfly"]
+    command: --cluster_mode=emulated --lock_on_hashtags
+    ports:
+      - "6379:6379"
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - "8001:8001"
 
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
-      - '4318:4318'
-      - '16686:16686'
+      - "4318:4318"
+      - "16686:16686"
