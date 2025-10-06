@@ -56,7 +56,9 @@ export class FlowJobsRepository {
 
       for (const queueName of queueNames) {
         const queue = queueManager.useQueue(queueName as any)
-        const parentJob: BullJob | null = await queue.getJob(currentJob.parent.id).catch(() => null)
+        const parentJob: BullJob | null | undefined = await queue
+          .getJob(currentJob.parent.id)
+          .catch(() => null)
 
         if (parentJob) {
           currentJob = parentJob

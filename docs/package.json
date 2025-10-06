@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/react": "latest",
-    "tailwindcss": "^4.1.10",
+    "tailwindcss": "^4.1.14",
     "typescript": "latest"
   }
 }
