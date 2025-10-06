@@ -66,13 +66,16 @@ export function queueDashUiRoutes(): RouteGroup {
       response.type('text/css').send(style)
     })
 
-    router.get('/', ({ response, request }) => {
-      const baseUrl = request.completeUrl().slice(0, -1)
+    router.get('/', ({ response, route }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+      const baseUrl = router.builder().params(route?.meta?.params).make(route?.pattern!)
       response.type('text/html').send(createQueueDashHtml(baseUrl))
     })
 
-    router.get('/*', ({ request, response }) => {
-      const baseUrl = request.completeUrl().slice(0, -2)
+    router.get('/*', ({ response, route }) => {
+      const patternWithoutWildcard = route?.pattern.slice(0, -2)
+      const baseUrl = router.builder().params(route?.meta?.params).make(patternWithoutWildcard!)
+
       response.type('text/html').send(createQueueDashHtml(baseUrl))
     })
   })
