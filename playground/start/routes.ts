@@ -11,7 +11,7 @@ import router from '@adonisjs/core/services/router'
 import { uiRoutes } from '@nemoventures/adonis-jobs-ui-api'
 import CommandJob from '@nemoventures/adonis-jobs/builtin/command_job'
 import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
-import { JobChain, JobFlow, JobScheduler } from '@nemoventures/adonis-jobs'
+import { BulkDispatcher, JobChain, JobFlow, JobScheduler } from '@nemoventures/adonis-jobs'
 
 import SlowJob from '#jobs/slow_job'
 import Cleanup from '../commands/cleanup.js'
@@ -148,6 +148,14 @@ router.get('/flow-job-2', async () => {
   await flow.dispatch()
 
   return 'Complex flow job dispatched with 20 jobs!'
+})
+
+router.get('/bulk', async () => {
+  await new BulkDispatcher(
+    Array.from({ length: 50 }, (_, i) => WriteFileJob.dispatch({ data: `Bulk job ${i + 1}` })),
+  ).dispatch()
+
+  return 'dispatched!'
 })
 
 queueDashUiRoutes().prefix('/admin/queue')
