@@ -22,7 +22,7 @@ export function queueDashUiRoutes(): RouteGroup {
       const queues = queueManager.config.queues
 
       const req = new Request(url, {
-        headers: request.headers() as Record<string, string | ReadonlyArray<string>>,
+        headers: request.headers() as any,
         body: request.raw(),
         method: request.method(),
       })
