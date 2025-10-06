@@ -76,6 +76,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       this.#getQueue(queueName)
 
     const queue = BullMqFactory.createQueue<DataType, ReturnType>(String(queueName), {
+      prefix: this.config.defaultPrefix,
       ...queueOptions,
       connection: this.connectionResolver.resolve(connection),
       telemetry: new BullMQOtel('adonis-jobs'),
@@ -98,6 +99,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       this.#getQueue(queueName)
 
     const queueEvents = BullMqFactory.createQueueEvents(String(queueName), {
+      prefix: this.config.defaultPrefix,
       ...queueOptions,
       connection: this.connectionResolver.resolve(connection),
       telemetry: new BullMQOtel('adonis-jobs'),
@@ -111,6 +113,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     if (this.#flowProducer) return this.#flowProducer
 
     this.#flowProducer = BullMqFactory.createFlowProducer({
+      prefix: this.config.defaultPrefix,
       connection: this.connectionResolver.resolve(this.config.connection),
       telemetry: new BullMQOtel('adonis-jobs'),
     })

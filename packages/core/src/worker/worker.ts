@@ -51,6 +51,7 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
         autorun: false,
         connection,
         telemetry: new BullMQOtel('adonis-jobs'),
+        prefix: queueConfig.prefix || this.#config.defaultPrefix,
         ...queueConfig.defaultWorkerOptions,
         ...(queueConfig?.globalConcurrency && { concurrency: queueConfig.globalConcurrency }),
       },

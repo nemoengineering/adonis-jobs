@@ -64,6 +64,7 @@ export interface Config<
   connection: QueueConnectionConfig
   useSharedConnection?: boolean
   defaultQueue: keyof KnownQueues
+  defaultPrefix?: string
   queues: KnownQueues
   healthCheck?: HealthCheckConfig
   metrics?: MetricsConfig
@@ -78,6 +79,7 @@ export interface Config<
 }
 
 export type QueueConfig = Omit<BullQueueOptions, 'connection' | 'skipVersionCheck'> & {
+  defaultPrefix?: string
   connection?: QueueConnectionConfig
   globalConcurrency?: number
   defaultWorkerOptions?: WorkerOptions
