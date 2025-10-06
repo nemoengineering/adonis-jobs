@@ -90,12 +90,14 @@ export class JobDispatcher<
   // @internal
   $toFlowJob(children?: BullFlowChildJob[]): BullFlowJob {
     const jobChildren = this.#children?.map((j) => j.$toFlowJob())
+    const queueName = this.#queueName || queueManager.config.defaultQueue
+    const queueConfig = queueManager.config.queues[queueName] as any
 
     return {
+      queueName,
       name: this.#jobClass.jobName,
-      queueName: (this.#queueName || queueManager.config.defaultQueue) as string,
       data: this.#getJobData(),
-      opts: this.#options,
+      opts: { ...queueConfig.defaultJobOptions, ...this.#options },
       children: jobChildren || children ? [...(jobChildren || []), ...(children || [])] : undefined,
     }
   }
