@@ -1,5 +1,19 @@
 # @nemoventures/adonis-jobs-ui
 
+## 1.0.0
+
+### Minor Changes
+
+- 8981d62: Added custom UI Package. Docs are coming soon.
+
+### Patch Changes
+
+- 086339b: Update dependencies
+- Updated dependencies [41d64d6]
+- Updated dependencies [086339b]
+- Updated dependencies [8981d62]
+  - @nemoventures/adonis-jobs-ui-api@1.0.0
+
 ## 1.0.0-beta.4
 
 ### Patch Changes

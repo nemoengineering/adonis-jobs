@@ -1,5 +1,17 @@
 # @nemoventures/adonis-jobs
 
+## 1.1.0
+
+### Minor Changes
+
+- 663cdb7: This change introduces the "Metrics per worker" feature, allowing each worker HTTP Server to expose its own Prometheus metrics endpoint.
+- 8981d62: Added custom UI Package. Docs are coming soon.
+
+### Patch Changes
+
+- 41d64d6: Make UIs work on subdomains
+- 086339b: Update dependencies
+
 ## 1.1.0-beta.3
 
 ### Patch Changes

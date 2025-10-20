@@ -16,5 +16,6 @@
     "@types/react": "latest",
     "tailwindcss": "^4.1.14",
     "typescript": "latest"
-  }
+  },
+  "version": null
 }

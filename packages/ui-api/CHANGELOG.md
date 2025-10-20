@@ -1,5 +1,22 @@
 # @nemoventures/adonis-jobs-ui-api
 
+## 1.0.0
+
+### Minor Changes
+
+- 8981d62: Added custom UI Package. Docs are coming soon.
+
+### Patch Changes
+
+- 41d64d6: Make UIs work on subdomains
+- 086339b: Update dependencies
+- Updated dependencies [41d64d6]
+- Updated dependencies [086339b]
+- Updated dependencies [663cdb7]
+- Updated dependencies [8981d62]
+  - @nemoventures/adonis-jobs@1.1.0
+  - @nemoventures/adonis-jobs-ui@1.0.0
+
 ## 1.0.0-beta.8
 
 ### Patch Changes
