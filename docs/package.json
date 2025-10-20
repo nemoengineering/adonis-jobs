@@ -1,6 +1,7 @@
 {
   "name": "adonis-js-jobs",
   "type": "module",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "dev": "vocs dev",
@@ -16,6 +17,5 @@
     "@types/react": "latest",
     "tailwindcss": "^4.1.14",
     "typescript": "latest"
-  },
-  "version": null
+  }
 }
