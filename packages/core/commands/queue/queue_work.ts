@@ -153,7 +153,22 @@ export default class QueueWork extends BaseCommand {
     return server
   }
 
+  /**
+   * Check if HTTP server should be started.
+   * Server is needed for health checks or metrics endpoints.
+   */
+  #shouldStartServer() {
+    const healthEnabled = this.#config.healthCheck?.enabled ?? false
+    const metricsEnabled = this.#config.metrics?.enabled ?? false
+    return healthEnabled || metricsEnabled || this.useAppRouter
+  }
+
   async #startServer() {
+    if (!this.#shouldStartServer()) {
+      this.#appLogger.debug('HTTP server disabled (health check and metrics both disabled)')
+      return undefined
+    }
+
     const server = await this.#makeServer()
     const httpServer = createServer(server.handle.bind(server))
     await server.boot()
@@ -161,7 +176,9 @@ export default class QueueWork extends BaseCommand {
     server.setNodeServer(httpServer)
 
     const host = process.env.HOST || '0.0.0.0'
-    const port = Number(process.env.QUEUE_PORT || process.env.PORT || '3333')
+    const port = Number(
+      process.env.QUEUE_PORT || process.env.PORT || this.#config.healthCheck?.port || '3333'
+    )
 
     httpServer.once('listening', () =>
       this.#appLogger.info(`listening to http server, host: ${host}, port: ${port}`),

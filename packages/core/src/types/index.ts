@@ -19,6 +19,11 @@ export type { JobConstructor } from '../job/job.js'
 export interface HealthCheckConfig {
   enabled: boolean
   endpoint?: string
+  /**
+   * Port for the health check server. Defaults to 3333.
+   * Can also be set via QUEUE_PORT or PORT environment variables.
+   */
+  port?: number
   checks?: (context: { connection: RedisClusterConnection }) => any[]
 }
 
