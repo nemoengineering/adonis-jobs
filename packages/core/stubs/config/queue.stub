@@ -46,7 +46,7 @@ const queueConfig = defineConfig({
   // otel: {
   //   /**
   //    * Additional default attributes for the span created within each job.
-  //    * Internally, we already add an attribute `bullmq.job.name` with the job name.
+  //    * Internally, we already add an attribute 'bullmq.job.name' with the job name.
   //    */
   //   defaultJobAttributes: (jobInstance) => ({
   //     ['apm.root_name']: jobInstance.job.name,
