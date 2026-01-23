@@ -2,6 +2,7 @@
   exports({ to: app.configPath('queue.ts') })
 }}}
 import { defineConfig } from '@nemoventures/adonis-jobs'
+import type { InferQueues } from '@nemoventures/adonis-jobs/types'
 import { RedisCheck, RedisMemoryUsageCheck } from '@adonisjs/redis'
 
 const queueConfig = defineConfig({
