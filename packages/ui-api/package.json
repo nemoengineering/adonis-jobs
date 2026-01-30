@@ -26,7 +26,7 @@
   "peerDependencies": {
     "@adonisjs/core": "catalog:",
     "@nemoventures/adonis-jobs": "workspace:*",
-    "@vinejs/vine": "^3.0.1"
+    "@vinejs/vine": "^3.0.1 || ^4.0.0"
   },
   "dependencies": {
     "@nemoventures/adonis-jobs-ui": "workspace:*",
@@ -36,7 +36,7 @@
     "@adonisjs/core": "catalog:",
     "@nemoventures/adonis-jobs": "workspace:*",
     "@types/luxon": "^3.7.1",
-    "@vinejs/vine": "^4.2.0",
+    "@vinejs/vine": "^3.0.1",
     "bullmq": "^5.67.2",
     "tsdown": "^0.20.1"
   },
