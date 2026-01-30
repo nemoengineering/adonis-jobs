@@ -42,7 +42,10 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
    */
   #createBullWorker(): BullWorker {
     const queueConfig = this.#config.queues[this.#queueName]
-    const connection = this.#connectionResolver.resolve(queueConfig.connection)
+    const connection = this.#connectionResolver.resolve({
+      config: queueConfig.connection,
+      role: 'worker',
+    })
 
     return BullMqFactory.createWorker(
       String(this.#queueName),

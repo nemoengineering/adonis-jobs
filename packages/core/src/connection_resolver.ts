@@ -14,10 +14,18 @@ export class ConnectionResolver {
   }
 
   /**
-   * Resolve a connection configuration to BullMQ connection options
+   * Resolve a connection configuration to BullMQ connection options.
+   *
+   * Applies role-specific IORedis defaults following BullMQ production
+   * recommendations: queues should fail fast while workers should be
+   * resilient to temporary disconnections.
    */
-  resolve(connectionConfig?: QueueConnectionConfig): BullConnectionOptions {
-    if (!connectionConfig) connectionConfig = this.config.connection
+  resolve(options?: {
+    config?: QueueConnectionConfig
+    role?: 'queue' | 'worker'
+  }): BullConnectionOptions {
+    const connectionConfig = options?.config ?? this.config.connection
+    const role = options?.role ?? 'queue'
 
     const redisConnection = this.redis.connection(
       connectionConfig.connectionName,
@@ -28,8 +36,17 @@ export class ConnectionResolver {
     /**
      * For non-shared connections, we return the connection options
      * in order to let BullMQ create a new IORedis instance.
+     *
+     * We apply different defaults based on the role:
+     * - Queue: disable offline queue so calls fail fast during disconnections
+     * - Worker: set maxRetriesPerRequest to null (required by BullMQ)
      */
     const ioConnection = redisConnection.ioConnection
-    return { ...ioConnection.options, maxRetriesPerRequest: null }
+
+    if (role === 'worker') {
+      return { ...ioConnection.options, maxRetriesPerRequest: null }
+    }
+
+    return { ...ioConnection.options, enableOfflineQueue: false }
   }
 }
