@@ -19,7 +19,11 @@ export default class QueueWork extends BaseCommand {
   static commandName = 'queue:work'
   static description = 'Listen for dispatched jobs'
 
-  @flags.array({ name: 'queues', alias: ['queue', 'q'], description: 'The queues you want to listen for' })
+  @flags.array({
+    name: 'queues',
+    alias: ['queue', 'q'],
+    description: 'The queues you want to listen for',
+  })
   declare queues: (keyof Queues)[]
 
   @flags.boolean({ name: 'list', alias: 'l', description: 'List all available queues' })
@@ -153,7 +157,17 @@ export default class QueueWork extends BaseCommand {
     return server
   }
 
+  #needsHttpServer() {
+    if (this.useAppRouter) return true
+    if (this.#config.healthCheck?.enabled) return true
+    if (this.#config.metrics?.enabled) return true
+
+    return false
+  }
+
   async #startServer() {
+    if (!this.#needsHttpServer()) return undefined
+
     const server = await this.#makeServer()
     const httpServer = createServer(server.handle.bind(server))
     await server.boot()
@@ -161,7 +175,7 @@ export default class QueueWork extends BaseCommand {
     server.setNodeServer(httpServer)
 
     const host = process.env.HOST || '0.0.0.0'
-    const port = Number(process.env.QUEUE_PORT || process.env.PORT || '3333')
+    const port = Number(process.env.QUEUE_PORT || '9009')
 
     httpServer.once('listening', () =>
       this.#appLogger.info(`listening to http server, host: ${host}, port: ${port}`),
