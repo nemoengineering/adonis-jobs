@@ -158,5 +158,47 @@ router.get('/bulk', async () => {
   return 'dispatched!'
 })
 
+/**
+ * Deduplication POC
+ *
+ * Dispatches the same job 3 times with the same deduplication id.
+ * Only the first one should be processed, the other two should be
+ * deduplicated by BullMQ.
+ */
+router.get('/dedup', async () => {
+  const results = []
+
+  for (let i = 1; i <= 3; i++) {
+    const job = await WriteFileJob.dispatch({ data: `Dedup attempt ${i}` }).with('deduplication', {
+      id: 'my-dedup-key',
+    })
+
+    results.push({ jobId: job.id, attempt: i })
+  }
+
+  return { message: 'Dispatched 3 jobs with same dedup id', results }
+})
+
+/**
+ * Deduplication with TTL (throttle mode)
+ *
+ * Dispatches 3 jobs with the same dedup id and a 10s TTL.
+ * After the TTL expires, new jobs can be added again.
+ */
+router.get('/dedup-throttle', async () => {
+  const results = []
+
+  for (let i = 1; i <= 3; i++) {
+    const job = await WriteFileJob.dispatch({ data: `Dedup throttle attempt ${i}` }).with(
+      'deduplication',
+      { id: 'my-throttle-key', ttl: 10_000 },
+    )
+
+    results.push({ jobId: job.id, attempt: i })
+  }
+
+  return { message: 'Dispatched 3 jobs with dedup ttl=10s', results }
+})
+
 queueDashUiRoutes().prefix('/admin/queue')
 uiRoutes().prefix('/admin/jobs')
