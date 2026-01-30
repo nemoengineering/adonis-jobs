@@ -19,7 +19,7 @@ export default class QueueWork extends BaseCommand {
   static commandName = 'queue:work'
   static description = 'Listen for dispatched jobs'
 
-  @flags.array({ name: 'queues', alias: 'q', description: 'The queues you want to listen for' })
+  @flags.array({ name: 'queues', alias: ['queue', 'q'], description: 'The queues you want to listen for' })
   declare queues: (keyof Queues)[]
 
   @flags.boolean({ name: 'list', alias: 'l', description: 'List all available queues' })
