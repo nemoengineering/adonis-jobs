@@ -59,8 +59,8 @@ export interface FileRoutesByFullPath {
   '/schedules': typeof SchedulesRoute
   '/test': typeof TestRoute
   '/runs/$jobId': typeof RunsJobIdRoute
-  '/overview': typeof OverviewIndexRoute
-  '/runs': typeof RunsIndexRoute
+  '/overview/': typeof OverviewIndexRoute
+  '/runs/': typeof RunsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,8 +89,8 @@ export interface FileRouteTypes {
     | '/schedules'
     | '/test'
     | '/runs/$jobId'
-    | '/overview'
-    | '/runs'
+    | '/overview/'
+    | '/runs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -154,14 +154,14 @@ declare module '@tanstack/react-router' {
     '/runs/': {
       id: '/runs/'
       path: '/runs'
-      fullPath: '/runs'
+      fullPath: '/runs/'
       preLoaderRoute: typeof RunsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/overview/': {
       id: '/overview/'
       path: '/overview'
-      fullPath: '/overview'
+      fullPath: '/overview/'
       preLoaderRoute: typeof OverviewIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

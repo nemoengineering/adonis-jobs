@@ -23,7 +23,7 @@ export class ConnectionResolver {
       connectionConfig.connectionName,
     ) as any as RedisConnection
 
-    if (this.#useSharedConnection) return redisConnection.ioConnection
+    if (this.#useSharedConnection) return redisConnection.ioConnection as any
 
     /**
      * For non-shared connections, we return the connection options
