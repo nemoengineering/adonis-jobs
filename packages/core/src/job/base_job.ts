@@ -58,6 +58,7 @@ export abstract class BaseJob<DataType, ReturnType> {
   worker!: BullWorker<DataType, ReturnType>
   logger!: Logger
   token?: string
+  signal?: AbortSignal
   error?: Error
 
   abstract process(...args: any[]): Promise<ReturnType>
@@ -131,6 +132,7 @@ export abstract class BaseJob<DataType, ReturnType> {
     job: BullJob<DataType, ReturnType>,
     token: string | undefined,
     logger: Logger,
+    signal: AbortSignal | undefined,
   ) {
     if (jobClass.encrypted) {
       job.data = jobClass.decrypt(job.data as string)
@@ -140,6 +142,7 @@ export abstract class BaseJob<DataType, ReturnType> {
     this.job = job
     this.data = job.data
     this.token = token
+    this.signal = signal
     this.logger = logger.child({ jobName: job.name, jobId: job.id })
   }
 

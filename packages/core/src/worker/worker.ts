@@ -46,7 +46,7 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
 
     return BullMqFactory.createWorker(
       String(this.#queueName),
-      async (job, token) => this.#processJob(job, token),
+      async (job, token, signal) => this.#processJob(job, token, signal),
       {
         autorun: false,
         connection,
@@ -105,8 +105,13 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   /**
    * Create a job instance with all dependencies configured
    */
-  async #createJobInstance(options: { job: BullJob; token?: string; error?: Error }) {
-    const { job, token, error } = options
+  async #createJobInstance(options: {
+    job: BullJob
+    token?: string
+    signal?: AbortSignal
+    error?: Error
+  }) {
+    const { job, token, signal, error } = options
 
     const JobClass = this.#getJobClass(job.name)
     const adonisLogger = this.#createTracedLogger()
@@ -116,7 +121,7 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
     resolver.bindValue(Logger, jobLogger)
 
     const instance = await resolver.make(JobClass)
-    instance.$init(this.#bullWorker!, JobClass, job, token, jobLogger)
+    instance.$init(this.#bullWorker!, JobClass, job, token, jobLogger, signal)
 
     if (error) instance.$setError(error)
 
@@ -138,8 +143,12 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   /**
    * Start processing a job
    */
-  async #processJob(job: BullJob, token?: string) {
-    const { instance: jobInstance, resolver } = await this.#createJobInstance({ job, token })
+  async #processJob(job: BullJob, token?: string, signal?: AbortSignal) {
+    const { instance: jobInstance, resolver } = await this.#createJobInstance({
+      job,
+      token,
+      signal,
+    })
 
     this.#setDefaultSpanAttributes(jobInstance)
 

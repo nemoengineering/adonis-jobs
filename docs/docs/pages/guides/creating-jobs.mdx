@@ -98,7 +98,30 @@ export default class SendEmailJob extends Job<SendEmailJobData, SendEmailJobRetu
     // Logger instance
     this.logger.info('Processing email job', { to: emailData.to })
 
+    // AbortSignal - aborted when the worker is shutting down or the job is cancelled
+    const signal = this.signal
+
     return { messageId: 'abc123', success: true }
+  }
+}
+```
+
+### Abort Signal
+
+When the worker shuts down gracefully or a job is explicitly cancelled, BullMQ aborts the `AbortSignal` available via `this.signal`. You can use it to stop long-running work early:
+
+```typescript
+export default class CrawlPagesJob extends Job<CrawlData, void> {
+  async process(): Promise<void> {
+    // Pass it directly to fetch or any AbortSignal-aware API
+    const response = await fetch(this.data.url, { signal: this.signal })
+
+    // Or check it manually in a loop
+    for (const page of this.data.pages) {
+      if (this.signal?.aborted) break
+
+      await this.crawlPage(page)
+    }
   }
 }
 ```
