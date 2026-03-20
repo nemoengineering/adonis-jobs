@@ -1,6 +1,6 @@
 {
   "name": "@nemoventures/adonis-jobs-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dashboard UI for @nemoventures/adonis-jobs",
   "license": "MIT",
   "author": "Julien Ripouteau <julien@ripouteau.com>",
