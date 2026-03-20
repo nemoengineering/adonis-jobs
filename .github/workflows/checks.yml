@@ -1,6 +1,6 @@
 name: Check
 
-on: [push, workflow_call]
+on: [pull_request, workflow_call]
 
 env:
   BULLMQ_PRO_TOKEN: ${{ secrets.BULLMQ_PRO_TOKEN }}
