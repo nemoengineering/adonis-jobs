@@ -1,10 +1,10 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 
-import { Worker } from './worker.js'
-import type { BaseJobConstructor } from '../job/base_job.js'
-import type { ConnectionResolver } from '../connection_resolver.js'
-import type { Config, JobEvents, QueueConfig, Queues } from '../types/index.js'
+import { Worker } from './worker.ts'
+import type { BaseJobConstructor } from '../job/base_job.ts'
+import type { ConnectionResolver } from '../connection_resolver.ts'
+import type { Config, JobEvents, QueueConfig, Queues } from '../types/index.ts'
 
 export class WorkerManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   readonly #app: ApplicationService

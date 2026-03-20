@@ -1,4 +1,4 @@
-import type { BaseJobConstructor } from '../job/base_job.js'
+import type { BaseJobConstructor } from '../job/base_job.ts'
 
 export interface PrebuiltJobData<TJobData = Record<string, any>, TAdditionalData = {}> {
   job: BaseJobConstructor

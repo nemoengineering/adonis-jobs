@@ -8,12 +8,12 @@ import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { LoggerService } from '@adonisjs/core/types'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import JobProvider from '../../providers/queue_provider.js'
-import type { Config, Queues } from '../../src/types/index.js'
-import { WorkerManager } from '../../src/worker/worker_manager.js'
-import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
-import { ConnectionResolver } from '../../src/connection_resolver.js'
-import { HealthCheckManager } from '../../src/health/health_check_manager.js'
+import JobProvider from '../../providers/queue_provider.ts'
+import type { Config, Queues } from '../../src/types/index.ts'
+import { WorkerManager } from '../../src/worker/worker_manager.ts'
+import { JobDiscoverer } from '../../src/worker/job_discoverer.ts'
+import { ConnectionResolver } from '../../src/connection_resolver.ts'
+import { HealthCheckManager } from '../../src/health/health_check_manager.ts'
 
 export default class QueueWork extends BaseCommand {
   static commandName = 'queue:work'
@@ -127,9 +127,8 @@ export default class QueueWork extends BaseCommand {
     const config = this.#config.metrics
     if (!config?.enabled) return
 
-    const { PrometheusMetricController } = await import(
-      '@julr/adonisjs-prometheus/controllers/prometheus_metric_controller'
-    )
+    const { PrometheusMetricController } =
+      await import('@julr/adonisjs-prometheus/controllers/prometheus_metric_controller')
 
     const router = server.getRouter()
     const metricsEndpoint = config.endpoint || this.app.config.get<string>('prometheus.endpoint')
@@ -145,7 +144,7 @@ export default class QueueWork extends BaseCommand {
 
     const server = new Server(
       this.app,
-      await this.app.container.make('encryption'),
+      (await this.app.container.make('encryption')).use(),
       await this.app.container.make('emitter'),
       this.#appLogger,
       this.app.config.get<any>('app.http'),

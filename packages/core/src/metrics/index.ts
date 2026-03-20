@@ -1,1 +1,1 @@
-export { bullmqCollector } from './bullmq_collector.js'
+export { bullmqCollector } from './bullmq_collector.ts'

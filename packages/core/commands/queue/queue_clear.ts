@@ -1,7 +1,7 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import type { Queues } from '../../src/types/index.js'
+import type { Queues } from '../../src/types/index.ts'
 
 export default class QueueClear extends BaseCommand {
   static commandName = 'queue:clear'

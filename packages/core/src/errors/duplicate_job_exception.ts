@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 
-import { type BaseJobConstructor } from '../job/base_job.js'
+import { type BaseJobConstructor } from '../job/base_job.ts'
 
 interface DuplicateJob {
   jobName: string

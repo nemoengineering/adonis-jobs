@@ -27,26 +27,26 @@
     "build"
   ],
   "engines": {
-    "node": ">=20.6.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "test": "c8 npm run quick:test",
     "copy:templates": "copyfiles --up 1 \"stubs/**/*.stub\" build",
-    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
+    "compile": "tsdown && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
     "prepare": "pnpm build",
     "version": "npm run build",
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
-    "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --enable-source-maps --loader=ts-node/esm bin/test.ts",
+    "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --import=@poppinss/ts-exec --enable-source-maps bin/test.ts",
     "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoventures/adonis-jobs"
   },
   "peerDependencies": {
-    "@adonisjs/core": "^6.0.0",
-    "@adonisjs/http-server": "^7.6.1",
-    "@adonisjs/redis": "^9.2.0",
-    "@julr/adonisjs-prometheus": "^1.1.0",
+    "@adonisjs/core": "^7.0.0",
+    "@adonisjs/http-server": "^8.0.0",
+    "@adonisjs/redis": "^10.0.0",
+    "@julr/adonisjs-prometheus": "^2.0.0",
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "bullmq": "^5.53.2"
   },
@@ -86,8 +86,7 @@
     "@taskforcesh/bullmq-pro": "^7.43.0",
     "@types/node": "^25.5.0",
     "@types/pluralize": "^0.0.33",
-    "bullmq": "^5.71.0",
-    "tsup": "^8.5.1"
+    "bullmq": "^5.71.0"
   },
   "publishConfig": {
     "access": "public"
@@ -102,7 +101,7 @@
       "factories/**"
     ]
   },
-  "tsup": {
+  "tsdown": {
     "entry": [
       "index.ts",
       "src/types.ts",
@@ -121,7 +120,10 @@
     "clean": true,
     "format": "esm",
     "dts": false,
-    "sourcemap": true,
-    "target": "esnext"
+    "sourcemaps": false,
+    "target": "esnext",
+    "minify": "dce-only",
+    "fixedExtension": false,
+    "treeshake": false
   }
 }

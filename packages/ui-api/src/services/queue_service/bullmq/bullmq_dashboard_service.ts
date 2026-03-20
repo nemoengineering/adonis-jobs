@@ -1,11 +1,11 @@
 import queueManager from '@nemoventures/adonis-jobs/services/main'
 
-import { JobStatus, QueueStatus } from '../types.js'
-import { JobRunsRepository } from './job_runs_repository.js'
-import { BullmqPresenter, remapJobStatus } from './mappers.js'
-import { FlowJobsRepository } from './flow_jobs_repository.js'
-import type { QueueListResponse, QueueService } from '../main.js'
-import type { GetJobRunsValidator } from '../../../validators/dashboard_validator.js'
+import { JobStatus, QueueStatus } from '../types.ts'
+import { JobRunsRepository } from './job_runs_repository.ts'
+import { BullmqPresenter, remapJobStatus } from './mappers.ts'
+import { FlowJobsRepository } from './flow_jobs_repository.ts'
+import type { QueueListResponse, QueueService } from '../main.ts'
+import type { GetJobRunsValidator } from '../../../validators/dashboard_validator.ts'
 import type {
   JobRun,
   JobRunsResponse,
@@ -16,7 +16,7 @@ import type {
   DispatchJobRequest,
   DispatchJobResponse,
   AvailableJobResponse,
-} from '../types.js'
+} from '../types.ts'
 
 export class BullmqDashboardService implements QueueService {
   #jobRunsRepository = new JobRunsRepository()

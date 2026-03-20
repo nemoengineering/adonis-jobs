@@ -2,8 +2,8 @@ import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/core/factories/app'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { defineConfig } from '../../src/define_config.js'
-import type { InferQueues, Queues } from '../../src/types/index.js'
+import { defineConfig } from '../../src/define_config.ts'
+import type { InferQueues, Queues } from '../../src/types/index.ts'
 
 const BASE_URL = new URL('./', import.meta.url)
 const app = new AppFactory().create(BASE_URL, () => {}) as ApplicationService

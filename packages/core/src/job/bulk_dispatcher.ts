@@ -1,8 +1,8 @@
 import emitter from '@adonisjs/core/services/emitter'
 
-import type { Queues } from '../types/index.js'
-import queueManager from '../../services/main.js'
-import type { JobDispatcher } from './job_dispatcher.js'
+import type { Queues } from '../types/index.ts'
+import queueManager from '../../services/main.ts'
+import type { JobDispatcher } from './job_dispatcher.ts'
 
 export class BulkDispatcher {
   #jobs: JobDispatcher[]

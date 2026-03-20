@@ -2,10 +2,10 @@ import { configProvider } from '@adonisjs/core'
 import { RuntimeException } from '@poppinss/utils/exception'
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { BullMqFactory } from '../src/bull_factory.js'
-import { QueueManager } from '../src/queue_manager.js'
-import { ConnectionResolver } from '../src/connection_resolver.js'
-import type { Config, JobEvents, Queues, QueueService } from '../src/types/index.js'
+import { BullMqFactory } from '../src/bull_factory.ts'
+import { QueueManager } from '../src/queue_manager.ts'
+import { ConnectionResolver } from '../src/connection_resolver.ts'
+import type { Config, JobEvents, Queues, QueueService } from '../src/types/index.ts'
 
 /**
  * Extended types

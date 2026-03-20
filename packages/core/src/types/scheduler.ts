@@ -1,6 +1,6 @@
-import type { PrebuiltJobData } from './job.js'
-import type { BaseJobConstructor } from '../job/base_job.js'
-import type { BullJobsOptions, Queues, BullRepeatOptions, InferDataType } from './index.js'
+import type { PrebuiltJobData } from './job.ts'
+import type { BaseJobConstructor } from '../job/base_job.ts'
+import type { BullJobsOptions, Queues, BullRepeatOptions, InferDataType } from './index.ts'
 
 export interface SchedulerRepeatOptions extends Omit<BullRepeatOptions, 'key' | 'jobId'> {}
 

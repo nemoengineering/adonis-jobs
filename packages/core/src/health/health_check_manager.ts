@@ -2,7 +2,7 @@ import { HealthChecks } from '@adonisjs/core/health'
 import type { RedisService } from '@adonisjs/redis/types'
 import { RedisCheck, RedisMemoryUsageCheck } from '@adonisjs/redis'
 
-import type { Config } from '../types/index.js'
+import type { Config } from '../types/index.ts'
 
 export class HealthCheckManager {
   #config: Config

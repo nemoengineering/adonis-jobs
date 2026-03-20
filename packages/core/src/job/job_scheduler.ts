@@ -1,12 +1,12 @@
-import type { Queues } from '../types/index.js'
-import queueManager from '../../services/main.js'
-import type { PrebuiltJobData } from '../types/job.js'
-import type { BaseJobConstructor } from './base_job.js'
+import type { Queues } from '../types/index.ts'
+import queueManager from '../../services/main.ts'
+import type { PrebuiltJobData } from '../types/job.ts'
+import type { BaseJobConstructor } from './base_job.ts'
 import type {
   ScheduleJobOptions,
   ScheduleJobOptionsWithPrebuilt,
   ScheduledJobInfo,
-} from '../types/scheduler.js'
+} from '../types/scheduler.ts'
 
 export class JobScheduler {
   /**

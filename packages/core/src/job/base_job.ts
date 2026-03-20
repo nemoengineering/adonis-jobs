@@ -3,7 +3,7 @@ import type { RateLimitError } from 'bullmq'
 import type { Logger } from '@adonisjs/core/logger'
 import encryption from '@adonisjs/core/services/encryption'
 
-import { BullMqFactory } from '../bull_factory.js'
+import { BullMqFactory } from '../bull_factory.ts'
 import type {
   BullJob,
   BullWorker,
@@ -11,7 +11,7 @@ import type {
   InferReturnType,
   Queues,
   BullJobsOptions,
-} from '../types/index.js'
+} from '../types/index.ts'
 
 export type BaseJobConstructor<JobInstance extends BaseJob<any, any> = BaseJob<any, any>> = {
   new (...args: any[]): JobInstance

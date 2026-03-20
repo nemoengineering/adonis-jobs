@@ -5,11 +5,11 @@ import { RuntimeException } from '@poppinss/utils/exception'
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 
-import { JobLogger } from './job_logger.js'
-import { BullMqFactory } from '../bull_factory.js'
-import type { ConnectionResolver } from '../connection_resolver.js'
-import type { BaseJob, BaseJobConstructor } from '../job/base_job.js'
-import type { BullJob, BullWorker, Config, JobEvents, QueueConfig, Queues } from '../types/index.js'
+import { JobLogger } from './job_logger.ts'
+import { BullMqFactory } from '../bull_factory.ts'
+import type { ConnectionResolver } from '../connection_resolver.ts'
+import type { BaseJob, BaseJobConstructor } from '../job/base_job.ts'
+import type { BullJob, BullWorker, Config, JobEvents, QueueConfig, Queues } from '../types/index.ts'
 
 export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #logger?: Logger

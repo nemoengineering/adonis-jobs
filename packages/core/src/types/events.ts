@@ -1,4 +1,4 @@
-import type { BullJob, BullJobNode } from './bull.js'
+import type { BullJob, BullJobNode } from './bull.ts'
 
 type EventWithJob = { job: BullJob }
 

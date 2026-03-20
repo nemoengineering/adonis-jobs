@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
 
-import { JobDiscoverer } from '../../src/worker/job_discoverer.js'
-import { createFakeJob, setupApp, getActiveTestOrFail } from '../helpers.js'
-import { DuplicateJobException } from '../../src/errors/duplicate_job_exception.js'
+import { JobDiscoverer } from '../../src/worker/job_discoverer.ts'
+import { createFakeJob, setupApp, getActiveTestOrFail } from '../helpers.ts'
+import { DuplicateJobException } from '../../src/errors/duplicate_job_exception.ts'
 
 const kBuiltinJobs = ['CommandJob']
 test.group('JobDiscoverer', () => {

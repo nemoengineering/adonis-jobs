@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 
-import { ConnectionResolver } from '../../src/connection_resolver.js'
-import type { Config, QueueConnectionConfig } from '../../src/types/index.js'
+import { ConnectionResolver } from '../../src/connection_resolver.ts'
+import type { Config, QueueConnectionConfig } from '../../src/types/index.ts'
 
 function createFakeRedisService(ioOptions: Record<string, any> = {}) {
   const fakeIoConnection = { options: { host: '127.0.0.1', port: 6379, ...ioOptions } }

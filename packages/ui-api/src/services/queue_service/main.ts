@@ -1,4 +1,4 @@
-import type { GetJobRunsValidator } from '../../validators/dashboard_validator.js'
+import type { GetJobRunsValidator } from '../../validators/dashboard_validator.ts'
 import type {
   AvailableJobResponse,
   DashboardOverview,
@@ -10,7 +10,7 @@ import type {
   JobStatus,
   QueueStatus,
   ScheduleListResponse,
-} from './types.js'
+} from './types.ts'
 
 export interface QueueStats {
   waiting: number

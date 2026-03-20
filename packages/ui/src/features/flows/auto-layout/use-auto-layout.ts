@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import type { ReactFlowState } from '@xyflow/react'
 import { useNodesInitialized, useReactFlow, useStore, Position } from '@xyflow/react'
 
-import dagreLayout from './algorithms/dagre.js'
-import type { Direction } from './algorithms/index.js'
+import dagreLayout from './algorithms/dagre.ts'
+import type { Direction } from './algorithms/index.ts'
 
 const nodeCountSelector = (state: ReactFlowState) => state.nodeLookup.size
 

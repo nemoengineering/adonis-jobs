@@ -6,9 +6,9 @@ import router from '@adonisjs/core/services/router'
 import { resolveResponse } from '@trpc/server/http'
 import type { RouteGroup } from '@adonisjs/http-server'
 
-import { createQueueDashHtml } from './html.js'
-import type { Queues } from '../../types/index.js'
-import queueManager from '../../../services/main.js'
+import { createQueueDashHtml } from './html.ts'
+import type { Queues } from '../../types/index.ts'
+import queueManager from '../../../services/main.ts'
 
 export function queueDashUiRoutes(): RouteGroup {
   const mainJS = readFileSync(fileURLToPath(import.meta.resolve('@queuedash/client/dist/main.mjs')))

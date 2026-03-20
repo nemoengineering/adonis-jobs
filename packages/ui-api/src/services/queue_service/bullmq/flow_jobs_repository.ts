@@ -1,8 +1,8 @@
 import type { BullJob } from '@nemoventures/adonis-jobs/types'
 import queueManager from '@nemoventures/adonis-jobs/services/main'
 
-import type { JobRun } from '../types.js'
-import { BullmqPresenter } from './mappers.js'
+import type { JobRun } from '../types.ts'
+import { BullmqPresenter } from './mappers.ts'
 
 export class FlowJobsRepository {
   /**

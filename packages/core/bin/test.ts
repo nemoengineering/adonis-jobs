@@ -16,6 +16,7 @@ configure({
     snapshot(),
     expect(),
   ],
+  forceExit: true,
 })
 
 run()

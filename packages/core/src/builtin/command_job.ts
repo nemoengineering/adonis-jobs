@@ -2,10 +2,10 @@ import app from '@adonisjs/core/services/app'
 import type { BaseCommand } from '@adonisjs/core/ace'
 import { FsLoader, Kernel } from '@adonisjs/core/ace'
 
-import { BaseJob } from '../job/base_job.js'
-import type { PrebuiltJobData } from '../types/job.js'
-import { JobDispatcher } from '../job/job_dispatcher.js'
-import type { BaseJobConstructor } from '../job/base_job.js'
+import { BaseJob } from '../job/base_job.ts'
+import type { PrebuiltJobData } from '../types/job.ts'
+import { JobDispatcher } from '../job/job_dispatcher.ts'
+import type { BaseJobConstructor } from '../job/base_job.ts'
 
 export type ScheduledCommandData = {
   commandName: string

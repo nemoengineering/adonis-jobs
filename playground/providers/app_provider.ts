@@ -1,6 +1,6 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 
-import { PaymentService, StripePaymentService } from '../app/services/payment_service.js'
+import { PaymentService, StripePaymentService } from '../app/services/payment_service.ts'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}

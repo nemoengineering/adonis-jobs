@@ -9,8 +9,8 @@ import type {
   FlowProducer,
 } from 'bullmq'
 
-import { isModuleInstalled } from './helpers.js'
-import type { BullFlowProducer, BullQueue, BullQueueEvents, BullWorker } from './types/index.js'
+import { isModuleInstalled } from './helpers.ts'
+import type { BullFlowProducer, BullQueue, BullQueueEvents, BullWorker } from './types/index.ts'
 
 /**
  * Factory class responsible for creating BullMQ objects based on the installed version

@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import type { BullJob, JobState } from '@nemoventures/adonis-jobs/types'
 
-import { JobStatus, type JobRun } from '../types.js'
+import { JobStatus, type JobRun } from '../types.ts'
 
 export function remapJobState(bullJobStatus: JobState | string): JobStatus {
   switch (bullJobStatus) {

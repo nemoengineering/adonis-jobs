@@ -1,12 +1,12 @@
 import { test } from '@japa/runner'
 
-import Cleanup from '../fixtures/cleanup.js'
+import Cleanup from '../fixtures/cleanup.ts'
 import type { JobScheduler } from '#job/job_scheduler'
 
 test.group('Job Scheduler', () => {
   test('Schedule Typings', async ({ expectTypeOf }) => {
-    const { FakeJob } = await import('../fixtures/fake_job.js')
-    const { default: CommandJob } = await import('../../src/builtin/command_job.js')
+    const { FakeJob } = await import('../fixtures/fake_job.ts')
+    const { default: CommandJob } = await import('../../src/builtin/command_job.ts')
 
     const p1 = {
       key: 'test-command-job',

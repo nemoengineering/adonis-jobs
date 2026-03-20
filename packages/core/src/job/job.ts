@@ -1,7 +1,7 @@
-import { BaseJob } from './base_job.js'
-import { JobDispatcher } from './job_dispatcher.js'
-import type { InferDataType } from '../types/index.js'
-import type { BaseJobConstructor } from './base_job.js'
+import { BaseJob } from './base_job.ts'
+import { JobDispatcher } from './job_dispatcher.ts'
+import type { InferDataType } from '../types/index.ts'
+import type { BaseJobConstructor } from './base_job.ts'
 
 /**
  * Arguments to be passed to the `dispatch` method of a job

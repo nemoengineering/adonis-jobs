@@ -1,15 +1,15 @@
 import emitter from '@adonisjs/core/services/emitter'
 
-import { JobFlow } from './job_flow.js'
-import queueManager from '../../services/main.js'
-import type { BaseJobConstructor } from './base_job.js'
+import { JobFlow } from './job_flow.ts'
+import queueManager from '../../services/main.ts'
+import type { BaseJobConstructor } from './base_job.ts'
 import type {
   BullFlowChildJob,
   BullFlowJob,
   BullJob,
   BullJobsOptions,
   Queues,
-} from '../types/index.js'
+} from '../types/index.ts'
 
 type JobData<J extends BaseJobConstructor> = InstanceType<J>['job']['data']
 

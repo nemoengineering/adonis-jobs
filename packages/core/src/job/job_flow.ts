@@ -1,9 +1,9 @@
 import emitter from '@adonisjs/core/services/emitter'
 
-import debuglog from '../debug.js'
-import queueManager from '../../services/main.js'
-import type { JobDispatcher } from './job_dispatcher.js'
-import type { BullFlowJob, Queues } from '../types/index.js'
+import debuglog from '../debug.ts'
+import queueManager from '../../services/main.ts'
+import type { JobDispatcher } from './job_dispatcher.ts'
+import type { BullFlowJob, Queues } from '../types/index.ts'
 
 class FlowBuilder {
   readonly #flow: BullFlowJob

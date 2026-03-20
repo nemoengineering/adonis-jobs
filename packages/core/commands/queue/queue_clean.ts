@@ -1,7 +1,7 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import type { JobState, Queues } from '../../src/types/index.js'
+import type { JobState, Queues } from '../../src/types/index.ts'
 
 const JOB_STATES: JobState[] = [
   'completed',

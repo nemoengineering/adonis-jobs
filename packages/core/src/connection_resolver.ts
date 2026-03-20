@@ -1,7 +1,7 @@
 import type { RedisConnection } from '@adonisjs/redis'
 import type { RedisService } from '@adonisjs/redis/types'
 
-import type { BullConnectionOptions, Config, QueueConnectionConfig } from './types/index.js'
+import type { BullConnectionOptions, Config, QueueConnectionConfig } from './types/index.ts'
 
 export class ConnectionResolver {
   #useSharedConnection = false

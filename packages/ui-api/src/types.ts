@@ -1,2 +1,2 @@
-export * from './services/queue_service/types.js'
-export * from './services/queue_service/main.js'
+export * from './services/queue_service/types.ts'
+export * from './services/queue_service/main.ts'

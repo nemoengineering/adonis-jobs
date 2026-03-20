@@ -14,9 +14,9 @@ import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
 import { BulkDispatcher, JobChain, JobFlow, JobScheduler } from '@nemoventures/adonis-jobs'
 
 import SlowJob from '#jobs/slow_job'
-import Cleanup from '../commands/cleanup.js'
-import WriteFileJob from '../app/jobs/write_file_job.js'
-import NotificationJob from '../app/modules/notifications/jobs/notification_job.js'
+import Cleanup from '../commands/cleanup.ts'
+import WriteFileJob from '../app/jobs/write_file_job.ts'
+import NotificationJob from '../app/modules/notifications/jobs/notification_job.ts'
 
 router.get('/', async ({ view }) => view.render('home'))
 

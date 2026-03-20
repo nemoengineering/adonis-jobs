@@ -1,6 +1,6 @@
 import { Logger } from '@adonisjs/core/logger'
 
-import type { BullJob } from '../types/index.js'
+import type { BullJob } from '../types/index.ts'
 
 /**
  * Combined logger that sends logs to both Pino (AdonisJS) and BullMQ

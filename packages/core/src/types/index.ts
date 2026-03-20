@@ -3,15 +3,15 @@ import type { ConfigProvider } from '@adonisjs/core/types'
 import type { RedisClusterConnection } from '@adonisjs/redis'
 import type { RedisConnections } from '@adonisjs/redis/types'
 
-import type { BaseJob } from '../job/base_job.js'
-import type { QueueManager } from '../queue_manager.js'
-import type { BullQueueOptions, BullWorkerOptions } from './bull.js'
+import type { BaseJob } from '../job/base_job.ts'
+import type { QueueManager } from '../queue_manager.ts'
+import type { BullQueueOptions, BullWorkerOptions } from './bull.ts'
 
-export * from './scheduler.js'
-export * from './events.js'
-export * from './bull.js'
-export * from './job.js'
-export type { JobConstructor } from '../job/job.js'
+export * from './scheduler.ts'
+export * from './events.ts'
+export * from './bull.ts'
+export * from './job.ts'
+export type { JobConstructor } from '../job/job.ts'
 
 /**
  * Health check configuration

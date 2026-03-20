@@ -1,6 +1,6 @@
 import dagre from '@dagrejs/dagre'
 
-import type { LayoutAlgorithm } from './index.js'
+import type { LayoutAlgorithm } from './index.ts'
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}))
 

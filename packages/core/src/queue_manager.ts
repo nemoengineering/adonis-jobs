@@ -2,9 +2,9 @@ import { BullMQOtel } from 'bullmq-otel'
 import type { Logger } from '@adonisjs/core/logger'
 import { RuntimeException } from '@adonisjs/core/exceptions'
 
-import { BullMqFactory } from './bull_factory.js'
-import { JobDiscoverer } from './worker/job_discoverer.js'
-import type { ConnectionResolver } from './connection_resolver.js'
+import { BullMqFactory } from './bull_factory.ts'
+import { JobDiscoverer } from './worker/job_discoverer.ts'
+import type { ConnectionResolver } from './connection_resolver.ts'
 import type {
   BullFlowProducer,
   BullQueue,
@@ -13,7 +13,7 @@ import type {
   JobState,
   QueueConfig,
   Queues,
-} from './types/index.js'
+} from './types/index.ts'
 
 export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queues> {
   #flowProducer?: BullFlowProducer

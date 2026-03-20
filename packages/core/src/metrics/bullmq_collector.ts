@@ -2,8 +2,8 @@ import { configProvider } from '@adonisjs/core'
 import { Collector } from '@julr/adonisjs-prometheus/collectors/collector'
 import type { CommonCollectorOptions, ResolvedPromConfig } from '@julr/adonisjs-prometheus/types'
 
-import type { BullJob } from '../types/bull.js'
-import type { QueueManager } from '../queue_manager.js'
+import type { BullJob } from '../types/bull.ts'
+import type { QueueManager } from '../queue_manager.ts'
 
 export interface BullMQCollectorOptions {
   /**

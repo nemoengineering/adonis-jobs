@@ -1,4 +1,4 @@
-import type { HasPro } from './index.js'
+import type { HasPro } from './index.ts'
 
 /**
  * Since we are allowing the user to define the BullMQ version they want to use,

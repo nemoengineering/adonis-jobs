@@ -1,7 +1,7 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
-import { JobScheduler } from '../../src/job/job_scheduler.js'
+import { JobScheduler } from '../../src/job/job_scheduler.ts'
 
 export default class ScheduleClear extends BaseCommand {
   static commandName = 'queue:scheduler:clear'

@@ -1,6 +1,6 @@
 import { configProvider } from '@adonisjs/core'
 
-import type { Config, QueueConfig } from './types/index.js'
+import type { Config, QueueConfig } from './types/index.ts'
 
 export function defineConfig<KnownQueues extends Record<string, QueueConfig>>(
   config: Config<KnownQueues>,
