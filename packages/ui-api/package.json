@@ -28,8 +28,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "prepare": "pnpm build"
+    "build": "tsc"
   },
   "dependencies": {
     "@nemoventures/adonis-jobs-ui": "workspace:*",

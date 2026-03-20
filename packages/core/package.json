@@ -34,8 +34,6 @@
     "compile": "tsdown && tsc --emitDeclarationOnly --declaration",
     "postcompile": "npm run copy:templates && npm run index:commands",
     "build": "npm run compile",
-    "prepare": "pnpm build",
-    "version": "npm run build",
     "typecheck": "tsc --noEmit",
     "index:commands": "adonis-kit index build/commands",
     "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --import=@poppinss/ts-exec --enable-source-maps bin/test.ts",
