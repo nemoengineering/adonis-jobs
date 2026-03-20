@@ -1,10 +1,11 @@
 import { fileURLToPath } from 'node:url'
-import { fsReadAll, isScriptFile } from '@poppinss/utils'
+import { fsReadAll } from '@poppinss/utils/fs'
 
 import { group } from '../helpers.js'
 import { rootDir } from '../../root_dir.js'
 import { type BaseJobConstructor } from '../job/base_job.js'
 import { DuplicateJobException } from '../errors/duplicate_job_exception.js'
+import { isScriptFile } from '@poppinss/utils'
 
 /**
  * Discover and load job classes from the application directory.

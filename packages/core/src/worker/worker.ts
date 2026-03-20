@@ -1,7 +1,7 @@
 import { BullMQOtel } from 'bullmq-otel'
 import { trace } from '@opentelemetry/api'
 import { Logger } from '@adonisjs/core/logger'
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { ApplicationService } from '@adonisjs/core/types'
 import type { EmitterLike } from '@adonisjs/core/types/events'
 

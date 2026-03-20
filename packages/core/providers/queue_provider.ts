@@ -1,5 +1,5 @@
 import { configProvider } from '@adonisjs/core'
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { ApplicationService } from '@adonisjs/core/types'
 
 import { BullMqFactory } from '../src/bull_factory.js'
