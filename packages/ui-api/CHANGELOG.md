@@ -1,5 +1,12 @@
 # @nemoventures/adonis-jobs-ui-api
 
+## 2.0.1
+
+### Patch Changes
+
+- a28fecf: Fix publish by removing prepare scripts that caused rebuild during npm publish
+  - @nemoventures/adonis-jobs-ui@1.0.2
+
 ## 2.0.0
 
 ### Major Changes

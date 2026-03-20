@@ -1,6 +1,6 @@
 {
   "name": "@nemoventures/adonis-jobs-ui-api",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "API provider for @nemoventures/adonis-jobs-ui",
   "license": "ISC",
   "author": "Julien Ripouteau <julien@ripouteau.com>",
