@@ -1,5 +1,22 @@
 # @nemoventures/adonis-jobs-ui-api
 
+## 2.0.0
+
+### Major Changes
+
+- 503eb18: Migrate to AdonisJS 7
+
+### Patch Changes
+
+- Updated dependencies [503eb18]
+- Updated dependencies [fb5cedc]
+- Updated dependencies [fb5cedc]
+- Updated dependencies [fb5cedc]
+- Updated dependencies [fb5cedc]
+- Updated dependencies [2dd9100]
+  - @nemoventures/adonis-jobs@2.0.0
+  - @nemoventures/adonis-jobs-ui@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes
