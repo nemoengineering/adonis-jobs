@@ -10,7 +10,6 @@
   },
   "exports": {
     ".": "./build/index.js",
-    "./bull": "./build/src/bull.js",
     "./types": "./build/src/types/index.js",
     "./builtin/*": "./build/src/builtin/*.js",
     "./commands": "./build/commands/main.js",
@@ -104,11 +103,8 @@
   "tsdown": {
     "entry": [
       "index.ts",
-      "src/types.ts",
-      "src/job.ts",
-      "src/builtin",
-      "src/multi_dispatcher.ts",
-      "src/bull.ts",
+      "src/types/index.ts",
+      "src/builtin/command_job.ts",
       "services/main.ts",
       "src/ui/**/index.ts",
       "src/metrics/index.ts",
