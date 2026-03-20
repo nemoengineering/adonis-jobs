@@ -1,10 +1,17 @@
 {
   "name": "@nemoventures/adonis-jobs",
-  "type": "module",
   "version": "1.1.0",
   "description": "Job queues for your AdonisJS applications",
   "license": "MIT",
   "repository": "https://github.com/nemoengineering/adonis-jobs",
+  "files": [
+    "!build/bin",
+    "!build/factories",
+    "!build/tests",
+    "build"
+  ],
+  "type": "module",
+  "main": "build/index.js",
   "imports": {
     "#job/*": "./src/job/*.js"
   },
@@ -18,15 +25,8 @@
     "./services/main": "./build/services/main.js",
     "./ui/queuedash": "./build/src/ui/queuedash/index.js"
   },
-  "main": "build/index.js",
-  "files": [
-    "!build/bin",
-    "!build/factories",
-    "!build/tests",
-    "build"
-  ],
-  "engines": {
-    "node": ">=24.0.0"
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "test": "c8 npm run quick:test",
@@ -40,25 +40,6 @@
     "index:commands": "adonis-kit index build/commands",
     "quick:test": "NODE_DEBUG=\"adonisjs:worker\" node --import=@poppinss/ts-exec --enable-source-maps bin/test.ts",
     "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json @nemoventures/adonis-jobs"
-  },
-  "peerDependencies": {
-    "@adonisjs/core": "^7.0.0",
-    "@adonisjs/http-server": "^8.0.0",
-    "@adonisjs/redis": "^10.0.0",
-    "@julr/adonisjs-prometheus": "^2.0.0",
-    "@taskforcesh/bullmq-pro": "^7.35.2",
-    "bullmq": "^5.53.2"
-  },
-  "peerDependenciesMeta": {
-    "@julr/adonisjs-prometheus": {
-      "optional": true
-    },
-    "@taskforcesh/bullmq-pro": {
-      "optional": true
-    },
-    "bullmq": {
-      "optional": true
-    }
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
@@ -87,20 +68,28 @@
     "@types/pluralize": "^0.0.33",
     "bullmq": "^5.71.0"
   },
-  "publishConfig": {
-    "access": "public"
+  "peerDependencies": {
+    "@adonisjs/core": "^7.0.0",
+    "@adonisjs/http-server": "^8.0.0",
+    "@adonisjs/redis": "^10.0.0",
+    "@julr/adonisjs-prometheus": "^2.0.0",
+    "@taskforcesh/bullmq-pro": "^7.35.2",
+    "bullmq": "^5.53.2"
   },
-  "c8": {
-    "reporter": [
-      "text",
-      "html"
-    ],
-    "exclude": [
-      "tests/**",
-      "factories/**"
-    ]
+  "peerDependenciesMeta": {
+    "@julr/adonisjs-prometheus": {
+      "optional": true
+    },
+    "@taskforcesh/bullmq-pro": {
+      "optional": true
+    },
+    "bullmq": {
+      "optional": true
+    }
   },
   "tsdown": {
+    "clean": true,
+    "dts": false,
     "entry": [
       "index.ts",
       "src/types/index.ts",
@@ -112,14 +101,25 @@
       "./commands/**/*.ts",
       "root_dir.ts"
     ],
-    "outDir": "./build",
-    "clean": true,
+    "fixedExtension": false,
     "format": "esm",
-    "dts": false,
+    "minify": "dce-only",
+    "outDir": "./build",
     "sourcemaps": false,
     "target": "esnext",
-    "minify": "dce-only",
-    "fixedExtension": false,
     "treeshake": false
+  },
+  "c8": {
+    "exclude": [
+      "tests/**",
+      "factories/**"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ]
+  },
+  "engines": {
+    "node": ">=24.0.0"
   }
 }

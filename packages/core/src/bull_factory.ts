@@ -32,9 +32,8 @@ export class BullMqFactory {
     if (this.#initialized) return
 
     if (isModuleInstalled('@taskforcesh/bullmq-pro')) {
-      const { QueuePro, WorkerPro, QueueEventsPro, FlowProducerPro } = await import(
-        '@taskforcesh/bullmq-pro'
-      )
+      const { QueuePro, WorkerPro, QueueEventsPro, FlowProducerPro } =
+        await import('@taskforcesh/bullmq-pro')
       this.#QueueClass = QueuePro
       this.WorkerClass = WorkerPro
       this.#QueueEventsClass = QueueEventsPro

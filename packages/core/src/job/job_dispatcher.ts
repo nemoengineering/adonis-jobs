@@ -21,8 +21,7 @@ export class JobDispatcher<
   TJobClass extends BaseJobConstructor = BaseJobConstructor,
   TJobData extends JobData<TJobClass> = JobData<TJobClass>,
   TJobReturn extends JobReturn<TJobClass> = JobReturn<TJobClass>,
-> implements Promise<BullJob<TJobData, TJobReturn>>
-{
+> implements Promise<BullJob<TJobData, TJobReturn>> {
   readonly #jobClass: TJobClass
   readonly #data: TJobData
   #queueName?: keyof Queues

@@ -1,15 +1,8 @@
 {
   "name": "playground",
-  "type": "module",
   "private": true,
   "license": "UNLICENSED",
-  "scripts": {
-    "start": "node bin/server.js",
-    "build": "node ace build",
-    "dev": "node ace serve --hmr",
-    "queue:watch": "node --watch-path=./app ace queue:work -f",
-    "typecheck": "tsc --noEmit"
-  },
+  "type": "module",
   "imports": {
     "#jobs/*": "./app/jobs/*.js",
     "#controllers/*": "./app/controllers/*.js",
@@ -28,6 +21,13 @@
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
     "#config/*": "./config/*.js"
+  },
+  "scripts": {
+    "start": "node bin/server.js",
+    "build": "node ace build",
+    "dev": "node ace serve --hmr",
+    "queue:watch": "node --watch-path=./app ace queue:work -f",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@adonisjs/core": "catalog:",

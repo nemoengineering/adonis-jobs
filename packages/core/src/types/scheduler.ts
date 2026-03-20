@@ -16,8 +16,9 @@ export interface ScheduleJobOptions<J extends BaseJobConstructor> extends BaseSc
   data: InferDataType<InstanceType<J>>
 }
 
-export interface ScheduleJobOptionsWithPrebuilt<TPrebuiltJob extends PrebuiltJobData<any>>
-  extends BaseScheduleOptions {
+export interface ScheduleJobOptionsWithPrebuilt<
+  TPrebuiltJob extends PrebuiltJobData<any>,
+> extends BaseScheduleOptions {
   job: TPrebuiltJob
   data?: TPrebuiltJob['additionalData']
 }

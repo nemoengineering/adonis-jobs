@@ -8,6 +8,7 @@
 A powerful and type-safe job queue system for AdonisJS 6 applications. Built on top of BullMQ, it provides a clean API for managing background jobs, scheduled tasks, and complex job workflows.
 
 **Features:**
+
 - Clean BullMQ Integration
 - Dedicated Ace commands for job management
 - Scheduled and delayed job execution
@@ -46,9 +47,9 @@ export default class SendEmailJob extends Job<SendEmailJobData, void> {
 Dispatch it:
 
 ```typescript
-await SendEmailJob.dispatch({ 
-  email: 'user@example.com', 
-  subject: 'Welcome!' 
+await SendEmailJob.dispatch({
+  email: 'user@example.com',
+  subject: 'Welcome!',
 })
 ```
 
@@ -61,4 +62,3 @@ node ace queue:work
 ## License
 
 MIT
-

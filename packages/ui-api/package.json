@@ -1,32 +1,35 @@
 {
   "name": "@nemoventures/adonis-jobs-ui-api",
-  "type": "module",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.32.1",
   "description": "",
-  "author": "Julien Ripouteau <julien@ripouteau.com>",
-  "license": "ISC",
   "keywords": [],
+  "license": "ISC",
+  "author": "Julien Ripouteau <julien@ripouteau.com>",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types.ts",
     "./ui_provider": "./src/providers/app_provider.ts",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.js",
+      "./types": "./dist/types.js",
+      "./ui_provider": "./dist/providers/app_provider.js",
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "prepare": "pnpm build"
-  },
-  "peerDependencies": {
-    "@adonisjs/core": "catalog:",
-    "@nemoventures/adonis-jobs": "workspace:*",
-    "@vinejs/vine": "^3.0.1 || ^4.0.0"
   },
   "dependencies": {
     "@nemoventures/adonis-jobs-ui": "workspace:*",
@@ -40,13 +43,10 @@
     "bullmq": "^5.71.0",
     "tsdown": "^0.21.4"
   },
-  "publishConfig": {
-    "access": "public",
-    "exports": {
-      ".": "./dist/index.js",
-      "./types": "./dist/types.js",
-      "./ui_provider": "./dist/providers/app_provider.js",
-      "./package.json": "./package.json"
-    }
-  }
+  "peerDependencies": {
+    "@adonisjs/core": "catalog:",
+    "@nemoventures/adonis-jobs": "workspace:*",
+    "@vinejs/vine": "^3.0.1 || ^4.0.0"
+  },
+  "packageManager": "pnpm@10.32.1"
 }
