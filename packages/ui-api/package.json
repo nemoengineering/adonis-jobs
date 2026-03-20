@@ -1,10 +1,10 @@
 {
   "name": "@nemoventures/adonis-jobs-ui-api",
   "version": "1.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "API provider for @nemoventures/adonis-jobs-ui",
   "license": "ISC",
   "author": "Julien Ripouteau <julien@ripouteau.com>",
+  "repository": "https://github.com/nemoengineering/adonis-jobs",
   "files": [
     "dist"
   ],
@@ -47,6 +47,5 @@
     "@adonisjs/core": "catalog:",
     "@nemoventures/adonis-jobs": "workspace:*",
     "@vinejs/vine": "^3.0.1 || ^4.0.0"
-  },
-  "packageManager": "pnpm@10.32.1"
+  }
 }

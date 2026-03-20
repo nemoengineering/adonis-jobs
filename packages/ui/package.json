@@ -1,6 +1,10 @@
 {
   "name": "@nemoventures/adonis-jobs-ui",
   "version": "1.0.0",
+  "description": "Dashboard UI for @nemoventures/adonis-jobs",
+  "license": "MIT",
+  "author": "Julien Ripouteau <julien@ripouteau.com>",
+  "repository": "https://github.com/nemoengineering/adonis-jobs",
   "files": [
     "dist"
   ],
