@@ -1,5 +1,13 @@
 # @nemoventures/adonis-jobs-ui-api
 
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [56b211e]
+  - @nemoventures/adonis-jobs@2.1.0
+  - @nemoventures/adonis-jobs-ui@1.0.3
+
 ## 2.0.1
 
 ### Patch Changes
