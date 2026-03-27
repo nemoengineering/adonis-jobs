@@ -47,13 +47,18 @@ export class Worker<KnownQueues extends Record<string, QueueConfig> = Queues> {
       role: 'worker',
     })
 
+    const telemetry =
+      this.#config.telemetry === false
+        ? undefined
+        : (this.#config.telemetry ?? new BullMQOtel('adonis-jobs'))
+
     return BullMqFactory.createWorker(
       String(this.#queueName),
       async (job, token, signal) => this.#processJob(job, token, signal),
       {
         autorun: false,
         connection,
-        telemetry: new BullMQOtel('adonis-jobs'),
+        telemetry,
         prefix: queueConfig.prefix || this.#config.defaultPrefix,
         ...queueConfig.defaultWorkerOptions,
         ...(queueConfig?.globalConcurrency && { concurrency: queueConfig.globalConcurrency }),

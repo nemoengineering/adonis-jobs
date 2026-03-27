@@ -106,6 +106,32 @@ const queueConfig = defineConfig({
 
 Make sure to check out the [BullMQ OpenTelemetry documentation](https://docs.bullmq.io/guide/telemetry/getting-started) if you are new to using OpenTelemetry as it provides a quick start guide for setting up tracing in your application.
 
+### Custom or External Telemetry
+
+By default, the package uses `bullmq-otel` to instrument all Queue, Worker, and FlowProducer instances. If you are using an external instrumentation library that patches BullMQ, you may end up with **duplicate spans**.
+
+To avoid this, you can disable the built-in telemetry:
+
+```typescript
+const queueConfig = defineConfig({
+  // ...
+  telemetry: false,
+})
+```
+
+You can also provide your own implementation of BullMQ's `Telemetry` interface:
+
+```typescript
+import { MyCustomTelemetry } from './my_custom_telemetry'
+
+const queueConfig = defineConfig({
+  // ...
+  telemetry: new MyCustomTelemetry(),
+})
+```
+
+When the `telemetry` option is not set, the default `bullmq-otel` behavior is preserved.
+
 ## Job Logging
 
 For logging inside jobs, we provide a child logger instance that automatically includes the trace ID. This logger can be accessed via the `this.logger` property inside your job classes.

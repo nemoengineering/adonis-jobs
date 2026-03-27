@@ -30,6 +30,12 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
     this.#jobDiscoverer = new JobDiscoverer(appRoot)
   }
 
+  get #telemetry() {
+    if (this.config.telemetry === false) return undefined
+
+    return this.config.telemetry ?? new BullMQOtel('adonis-jobs')
+  }
+
   /**
    * Get a queue by its name or throw an error if the queue
    * is not defined in the configuration.
@@ -79,7 +85,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       prefix: this.config.defaultPrefix,
       ...queueOptions,
       connection: this.connectionResolver.resolve({ config: connection, role: 'queue' }),
-      telemetry: new BullMQOtel('adonis-jobs'),
+      telemetry: this.#telemetry,
     })
 
     queue.on('error', (err) => {
@@ -102,7 +108,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
       prefix: this.config.defaultPrefix,
       ...queueOptions,
       connection: this.connectionResolver.resolve({ config: connection, role: 'queue' }),
-      telemetry: new BullMQOtel('adonis-jobs'),
+      telemetry: this.#telemetry,
     })
 
     this.#queuesEvents.set(queueName, queueEvents)
@@ -118,7 +124,7 @@ export class QueueManager<KnownQueues extends Record<string, QueueConfig> = Queu
         config: this.config.connection,
         role: 'queue',
       }),
-      telemetry: new BullMQOtel('adonis-jobs'),
+      telemetry: this.#telemetry,
     })
 
     return this.#flowProducer

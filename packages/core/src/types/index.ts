@@ -3,6 +3,8 @@ import type { ConfigProvider } from '@adonisjs/core/types'
 import type { RedisClusterConnection } from '@adonisjs/redis'
 import type { RedisConnections } from '@adonisjs/redis/types'
 
+import type { Telemetry } from 'bullmq'
+
 import type { BaseJob } from '../job/base_job.ts'
 import type { QueueManager } from '../queue_manager.ts'
 import type { BullQueueOptions, BullWorkerOptions } from './bull.ts'
@@ -69,6 +71,15 @@ export interface Config<
   healthCheck?: HealthCheckConfig
   metrics?: MetricsConfig
   otel?: OtelConfig
+
+  /**
+   * Telemetry configuration for BullMQ instances (Queue, Worker, FlowProducer).
+   *
+   * - `undefined` (default): uses the built-in `BullMQOtel` telemetry
+   * - `false`: disables telemetry entirely (useful when using an external instrumentation that patches BullMQ)
+   * - `Telemetry`: a custom telemetry implementation conforming to BullMQ's `Telemetry` interface
+   */
+  telemetry?: Telemetry | false
 
   /**
    * Multi logger allows you to use the AdonisJS logger as usual within your jobs,
