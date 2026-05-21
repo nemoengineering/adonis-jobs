@@ -5,8 +5,9 @@ packages:
   - docs
 
 catalog:
-  '@adonisjs/core': ^7.1.1
+  '@adonisjs/core': ^7.3.3
 
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
   - '@taskforcesh/bullmq-pro'
+  - '@adonisjs/*'
