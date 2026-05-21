@@ -80,7 +80,12 @@ export class JobScheduler {
   }
 
   /**
-   * Remove a specific scheduled job by id
+   * Remove a specific scheduled job by id. Scans every configured queue
+   * and returns true only if some queue actually removed the scheduler.
+   *
+   * BullMQ's `Queue#removeJobScheduler` returns a boolean indicating whether
+   * a scheduler was actually deleted; we must honor that to avoid reporting
+   * success when the scheduler still lives on a later queue.
    */
   static async remove(id: string): Promise<boolean> {
     const queueNames = Object.keys(queueManager.config.queues) as (keyof Queues)[]
@@ -89,8 +94,8 @@ export class JobScheduler {
       const queue = queueManager.useQueue(queueName)
 
       try {
-        await queue.removeJobScheduler(id)
-        return true
+        const removed = await queue.removeJobScheduler(id)
+        if (removed) return true
       } catch (_error) {
         continue
       }
