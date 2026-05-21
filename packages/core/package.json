@@ -42,10 +42,10 @@
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
     "@poppinss/utils": "^7.0.1",
-    "@queuedash/api": "^3.17.0",
-    "@queuedash/client": "^3.17.0",
-    "@queuedash/ui": "^3.17.0",
-    "@trpc/server": "^11.13.4",
+    "@queuedash/api": "^3.19.0",
+    "@queuedash/client": "^3.19.0",
+    "@queuedash/ui": "^3.19.0",
+    "@trpc/server": "^11.17.0",
     "bullmq-otel": "^1.3.0",
     "import-meta-resolve": "^4.2.0"
   },
