@@ -7,8 +7,6 @@ packages:
 catalog:
   '@adonisjs/core': ^7.1.1
 
-# Reject dependency versions younger than 7 days at resolution time.
-# Mitigates supply-chain risk (malicious or compromised releases are
-# usually reported and yanked within this window).
-# Escape hatch for urgent adoption: `pnpm add ... --ignore-minimum-release-age`.
 minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@taskforcesh/bullmq-pro'

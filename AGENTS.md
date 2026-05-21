@@ -40,7 +40,7 @@ CI's `.github/actions/setup` runs `pnpm --filter @nemoventures/adonis-jobs build
 - Node **>=24** required by `packages/core` (`engines.node`). CI matrix tests on 22.x and 24.x; lint/typecheck/release pin to 24.
 - pnpm 10.32.1 via Corepack (`packageManager` field). Do not switch to npm/yarn.
 - `.npmrc` configures the private `@taskforcesh` registry for `@taskforcesh/bullmq-pro`. `pnpm install` requires `BULLMQ_PRO_TOKEN` in the environment (CI secret). Without it install will fail. `bullmq-pro` is an optional peer dep — code paths must not assume it.
-- `pnpm-workspace.yaml` sets `minimumReleaseAge: 10080` (7 days). Lockfile installs are unaffected, but `pnpm add` / `pnpm update` will refuse versions published in the last 7 days. Override per-invocation with `--ignore-minimum-release-age`.
+- `pnpm-workspace.yaml` sets `minimumReleaseAge: 10080` (7 days). Lockfile installs are unaffected, but `pnpm add` / `pnpm update` will refuse versions published in the last 7 days. Override per-invocation with `--ignore-minimum-release-age`. `@taskforcesh/bullmq-pro` is exempted via `minimumReleaseAgeExclude` (private commercial registry).
 
 ## Conventions worth knowing
 
