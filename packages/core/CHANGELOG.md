@@ -1,5 +1,11 @@
 # @nemoventures/adonis-jobs
 
+## 2.1.3
+
+### Patch Changes
+
+- 51626ee: Add a package-level `README.md` and `keywords` so the npm package page renders quick-start instructions and is discoverable via keyword search. No runtime changes.
+
 ## 2.1.2
 
 ### Patch Changes
