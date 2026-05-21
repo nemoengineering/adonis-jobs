@@ -1,5 +1,12 @@
 # @nemoventures/adonis-jobs
 
+## 2.1.4
+
+### Patch Changes
+
+- 1083c92: Fix `JobScheduler.remove()` reporting success without actually deleting the scheduler. The wrapper previously ignored the boolean returned by BullMQ's `Queue#removeJobScheduler()` and short-circuited after the first non-throwing queue, so schedulers registered on any queue other than the first one in `config.queue.queues` were left active while the caller saw `true`. `remove()` now honours the BullMQ return value, keeps scanning remaining queues when none reported a deletion, and only returns `true` once a queue actually removed the scheduler (closes #115).
+- 94e2e65: Allow `@adonisjs/http-server@^9.0.0` as a peer dependency. `@adonisjs/core@7.3.3` bumped its `@adonisjs/http-server` dependency to `^9.0.0`, which previously made `node ace add @nemoventures/adonis-jobs` fail on fresh AdonisJS v7 projects due to peer-dep resolution. Existing `^8.0.0` installs continue to work.
+
 ## 2.1.3
 
 ### Patch Changes
