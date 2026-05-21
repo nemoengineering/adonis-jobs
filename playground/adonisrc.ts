@@ -53,7 +53,6 @@ export default defineConfig({
     () => import('@adonisjs/redis/redis_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),
     () => import('@adonisjs/cors/cors_provider'),
-    () => import('@nemoventures/adonis-jobs-ui-api/ui_provider'),
     () => import('@adonisjs/static/static_provider'),
   ],
 
