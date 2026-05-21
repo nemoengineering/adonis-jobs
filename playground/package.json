@@ -36,8 +36,6 @@
     "@adonisjs/static": "^2.0.1",
     "@julr/adonisjs-prometheus": "^2.1.0",
     "@nemoventures/adonis-jobs": "workspace:*",
-    "@nemoventures/adonis-jobs-ui": "workspace:*",
-    "@nemoventures/adonis-jobs-ui-api": "workspace:*",
     "@opentelemetry/auto-instrumentations-node": "^0.71.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0.213.0",
     "@opentelemetry/exporter-metrics-otlp-proto": "^0.213.0",
