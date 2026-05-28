@@ -34,6 +34,7 @@
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/redis": "^10.0.0",
     "@adonisjs/static": "^2.0.1",
+    "@getworkbench/core": "^0.6.0",
     "@julr/adonisjs-prometheus": "^2.1.0",
     "@nemoventures/adonis-jobs": "workspace:*",
     "@opentelemetry/auto-instrumentations-node": "^0.71.0",

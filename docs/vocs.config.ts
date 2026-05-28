@@ -63,6 +63,10 @@ export default defineConfig({
           link: '/guides/queue-dashboard',
         },
         {
+          text: 'Workbench Dashboard',
+          link: '/guides/workbench-dashboard',
+        },
+        {
           text: 'Observability',
           link: '/guides/observability',
         },
