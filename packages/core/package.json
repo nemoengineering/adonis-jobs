@@ -1,6 +1,6 @@
 {
   "name": "@nemoventures/adonis-jobs",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "description": "Job queues for your AdonisJS applications",
   "keywords": [
     "adonis",
