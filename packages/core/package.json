@@ -68,7 +68,7 @@
     "@adonisjs/core": "catalog:",
     "@adonisjs/http-server": "^9.0.0",
     "@adonisjs/redis": "^10.0.0",
-    "@getworkbench/core": "^0.6.0",
+    "@getworkbench/core": "^0.9.1",
     "@japa/assert": "^4.2.0",
     "@japa/expect": "^3.0.7",
     "@japa/expect-type": "^2.0.4",
@@ -86,7 +86,7 @@
     "@adonisjs/core": "^7.0.0",
     "@adonisjs/http-server": "^8.0.0 || ^9.0.0",
     "@adonisjs/redis": "^10.0.0",
-    "@getworkbench/core": "^0.6.0",
+    "@getworkbench/core": "^0.9.1",
     "@julr/adonisjs-prometheus": "^2.0.0",
     "@taskforcesh/bullmq-pro": "^7.35.2",
     "bullmq": "^5.53.2"
