@@ -14,79 +14,81 @@ export function queueDashUiRoutes(): RouteGroup {
   const mainJS = readFileSync(fileURLToPath(import.meta.resolve('@queuedash/client/dist/main.mjs')))
   const style = readFileSync(fileURLToPath(import.meta.resolve('@queuedash/ui/dist/styles.css')))
 
-  return router.group(() => {
-    router
-      .any('/trpc/*', async ({ request, response }) => {
-        const path = request.url().split('/trpc/')[1]
-        const url = new URL(request.completeUrl(true))
+  return router
+    .group(() => {
+      router
+        .any('/trpc/*', async ({ request, response }) => {
+          const path = request.url().split('/trpc/')[1]
+          const url = new URL(request.completeUrl(true))
 
-        const queues = queueManager.config.queues
+          const queues = queueManager.config.queues
 
-        const req = new Request(url, {
-          headers: request.headers() as any,
-          body: request.raw(),
-          method: request.method(),
+          const req = new Request(url, {
+            headers: request.headers() as any,
+            body: request.raw(),
+            method: request.method(),
+          })
+
+          const trpcResponse = await resolveResponse({
+            createContext: async () => ({
+              queues: Object.keys(queues).reduce(
+                (acc, queueName) => {
+                  acc.push({
+                    queue: queueManager.useQueue(queueName as keyof Queues),
+                    displayName: queueName,
+                    type: 'bullmq' as const,
+                  })
+
+                  return acc
+                },
+                [] as Context['queues'],
+              ),
+            }),
+            router: appRouter,
+            path,
+            req,
+            error: null,
+          })
+
+          const trpcResponseText = await trpcResponse.text()
+
+          trpcResponse.headers.forEach((value, key) => {
+            response.header(key, value)
+          })
+
+          response.status(trpcResponse.status)
+          response.send(trpcResponseText)
         })
+        .as('trpc')
 
-        const trpcResponse = await resolveResponse({
-          createContext: async () => ({
-            queues: Object.keys(queues).reduce(
-              (acc, queueName) => {
-                acc.push({
-                  queue: queueManager.useQueue(queueName as keyof Queues),
-                  displayName: queueName,
-                  type: 'bullmq' as const,
-                })
-
-                return acc
-              },
-              [] as Context['queues'],
-            ),
-          }),
-          router: appRouter,
-          path,
-          req,
-          error: null,
+      router
+        .get('main.mjs', async ({ response }) => {
+          response.type('application/javascript').send(mainJS)
         })
+        .as('main')
 
-        const trpcResponseText = await trpcResponse.text()
-
-        trpcResponse.headers.forEach((value, key) => {
-          response.header(key, value)
+      router
+        .get('styles.css', async ({ response }) => {
+          response.type('text/css').send(style)
         })
+        .as('styles')
 
-        response.status(trpcResponse.status)
-        response.send(trpcResponseText)
-      })
-      .as('trpc.*')
+      router
+        .get('/', ({ response, route }) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          const baseUrl = router.builder().params(route?.meta?.params).make(route?.pattern!)
+          response.type('text/html').send(createQueueDashHtml(baseUrl))
+        })
+        .as('index')
 
-    router
-      .get('main.mjs', async ({ response }) => {
-        response.type('application/javascript').send(mainJS)
-      })
-      .as('main.mjs')
+      router
+        .get('/*', ({ response, route }) => {
+          const patternWithoutWildcard = route?.pattern.slice(0, -2)
+          const baseUrl = router.builder().params(route?.meta?.params).make(patternWithoutWildcard!)
 
-    router
-      .get('styles.css', async ({ response }) => {
-        response.type('text/css').send(style)
-      })
-      .as('styles.css')
-
-    router
-      .get('/', ({ response, route }) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-        const baseUrl = router.builder().params(route?.meta?.params).make(route?.pattern!)
-        response.type('text/html').send(createQueueDashHtml(baseUrl))
-      })
-      .as('index')
-
-    router
-      .get('/*', ({ response, route }) => {
-        const patternWithoutWildcard = route?.pattern.slice(0, -2)
-        const baseUrl = router.builder().params(route?.meta?.params).make(patternWithoutWildcard!)
-
-        response.type('text/html').send(createQueueDashHtml(baseUrl))
-      })
-      .as('*')
-  })
+          response.type('text/html').send(createQueueDashHtml(baseUrl))
+        })
+        .as('catchAll')
+    })
+    .as('queuedash')
 }
