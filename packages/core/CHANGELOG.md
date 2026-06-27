@@ -1,5 +1,25 @@
 # @nemoventures/adonis-jobs
 
+## 2.2.0
+
+### Minor Changes
+
+- 2531015: Add optional Workbench UI integration as an alternative to QueueDash. Mount it via the new `@nemoventures/adonis-jobs/ui/workbench` subpath export:
+
+  ```ts
+  import { workbenchUiRoutes } from "@nemoventures/adonis-jobs/ui/workbench";
+
+  workbenchUiRoutes().prefix("/admin/workbench");
+  ```
+
+  `@getworkbench/core` is declared as an optional peer dependency, so it only needs to be installed by users who opt into the Workbench UI. See the [Workbench Dashboard guide](https://adonis-jobs.nemoventures.dev/guides/workbench-dashboard) for full documentation.
+
+### Patch Changes
+
+- 5fc8b5d: Name the routes registered inside `queueDashUiRoutes()` so the returned group can be named or prefixed-and-named by consumers (e.g. `queueDashUiRoutes().prefix('/jobs').as('jobs')`). Previously this threw `RuntimeException: Routes inside a group must have names before calling "router.group.as"`.
+
+  The routes are self-namespaced under `queuedash.*` (e.g. `queuedash.index`, `queuedash.trpc`) to avoid collisions with application routes. If you additionally name the group, the names stack via prepend — `queueDashUiRoutes().as('jobs')` produces `jobs.queuedash.index`, etc.
+
 ## 2.1.4
 
 ### Patch Changes
