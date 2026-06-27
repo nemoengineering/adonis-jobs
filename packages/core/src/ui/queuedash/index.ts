@@ -58,19 +58,19 @@ export function queueDashUiRoutes(): RouteGroup {
         response.status(trpcResponse.status)
         response.send(trpcResponseText)
       })
-      .as('trpc.*')
+      .as('trpc')
 
     router
       .get('main.mjs', async ({ response }) => {
         response.type('application/javascript').send(mainJS)
       })
-      .as('main.mjs')
+      .as('main')
 
     router
       .get('styles.css', async ({ response }) => {
         response.type('text/css').send(style)
       })
-      .as('styles.css')
+      .as('styles')
 
     router
       .get('/', ({ response, route }) => {
@@ -87,6 +87,6 @@ export function queueDashUiRoutes(): RouteGroup {
 
         response.type('text/html').send(createQueueDashHtml(baseUrl))
       })
-      .as('*')
+      .as('catchAll')
   })
 }
