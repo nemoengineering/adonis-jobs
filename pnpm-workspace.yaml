@@ -10,4 +10,5 @@ catalog:
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
   - '@taskforcesh/bullmq-pro'
+  - '@getworkbench/core'
   - '@adonisjs/*'

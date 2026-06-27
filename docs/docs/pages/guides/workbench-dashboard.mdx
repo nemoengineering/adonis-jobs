@@ -1,0 +1,118 @@
+---
+title: Workbench Dashboard
+description: Set up and use the Workbench UI as an alternative dashboard for monitoring and managing your job queues
+---
+
+# Workbench Dashboard
+
+[Workbench](https://github.com/pontusab/workbench) is a modern open-source BullMQ dashboard with flows/DAG visualization, schedulers, search, and metrics. It is shipped as an **alternative** to the built-in [QueueDash dashboard](/guides/queue-dashboard) — you can use either one (or both) depending on which UI you prefer.
+
+Workbench is delivered as an **optional peer dependency**, so it does not affect install size for users who stick with QueueDash.
+
+## Installation
+
+```bash
+npm i @getworkbench/core
+```
+
+## Setup
+
+Add the dashboard routes to your `start/routes.ts` file:
+
+```typescript
+import router from '@adonisjs/core/services/router'
+import { workbenchUiRoutes } from '@nemoventures/adonis-jobs/ui/workbench'
+
+router.group(() => {
+  workbenchUiRoutes().prefix('/workbench')
+}).prefix('/admin')
+```
+
+This makes the dashboard available at `/admin/workbench`. Run your AdonisJS application and open `http://localhost:3333/admin/workbench` to access it.
+
+Queues are pulled automatically from your `config/queue.ts` — there is no need to pass them explicitly.
+
+## Options
+
+`workbenchUiRoutes(options?)` accepts the following options:
+
+| Option     | Type                              | Description                                                                |
+| ---------- | --------------------------------- | -------------------------------------------------------------------------- |
+| `title`    | `string`                          | Dashboard title shown in the nav bar. Defaults to `"Workbench"`.           |
+| `logo`     | `string`                          | URL of a logo image displayed in the nav.                                  |
+| `readonly` | `boolean`                         | When `true`, all mutating actions (retry, remove, promote) return 403.     |
+| `tags`     | `string[]`                        | Fields from `job.data` to extract as filterable tags in the UI.            |
+| `auth`     | `{ username, password }`          | Built-in HTTP basic-auth credentials. See [Authentication](#authentication). |
+
+Example:
+
+```typescript
+workbenchUiRoutes({
+  title: 'Background Jobs',
+  readonly: env.get('NODE_ENV') === 'production',
+  tags: ['userId', 'tenantId'],
+}).prefix('/admin/workbench')
+```
+
+## Authentication
+
+### Recommended: AdonisJS middleware
+
+Because the dashboard returns a standard AdonisJS `RouteGroup`, the cleanest way to protect it is by wrapping it with the framework's own middleware:
+
+```typescript
+import { middleware } from '#start/kernel'
+
+router.group(() => {
+  workbenchUiRoutes().prefix('/workbench')
+})
+  .prefix('/admin')
+  .use(middleware.auth({ guards: ['basicAuth'] }))
+```
+
+### Alternative: built-in basic auth
+
+Workbench also ships its own HTTP basic-auth gate. Pass credentials via the `auth` option:
+
+```typescript
+workbenchUiRoutes({
+  auth: {
+    username: env.get('WORKBENCH_USER'),
+    password: env.get('WORKBENCH_PASS'),
+  },
+}).prefix('/admin/workbench')
+```
+
+The built-in gate is convenient if you don't already have an auth setup, but the AdonisJS middleware approach integrates better with the rest of your application (sessions, guards, RBAC, etc.).
+
+## Shield Configuration
+
+The dashboard performs `POST` requests for actions like retry, remove, and promote. Exempt the dashboard routes from [CSRF protection](https://docs.adonisjs.com/guides/security/securing-ssr-applications#config-reference) in your `config/shield.ts`:
+
+```typescript
+csrf: {
+  enabled: true,
+  exceptRoutes: (ctx) => {
+    return ctx.request.url().startsWith('/admin/workbench')
+  },
+},
+```
+
+## QueueDash vs Workbench
+
+Both dashboards are first-party integrations. Pick whichever fits your taste — they both target the same BullMQ feature surface.
+
+- **QueueDash** is bundled by default with `@nemoventures/adonis-jobs`. Lightweight, mature, and battle-tested.
+- **Workbench** is opt-in. Newer, ships a richer UI (flows/DAG view, tag-based filtering, search), and follows a more modern design language.
+
+Nothing stops you from mounting both side-by-side at different prefixes during evaluation.
+
+## How the integration works
+
+`workbenchUiRoutes()` is a thin shim over [`@getworkbench/core`](https://www.npmjs.com/package/@getworkbench/core)'s `createFetchHandler`. The dashboard is internally a [Hono](https://hono.dev) app exposed as a Fetch-compatible handler; this package translates the AdonisJS request/response pair into a web-standard `Request`/`Response` and back, automatically pulling queues from your `config/queue.ts`.
+
+The official [`@getworkbench/adonis`](https://www.npmjs.com/package/@getworkbench/adonis) package offers a different ergonomic (you pass queues and the mount path explicitly to `mountWorkbench(router, '/jobs', { queues, … })`). Use that one directly if you prefer to manage the queue list yourself or want to bypass the queue manager.
+
+## Next Steps
+
+Learn about [monitoring and metrics](/guides/observability) to set up comprehensive observability for your job queues.

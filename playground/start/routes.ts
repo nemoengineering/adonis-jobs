@@ -10,6 +10,7 @@
 import router from '@adonisjs/core/services/router'
 import CommandJob from '@nemoventures/adonis-jobs/builtin/command_job'
 import { queueDashUiRoutes } from '@nemoventures/adonis-jobs/ui/queuedash'
+import { workbenchUiRoutes } from '@nemoventures/adonis-jobs/ui/workbench'
 import { BulkDispatcher, JobChain, JobFlow, JobScheduler } from '@nemoventures/adonis-jobs'
 
 import SlowJob from '#jobs/slow_job'
@@ -200,3 +201,4 @@ router.get('/dedup-throttle', async () => {
 })
 
 queueDashUiRoutes().prefix('/admin/queue')
+workbenchUiRoutes().prefix('/admin/workbench')
