@@ -116,6 +116,13 @@ await JobScheduler.remove('file-writer-scheduler')
 
 Flows allow you to create complex job workflows with parent-child relationships. This is useful for orchestrating multiple jobs that depend on each other.
 
+:::warning
+A parent job does **not** run first. Children are the parent's *dependencies*: they
+run before it. BullMQ keeps the parent in the `waiting-children` state and only makes
+it available to a worker once every child has completed. Execution goes from the
+leaves up to the root.
+:::
+
 Make sure to check the [BullMQ documentation](https://docs.bullmq.io/guide/flows) for more details on flows.
 
 ### Bulk Dispatching
@@ -162,23 +169,36 @@ Create complex workflows with parent-child relationships:
 ```typescript
 import { JobFlow } from '@nemoventures/adonis-jobs'
 
-const parentJob = ProcessOrderJob.dispatch({ orderId: '123' })
+// The parent is the job you want to run *last*, once everything it depends on
+// is done. Here: the confirmation is only sent after the order is fully handled.
+const parentJob = SendOrderConfirmationJob.dispatch({ orderId: '123' })
 const flow = new JobFlow(parentJob)
 
-// Add child jobs that run after parent completes
-flow.addChildJob(SendEmailJob.dispatch({ orderId: '123' }))
+// Add child jobs. They run before the parent, and in parallel with each other.
+flow.addChildJob(ProcessOrderJob.dispatch({ orderId: '123' }))
 flow.addChildJob(UpdateInventoryJob.dispatch({ orderId: '123' }))
 
-// Add nested children
+// Nesting follows the same rule one level deeper: the invoice has to be
+// generated before it can be emailed.
 flow.addChildJob(
-  GenerateInvoiceJob.dispatch({ orderId: '123' }),
+  EmailInvoiceJob.dispatch({ orderId: '123' }),
   (childFlow) => {
-    childFlow.addChildJob(EmailInvoiceJob.dispatch({ orderId: '123' }))
+    childFlow.addChildJob(GenerateInvoiceJob.dispatch({ orderId: '123' }))
   }
 )
 
 await flow.dispatch()
 ```
+
+The flow above executes in this order:
+
+1. `ProcessOrderJob`, `UpdateInventoryJob` and `GenerateInvoiceJob` run first, in parallel
+2. `EmailInvoiceJob` runs once `GenerateInvoiceJob` has completed
+3. `SendOrderConfirmationJob` runs last, once all of its children have completed
+
+A child job that fails permanently keeps its parent in `waiting-children`.
+You can unblock it manually by retrying the failed child or by removing it from the queue (the parent then proceeds without that child's result).
+You can also set [`ignoreDependencyOnFailure`](https://docs.bullmq.io/guide/flows/ignore-dependency) on a child if the parent should always proceed anyway.
 
 ## Next Steps
 
