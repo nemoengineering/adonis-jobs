@@ -87,6 +87,14 @@ export default class QueueWork extends BaseCommand {
     const emitter = await this.app.container.make('emitter')
     const redis = await this.app.container.make('redis')
 
+    /**
+     * Commit the router to ensure all routes are registered.
+     * This is required when jobs dispatch HTTP requests or
+     * use URL generation.
+     */
+    const router = await this.app.container.make('router')
+    router.commit()
+
     const jobs = await new JobDiscoverer(this.app.appRoot).discoverAndLoadJobs()
     const resolver = new ConnectionResolver(this.#config, redis)
 
