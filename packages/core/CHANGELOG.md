@@ -1,5 +1,14 @@
 # @nemoventures/adonis-jobs
 
+## 2.2.1
+
+### Patch Changes
+
+- 465667f: Commit the app router when starting `queue:work`, so named-route lookups (`urlFor`, `signedUrlFor`, …) work inside jobs instead of throwing `Cannot lookup route`.
+- 14fa44b: Name the routes registered inside `workbenchUiRoutes()` so the returned group can be named or prefixed-and-named by consumers (e.g. `workbenchUiRoutes().prefix('/jobs').as('jobs')`). Previously this threw `RuntimeException: Routes inside a group must have names before calling "router.group.as"`.
+
+  The routes are self-namespaced under `workbench.*` (`workbench.index`, `workbench.catchAll`) to avoid collisions with application routes. If you additionally name the group, the names stack via prepend — `workbenchUiRoutes().as('jobs')` produces `jobs.workbench.index`, etc.
+
 ## 2.2.0
 
 ### Minor Changes
