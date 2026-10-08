@@ -88,9 +88,8 @@ export default class QueueWork extends BaseCommand {
     const redis = await this.app.container.make('redis')
 
     /**
-     * Commit the router to ensure all routes are registered.
-     * This is required when jobs dispatch HTTP requests or
-     * use URL generation.
+     * Commit the router so named-route lookups (`urlFor`,
+     * `signedUrlFor`, ...) work inside jobs.
      */
     const router = await this.app.container.make('router')
     router.commit()
