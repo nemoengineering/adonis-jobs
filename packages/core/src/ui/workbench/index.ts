@@ -165,10 +165,12 @@ export function workbenchUiRoutes(options: WorkbenchUiOptions = {}): RouteGroup 
     response.send(Buffer.from(await webResponse.arrayBuffer()))
   }
 
-  return router.group(() => {
-    // Two routes: the bare mount and a wildcard catch-all. Both delegate to
-    // the same handler — Workbench's internal Hono router does the rest.
-    router.any('/', handle)
-    router.any('/*', handle)
-  })
+  return router
+    .group(() => {
+      // Two routes: the bare mount and a wildcard catch-all. Both delegate to
+      // the same handler — Workbench's internal Hono router does the rest.
+      router.any('/', handle).as('index')
+      router.any('/*', handle).as('catchAll')
+    })
+    .as('workbench')
 }
